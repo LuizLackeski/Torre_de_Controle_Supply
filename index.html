@@ -395,13 +395,13 @@ function renderPainel(dados) {
         const dataStr      = val(linha, 'data').split(' ')[0];
 
         const alocLower    = alocacao.toLowerCase();
-        const tratLower    = tratativaRaw.toLowerCase();
-        const tratVazia    = !tratativaRaw || ['-','nan','null',''].includes(tratLower);
+        const tratUpper    = tratativaRaw.toUpperCase();
+        const tratVazia    = !tratativaRaw || ['-','nan','null',''].includes(tratativaRaw.toLowerCase());
         const hasNoShow    = /no[\s-]?show/i.test(tratativaRaw);
 
         // REGRAS DE CANCELAMENTO EXATAS
         if (alocLower.includes('cancelad') && tratVazia) return;
-        if (tratativaRaw.toUpperCase().includes('AGENDAMENTO - CANCELADO')) return; // Descarta completamente se conter a string exata
+        if (tratUpper.includes('AGENDAMENTO - CANCELADO')) return; // Descarta completamente se conter a string exata
 
         const dataISO = toISO(dataStr);
         if (dataISO) { datasSet.add(dataISO); volumeDia[dataISO] = (volumeDia[dataISO] || 0) + 1; }
@@ -412,7 +412,7 @@ function renderPainel(dados) {
         if (/imped/i.test(alocacao.normalize('NFD').replace(/[\u0300-\u036f]/g,''))) impedidos++;
         
         // REGRA DE ANTECIPADO EXATA
-        const isAntecipado = alocLower.includes('antecipa') || tratativaRaw.toUpperCase().includes('AGENDAMENTO - ANTECIPADO');
+        const isAntecipado = alocLower.includes('antecipa') || tratUpper.includes('AGENDAMENTO - ANTECIPADO');
         if (isAntecipado) antecipados++;
 
         // Processa Tratativas válidas
@@ -573,8 +573,8 @@ function renderPainel(dados) {
                     datalabels: { color: '#FFF', anchor: 'end', align: 'bottom', offset: 4, font: { size: 10, weight: 'bold' }, formatter: v => v }
                 },
                 {
-                    type: 'line', // Usado apenas para projetar a badge sobre a barra
-                    data: dataLine, // A mesma altura das barras
+                    type: 'line', 
+                    data: dataLine, 
                     borderColor: 'transparent',
                     pointRadius: 0,
                     datalabels: {
@@ -604,6 +604,7 @@ function renderPainel(dados) {
     if(semContatoCount>0) txt += `\n*⚡ Sem Contato:*\n• Total sem contato: ${semContatoCount}\n`;
     txt += `\n*📋 Últimas Tratativas:*\n`;
     tratsArr.forEach(t => txt += `• ${t.nome}: ${t.qtd} (${t.pct}%)\n`);
+    if(nsArr.length>0){ txt+=`\n*⚠️ No-Show Reincidente (90d):*\n`; nsArr.forEach(p=>txt+=`• ${p}\n`); }
     document.getElementById('texto-slack-preview').value = txt;
 }
 
