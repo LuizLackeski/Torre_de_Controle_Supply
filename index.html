@@ -10,7 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
     <style>
         :root {
-            var(--cobli-navy):   #07074E;   
+            --cobli-navy:   #07074E;   
             --cobli-mid:    #1F1F5F;   
             --bg:           #0F0F2A;         
             --card:         #181830;         
@@ -197,7 +197,7 @@
             </div>
             <div class="panel-block" style="padding:16px 20px;">
                 <div class="panel-block-title" style="color:var(--muted); margin-bottom:10px;"><span class="dot" style="color:var(--accent-red)"></span>No-Show Reincidente (90d)</div>
-                <div id="lista-no-show-novo"></div>
+                <div id="resumo-no-show"></div>
             </div>
         </div>
 
@@ -292,7 +292,6 @@ function isFimDeSemana(isoStr) {
     return dow === 0 || dow === 6;
 }
 
-// ── FILTRO GLOBAL E RENDERIZAÇÃO ──
 function aplicarFiltro(periodo, btnElement) {
     if (btnElement) {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -323,7 +322,7 @@ function aplicarFiltro(periodo, btnElement) {
 }
 
 function renderPainel(dados) {
-    let total = 0, pilotCount = 0, pilotNoShow = 0, concluidos = 0, impedidos = 0, antecipados = 0;
+    let total = 0, pilotCount = 0, pilotNoShow = 0, concluidos = 0, impedidos = 0, antecipados = 0, noShowTotal = 0;
     let totalTratativas = 0, semContatoCount = 0;
     let tratativasMap = {}, pilotStatusMap = {}, prestadoresSet = new Set();
     let prestadoresMap = {}, prestadoresSemContato = {}, datasSet = new Set(), volumeDia = {}, semContatoPorDia = {};
@@ -341,58 +340,67 @@ function renderPainel(dados) {
         const tratVazia    = !tratativaRaw || ['-','nan','null',''].includes(tratativaRaw.toLowerCase());
         const hasNoShow    = /no[\s-]?show/i.test(tratativaRaw);
 
-        // 🛑 REGRA 1: IGNORAR EXATAMENTE "AGENDAMENTO - CANCELADO" (Proporções puras)
+        // 🛑 FILTRO CANCELADOS EXATOS
         if (alocLower.includes('cancelad') && tratVazia) return;
         if (tratUpper.includes('AGENDAMENTO - CANCELADO')) return; 
 
         const dataISO = toISO(dataStr);
         const fds = isFimDeSemana(dataISO);
 
-        if (dataISO) { datasSet.add(dataISO); volumeDia[dataISO] = (volumeDia[dataISO] || 0) + 1; }
-
-        total++; 
-
-        if (alocLower.includes('conclu')) concluidos++;
-        if (/imped/i.test(alocacao.normalize('NFD').replace(/[\u0300-\u036f]/g,''))) impedidos++;
-        
+        // Mapeamento das condições principais
         const isAntecipado = alocLower.includes('antecipa') || tratUpper.includes('AGENDAMENTO - ANTECIPADO');
-        if (isAntecipado) antecipados++;
+        let isConcluido = alocLower.includes('conclu');
+        let isImpedido = /imped/i.test(alocacao.normalize('NFD').replace(/[\u0300-\u036f]/g,''));
 
-        // 📵 REGRA SEM CONTATO CORRIGIDA (Apenas se contiver no texto explícito)
-        let tratLimpa = tratativaRaw.replace(/^\d{2}\/\d{2}[^—\-]*(—|-)\s*/, '').trim();
-        const isSemContato = tratUpper.includes('SEM CONTATO');
-
-        // Se for fim de semana, desconsidera a tratativa para os gráficos/lista
-        if (fds) {
-            tratLimpa = ''; 
+        // Regra específica: Antecipado entra como Concluído
+        if (isAntecipado) {
+            antecipados++;
+            isConcluido = true;
         }
 
-        // Soma Tratativas válidas para a lista
-        if (tratLimpa && !tratVazia && tratLimpa.toLowerCase() !== 'nan' && tratLimpa.toLowerCase() !== 'null') {
-            tratativasMap[tratLimpa] = (tratativasMap[tratLimpa] || 0) + 1;
-            totalTratativas++;
+        // Restringe o universo estritamente para o fechamento de 100% (Realizados ou No-shows)
+        if (isConcluido || isImpedido || hasNoShow) {
+            if (dataISO) { datasSet.add(dataISO); volumeDia[dataISO] = (volumeDia[dataISO] || 0) + 1; }
+
+            if (isConcluido) concluidos++;
+            if (isImpedido) impedidos++;
+            if (hasNoShow) noShowTotal++;
+
+            let tratLimpa = tratativaRaw.replace(/^\d{2}\/\d{2}[^—\-]*(—|-)\s*/, '').trim();
+            const isSemContato = tratUpper.includes('SEM CONTATO');
+
+            if (fds) {
+                tratLimpa = ''; 
+            }
+
+            if (tratLimpa && !tratVazia && tratLimpa.toLowerCase() !== 'nan' && tratLimpa.toLowerCase() !== 'null') {
+                tratativasMap[tratLimpa] = (tratativasMap[tratLimpa] || 0) + 1;
+                totalTratativas++;
+            }
+
+            if (prestador) prestadoresMap[prestador] = (prestadoresMap[prestador] || 0) + 1;
+
+            if (isSemContato) {
+                semContatoCount++;
+                if (prestador) prestadoresSemContato[prestador] = (prestadoresSemContato[prestador] || 0) + 1;
+                if (dataISO) semContatoPorDia[dataISO] = (semContatoPorDia[dataISO] || 0) + 1;
+            }
+
+            if (classe.includes('pilot')) {
+                pilotCount++;
+                if (hasNoShow) { pilotNoShow++; } 
+                else { const s = alocacao || 'Sem Status'; pilotStatusMap[s] = (pilotStatusMap[s] || 0) + 1; }
+            }
+
+            if (noShow90d === 'sim' && hasNoShow && prestador) prestadoresSet.add(prestador);
         }
-
-        if (prestador) prestadoresMap[prestador] = (prestadoresMap[prestador] || 0) + 1;
-
-        if (isSemContato) {
-            semContatoCount++;
-            if (prestador) prestadoresSemContato[prestador] = (prestadoresSemContato[prestador] || 0) + 1;
-            if (dataISO) semContatoPorDia[dataISO] = (semContatoPorDia[dataISO] || 0) + 1;
-        }
-
-        if (classe.includes('pilot')) {
-            pilotCount++;
-            if (hasNoShow) { pilotNoShow++; } 
-            else { const s = alocacao || 'Sem Status'; pilotStatusMap[s] = (pilotStatusMap[s] || 0) + 1; }
-        }
-
-        if (noShow90d === 'sim' && hasNoShow && prestador) prestadoresSet.add(prestador);
     });
 
-    // ── TEXTOS E TAXAS ──
-    const txRealizados = total > 0 ? (((concluidos+impedidos) / total) * 100).toFixed(1) : 0;
-    const txConclusao  = total > 0 ? ((concluidos / total) * 100).toFixed(1) : 0;
+    // 📐 MATEMÁTICA PERFEITA: Universo fechado sem vazamentos
+    total = concluidos + impedidos + noShowTotal;
+    const realizados = concluidos + impedidos;
+
+    const txRealizados = total > 0 ? ((realizados / total) * 100).toFixed(1) : 0;
     const txImpedidos  = total > 0 ? ((impedidos / total) * 100).toFixed(1) : 0;
     const txNoShow     = pilotCount > 0 ? ((pilotNoShow / pilotCount) * 100).toFixed(1) : 0;
     const txPilot      = total > 0 ? ((pilotCount / total) * 100).toFixed(1) : 0;
@@ -429,29 +437,21 @@ function renderPainel(dados) {
     document.getElementById('kpi-row-main').innerHTML = [
         { label: 'Total Analisado', value: total, sub: '&nbsp;', accent: 'var(--accent-cyan)', icon: '📋', extra: '' },
         { label: 'Total Pilot', value: pilotCount, sub: txPilot+'% do total', accent: 'var(--accent-blue)', icon: '🚀', extra: pilotExtra },
-        { label: 'Realizados', value: concluidos+impedidos, sub: txRealizados+'% do total', accent: 'var(--accent-green)', icon: '⚡', extra: '' },
+        { label: 'Realizados', value: realizados, sub: txRealizados+'% do total', accent: 'var(--accent-green)', icon: '⚡', extra: '' },
         { label: 'Impedidos', value: impedidos, sub: txImpedidos+'% do total', accent: 'var(--accent-red)', icon: '🚫', extra: '' },
         { label: 'Antecipados', value: antecipados, sub: txAntecipado+'% do total', accent: 'var(--accent-purple)', icon: '⏳', extra: '' }
     ].map(k => `<div class="kpi-card" style="--kpi-accent:${k.accent}"><div class="kpi-label">${k.label}</div><div class="kpi-value">${k.value}</div><div class="kpi-sub">${k.sub}</div>${k.extra}<div class="kpi-icon">${k.icon}</div></div>`).join('');
 
-    // ── 4 COLUNAS (Com as % corretas e ajustadas) ──
-    const diasOrds = Object.keys(volumeDia).sort();
+    // ── 4 COLUNAS ──
     const fdsDias = diasOrds.filter(d => isFimDeSemana(d));
     const fdsTotal = fdsDias.reduce((s,d) => s+(volumeDia[d]||0),0);
     const fdsPct = total > 0 ? ((fdsTotal / total) * 100).toFixed(1) : 0;
 
     const fdsEl = document.getElementById('fds-totais-novo');
-    if(fdsEl) {
-        if(fdsDias.length===0) fdsEl.innerHTML = `<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum fim de semana</div>`;
-        else fdsEl.innerHTML = `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;"><span style="font-size:28px;font-weight:700;color:#F01A1A;line-height:1;">${fdsTotal}</span><span style="font-size:11px;color:var(--muted);">atends.</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:12px;background:rgba(240,26,26,0.15);color:#F01A1A;border:1px solid rgba(240,26,26,0.3);border-radius:20px;padding:3px 12px;font-weight:700;">${fdsPct}% do total</span></div><div style="margin-top:8px;font-size:10px;color:var(--muted);">${fdsDias.length} dias listados</div>`;
-    }
+    if(fdsEl) fdsEl.innerHTML = fdsDias.length===0 ? `<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum fim de semana</div>` : `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;"><span style="font-size:28px;font-weight:700;color:#F01A1A;line-height:1;">${fdsTotal}</span><span style="font-size:11px;color:var(--muted);">atends.</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:12px;background:rgba(240,26,26,0.15);color:#F01A1A;border:1px solid rgba(240,26,26,0.3);border-radius:20px;padding:3px 12px;font-weight:700;">${fdsPct}% do total</span></div>`;
 
     const scEl = document.getElementById('sc-totais-novo');
-    const txSC = total > 0 ? ((semContatoCount / total) * 100).toFixed(1) : 0;
-    if(scEl) {
-        if(semContatoCount===0) scEl.innerHTML = `<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum sem contato</div>`;
-        else scEl.innerHTML = `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;"><span style="font-size:28px;font-weight:700;color:#F5C519;line-height:1;">${semContatoCount}</span><span style="font-size:11px;color:var(--muted);">atends.</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:12px;background:rgba(245,197,25,0.12);color:#F5C519;border:1px solid rgba(245,197,25,0.25);border-radius:20px;padding:3px 12px;font-weight:700;">${txSC}% do total</span></div>`;
-    }
+    if(scEl) scEl.innerHTML = semContatoCount===0 ? `<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum sem contato</div>` : `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;"><span style="font-size:28px;font-weight:700;color:#F5C519;line-height:1;">${semContatoCount}</span><span style="font-size:11px;color:var(--muted);">atends.</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:12px;background:rgba(245,197,25,0.12);color:#F5C519;border:1px solid rgba(245,197,25,0.25);border-radius:20px;padding:3px 12px;font-weight:700;">${total>0?((semContatoCount/total)*100).toFixed(1):0}% do total</span></div>`;
 
     const ulPilot = document.getElementById('lista-pilot-novo');
     if(ulPilot) {
@@ -461,27 +461,17 @@ function renderPainel(dados) {
     }
 
     const nsArr = [...prestadoresSet];
-    const nsEl = document.getElementById('lista-no-show-novo');
-    if(nsEl) {
-        if(nsArr.length===0) nsEl.innerHTML = '<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum reincidente</div>';
-        else nsEl.innerHTML = `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;"><span style="font-size:28px;font-weight:700;color:#F04040;line-height:1;">${nsArr.length}</span><span style="font-size:11px;color:var(--muted);">prestadores</span></div><div style="margin-top:8px;font-size:10px;color:var(--muted);">Ver lista no rodapé</div>`;
-    }
+    const nsEl = document.getElementById('resumo-no-show');
+    if(nsEl) nsEl.innerHTML = nsArr.length===0 ? '<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum reincidente</div>' : `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;"><span style="font-size:28px;font-weight:700;color:#F04040;line-height:1;">${nsArr.length}</span><span style="font-size:11px;color:var(--muted);">prestadores</span></div>`;
 
     // ── TRATATIVAS ──
-    const removePrefixo = n => n.replace(/^agendamento\s*[-–—]\s*/i, '').trim();
-    const tratsArr = Object.entries(tratativasMap).map(([nome, qtd]) => ({ nome: removePrefixo(nome), qtd, pct: ((qtd/totalTratativas)*100).toFixed(1) }))
-        .reduce((acc, t) => { const ex = acc.find(x=>x.nome===t.nome); if(ex){ ex.qtd+=t.qtd; ex.pct=((ex.qtd/totalTratativas)*100).toFixed(1); } else acc.push(t); return acc; }, []).sort((a,b)=>b.qtd-a.qtd);
-    
     const ulTrat = document.getElementById('lista-tratativas');
-    const maxTrat = tratsArr[0]?.qtd || 1;
     if(ulTrat) {
         if(tratsArr.length===0) ulTrat.innerHTML = '<div class="empty">Sem dados de tratativa.</div>';
         else ulTrat.innerHTML = tratsArr.map(t => `<div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:2px 0;"><span style="flex:3;min-width:0;color:var(--text);line-height:1.4;">${t.nome}</span><div style="flex:2;height:6px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden;"><div style="width:${(t.qtd/maxTrat*100).toFixed(1)}%;height:100%;background:var(--accent-blue);"></div></div><span style="flex-shrink:0;min-width:28px;text-align:right;color:var(--accent-cyan);font-weight:700;">${t.qtd}</span><span style="flex-shrink:0;min-width:44px;text-align:right;color:var(--muted);">(${t.pct}%)</span></div>`).join('');
     }
 
     // ── PRESTADORES ──
-    const topPrest = Object.entries(prestadoresMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
-    const maxPrest = topPrest[0]?.[1] || 1;
     const ulPrest = document.getElementById('lista-prestadores');
     if(ulPrest) {
         if(topPrest.length===0) ulPrest.innerHTML = '<div class="empty">Sem dados de prestador.</div>';
@@ -502,12 +492,6 @@ function renderPainel(dados) {
 
     // ── GRÁFICOS ──
     Chart.register(ChartDataLabels);
-    const labels = diasOrds.map(d => fmtData(d));
-    const dataLine = diasOrds.map(d => volumeDia[d]);
-    const isFdsArr = diasOrds.map(d => isFimDeSemana(d));
-    const scLineData = diasOrds.map(d => semContatoPorDia[d] || 0);
-
-    // Evolução (Linha)
     const chartEvol = document.getElementById('graficoEvolucao');
     if (chartEvol) {
         const ctxLine = chartEvol.getContext('2d');
@@ -523,10 +507,6 @@ function renderPainel(dados) {
         });
     }
 
-    const legenda = document.getElementById('grafico-legenda');
-    if (legenda) legenda.innerHTML = `<span style="font-size:11px;color:#9095c4;"><span style="width:10px;height:10px;border-radius:50%;background:#0FFDC9;display:inline-block;"></span> Dia útil</span>&nbsp;&nbsp;<span style="font-size:11px;color:#9095c4;"><span style="width:10px;height:10px;border-radius:50%;background:#F01A1A;display:inline-block;"></span> Fim de semana</span>`;
-
-    // Volume por Dia (Barras com selo apenas onde é Sem Contato real)
     const chartVol = document.getElementById('graficoVolumeBar');
     if (chartVol) {
         const ctxBar = chartVol.getContext('2d');
@@ -552,13 +532,10 @@ function renderPainel(dados) {
                             backgroundColor: 'rgba(245,197,25,0.12)', borderColor: 'rgba(245,197,25,0.3)', borderWidth: 1, borderRadius: 20, color: '#F5C519', font: { size: 9, weight: 'bold' }, padding: {top: 2, bottom: 2, left: 6, right: 6},
                             align: 'top', anchor: 'end', offset: 6,
                             formatter: (v, ctx) => {
-                                const isFds = isFdsArr[ctx.dataIndex];
-                                if (isFds) return null; // Oculta a badge amarela se for final de semana
-
+                                if (isFdsArr[ctx.dataIndex]) return null; 
                                 const sc = scLineData[ctx.dataIndex];
                                 if (!sc || sc === 0) return null;
-                                const pct = v > 0 ? Math.round((sc/v)*100) : 0;
-                                return `${sc} s/c (${pct}%)`;
+                                return `${sc} s/c (${Math.round((sc/v)*100)}%)`;
                             }
                         }
                     }
@@ -576,7 +553,7 @@ function renderPainel(dados) {
     let txt = `*📊 PAINEL DE PERFORMANCE — COBLI (${textoData})*\n\n*Resumo Geral:*\n• Total Analisado: ${total}\n• Total Pilot: ${pilotCount} (${txPilot}%)\n• Concluídos: ${concluidos} (${txConclusao}%)\n• Impedidos: ${impedidos} (${txImpedidos}%)\n• Antecipados: ${antecipados} (${txAntecipado}%)\n\n*📊 Taxas:*\n• Taxa de Conclusão: ${txConclusao}%\n• No-Show entre Pilots: ${txNoShow}%\n\n*🚀 Detalhes Pilot:*\n`;
     if(pilotNoShow>0) txt += `• *🚨 PILOTOS COM NO-SHOW: ${pilotNoShow}*\n`;
     Object.entries(pilotStatusMap).sort((a,b)=>b[1]-a[1]).forEach(([s,q]) => txt += `• ${s}: ${q}\n`);
-    if(semContatoCount>0) txt += `\n*⚡ Sem Contato:*\n• Total sem contato: ${semContatoCount} (${txSC}% do total)\n`;
+    if(semContatoCount>0) txt += `\n*⚡ Sem Contato:*\n• Total sem contato: ${semContatoCount} (${total > 0 ? ((semContatoCount / total) * 100).toFixed(1) : 0}% do total)\n`;
     txt += `\n*📋 Últimas Tratativas:*\n`;
     tratsArr.forEach(t => txt += `• ${t.nome}: ${t.qtd} (${t.pct}%)\n`);
     if(nsArr.length>0){ txt+=`\n*⚠️ No-Show Reincidente (90d):*\n`; nsArr.forEach(p=>txt+=`• ${p}\n`); }
