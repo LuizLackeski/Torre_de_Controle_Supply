@@ -133,7 +133,7 @@
             gap: 12px;
         }
 
-        .top-bar-left { display: flex; align-items: center; gap: 16px; }
+        .top-bar-left { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
         .cobli-badge {
             font-size: 11px;
             font-weight: 700;
@@ -146,6 +146,21 @@
             border: 1px solid rgba(15,253,201,0.15);
         }
         #topbar-date { font-size: 13px; color: var(--text); font-weight: 500; }
+
+        /* Select de Período no Cabeçalho */
+        .filter-select {
+            background: rgba(255,255,255,0.04);
+            color: var(--text);
+            border: 1px solid var(--border-strong);
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .filter-select:focus { border-color: var(--accent-cyan); }
 
         .top-bar-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
@@ -190,7 +205,6 @@
             gap: 12px;
             margin-bottom: 14px;
         }
-        .kpi-row-4 { grid-template-columns: repeat(4, 1fr); }
         .kpi-row-5 { grid-template-columns: repeat(5, 1fr); }
 
         .kpi-card {
@@ -230,12 +244,6 @@
         }
 
         /* GRIDS GERAIS */
-        .grid-4 {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin-bottom: 14px;
-        }
         .grid-2 {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -265,6 +273,24 @@
             border-radius: 50%;
             background: currentColor;
             flex-shrink: 0;
+        }
+
+        /* 4 COLUNAS NUM MESMO BLOCO (SEPARADAS POR LINHAS) */
+        .four-col-block {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 14px;
+            overflow: hidden;
+        }
+        .four-col-item {
+            padding: 20px 22px;
+            border-right: 1px solid var(--border);
+        }
+        .four-col-item:last-child {
+            border-right: none;
         }
 
         /* LISTA TRATATIVAS */
@@ -313,8 +339,22 @@
             font-size: 14px;
         }
 
-        /* NO-SHOW ALERT */
-        .noshow-list { display: flex; flex-direction: column; gap: 5px; }
+        /* NO-SHOW PRESTADORES BADGES (NO RODAPÉ) */
+        .noshow-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .noshow-tag {
+            font-size: 11px;
+            padding: 5px 12px;
+            background: rgba(240,26,26,0.08);
+            border: 1px solid rgba(240,26,26,0.2);
+            border-left: 3px solid var(--accent-red);
+            border-radius: 4px;
+            color: var(--text);
+            font-weight: 500;
+        }
 
         /* CHART ROW */
         .chart-row {
@@ -359,23 +399,13 @@
         }
         .badge-cyan { background: rgba(15,253,201,0.1); color: var(--accent-cyan); border: 1px solid rgba(15,253,201,0.2); }
 
-        /* Select customizado */
-        select.custom-select {
-            background: var(--bg);
-            color: var(--text);
-            border: 1px solid var(--border-strong);
-            border-radius: 6px;
-            padding: 4px 10px;
-            font-size: 11px;
-            outline: none;
-            cursor: pointer;
-        }
-        select.custom-select:focus { border-color: var(--accent-cyan); }
-
         /* RESPONSIVO */
         @media (max-width: 900px) {
-            .kpi-row-4, .kpi-row-5 { grid-template-columns: repeat(2, 1fr); }
-            .grid-4, .grid-2 { grid-template-columns: 1fr; }
+            .kpi-row-5 { grid-template-columns: repeat(2, 1fr); }
+            .grid-2 { grid-template-columns: 1fr; }
+            .four-col-block { grid-template-columns: repeat(2, 1fr); }
+            .four-col-item:nth-child(2) { border-right: none; }
+            .four-col-item:nth-child(1), .four-col-item:nth-child(2) { border-bottom: 1px solid var(--border); }
         }
 
         /* EMPTY STATE */
@@ -384,6 +414,7 @@
 </head>
 <body>
 
+<!-- ── UPLOAD SCREEN ─────────────────────────────────────── -->
 <div id="upload-screen">
     <div class="upload-logo">Cobli</div>
     <div class="upload-title">Painel de Performance</div>
@@ -403,6 +434,7 @@
     <input type="file" id="csvFileInput" accept=".csv">
 </div>
 
+<!-- ── DASHBOARD SCREEN ──────────────────────────────────── -->
 <div id="dashboard-screen">
 
     <div class="top-bar-outer"><div class="top-bar">
@@ -410,6 +442,14 @@
             <span class="cobli-badge">Cobli</span>
             <span id="topbar-date">—</span>
             <span id="topbar-total" class="badge badge-cyan"></span>
+            
+            <!-- FILTRO GLOBAL MOVIDO PARA O TOPO -->
+            <select id="filtro-periodo" class="filter-select" onchange="aplicarFiltro(this.value)">
+                <option value="7">Últimos 7 dias</option>
+                <option value="15">Últimos 15 dias</option>
+                <option value="30">Últimos 30 dias</option>
+                <option value="all" selected>Todo o período</option>
+            </select>
         </div>
         <div class="top-bar-actions">
             <button class="btn btn-reload" onclick="recarregar()">↩ Novo CSV</button>
@@ -421,6 +461,7 @@
 
     <div id="painel-cobli">
 
+        <!-- HEADER DO PAINEL -->
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;padding-bottom:16px;border-bottom:1px solid var(--border);">
             <div>
                 <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent-cyan);margin-bottom:4px;">Performance Report</div>
@@ -432,29 +473,36 @@
             </div>
         </div>
 
+        <!-- ① KPIs 5 cards (Com Antecipado incluído) -->
         <div class="kpi-row kpi-row-5" id="kpi-row-main"></div>
 
-        <div class="grid-4">
-            <div class="panel-block" style="padding:16px 20px;">
+        <!-- ② BLOCOS SECUNDÁRIOS UNIDOS NUMA MESMA LINHA -->
+        <div class="four-col-block">
+            <!-- Fim de Semana -->
+            <div class="four-col-item">
                 <div class="panel-block-title" style="color:var(--accent-red); margin-bottom:10px;"><span class="dot"></span>Fim de Semana</div>
                 <div id="fds-totais-novo"></div>
             </div>
-            <div class="panel-block" style="padding:16px 20px;">
+            <!-- Sem Contato -->
+            <div class="four-col-item">
                 <div class="panel-block-title" style="color:var(--accent-yellow); margin-bottom:10px;"><span class="dot"></span>Sem Contato</div>
                 <div id="sc-totais-novo"></div>
             </div>
-            <div class="panel-block" style="padding:16px 20px;">
+            <!-- Detalhes Pilot -->
+            <div class="four-col-item">
                 <div class="panel-block-title" style="color:var(--accent-green); margin-bottom:10px;"><span class="dot"></span>Detalhes Pilot</div>
                 <div class="pilot-list" id="lista-pilot-novo"></div>
             </div>
-            <div class="panel-block" style="padding:16px 20px;">
+            <!-- No-Show Reincidente (Apenas Resumo/Contagem) -->
+            <div class="four-col-item">
                 <div class="panel-block-title" style="color:var(--muted); margin-bottom:10px;">
                     <span class="dot" style="color:var(--accent-red)"></span>No-Show Reincidente (90d)
                 </div>
-                <div class="noshow-list" id="lista-no-show-novo"></div>
+                <div id="resumo-no-show"></div>
             </div>
         </div>
 
+        <!-- ③ EVOLUÇÃO DE CHAMADOS POR DIA (Gráfico de Linha) -->
         <div class="chart-row">
             <div class="panel-block">
                 <div class="panel-block-title" style="color:var(--accent-blue);">
@@ -467,24 +515,18 @@
             </div>
         </div>
 
+        <!-- ④ VOLUME POR DIA (Gráfico de Barras Fino) -->
         <div class="panel-block" style="margin-bottom:14px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <div class="panel-block-title" style="margin:0; color:var(--accent-blue);">
-                    <span class="dot"></span> Volume por Dia
-                </div>
-                <select id="filtro-volume-dia" class="custom-select" onchange="renderChartVolume()">
-                    <option value="7">Últimos 7 dias</option>
-                    <option value="15">Últimos 15 dias</option>
-                    <option value="30">Últimos 30 dias</option>
-                    <option value="all" selected>Todo o período</option>
-                </select>
+            <div class="panel-block-title" style="color:var(--accent-blue);">
+                <span class="dot"></span> Volume por Dia
             </div>
             <div class="chart-wrap" style="height: 190px;">
                 <canvas id="graficoVolumeBar"></canvas>
             </div>
         </div>
 
-        <div class="grid-2" style="margin-bottom:0;">
+        <!-- ⑤ LADO A LADO: ÚLTIMAS TRATATIVAS & TOP 10 PRESTADORES -->
+        <div class="grid-2" style="margin-bottom:14px;">
             <div class="panel-block">
                 <div class="panel-block-title" style="color:var(--accent-blue);">
                     <span class="dot"></span> Últimas Tratativas
@@ -500,17 +542,30 @@
             </div>
         </div>
 
-    </div><div class="slack-outer"><div id="slack-section">
+        <!-- ⑥ PRESTADORES REINCIDENTES DE NO-SHOW (TAGS NO RODAPÉ) -->
+        <div class="panel-block" id="bloco-noshow-nomes" style="margin-bottom:0; display:none;">
+            <div class="panel-block-title" style="color:var(--accent-red);">
+                <span class="dot"></span> Prestadores com No-Show Reincidente (Últimos 90 dias)
+            </div>
+            <div class="noshow-tags" id="lista-no-show-novo"></div>
+        </div>
+
+    </div><!-- /painel-cobli -->
+
+    <!-- SLACK PREVIEW -->
+    <div class="slack-outer"><div id="slack-section">
         <div class="slack-header">📝 Pré-visualização do texto para Slack</div>
         <textarea id="texto-slack-preview"></textarea>
     </div></div>
 
-</div><script>
+</div><!-- /dashboard-screen -->
+
+<script>
 let chartLine = null;
 let chartBar = null;
 
-// Objeto global para armazenar dados de volume e permitir o filtro do ChartJS
-let volumeGlobalData = {};
+// Armazena todos os dados vindos do CSV para permitir o filtro
+let dadosGlobaisBase = [];
 
 // ── DRAG & DROP ──────────────────────────────────────────────────
 const uploadBox = document.querySelector('.upload-box');
@@ -531,7 +586,10 @@ function parseCSV(file) {
         header: true,
         skipEmptyLines: true,
         transformHeader: h => h.trim(),
-        complete: r => processarDados(r.data)
+        complete: r => {
+            dadosGlobaisBase = r.data;
+            aplicarFiltro('all'); // Inicializa exibindo tudo
+        }
     });
 }
 
@@ -541,22 +599,53 @@ function val(linha, pedaco) {
     return k ? (linha[k] || '').toString().trim() : '';
 }
 
-// ── PROCESSAMENTO ───────────────────────────────────────────────
-function processarDados(dados) {
+function toISO(s) {
+    if (!s) return '';
+    if (/^\d{2}[/\-]\d{2}[/\-]\d{4}/.test(s)) {
+        const parts = s.split(/[/\-]/);
+        return `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
+    }
+    if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0,10);
+    return s;
+}
+
+// ── FILTRO GLOBAL ───────────────────────────────────────────────
+function aplicarFiltro(periodo) {
+    if (!dadosGlobaisBase || dadosGlobaisBase.length === 0) return;
+
+    // Levantar todas as datas válidas existentes
+    const datasUnicas = new Set();
+    dadosGlobaisBase.forEach(linha => {
+        const dataStr = val(linha, 'data').split(' ')[0];
+        const dtISO = toISO(dataStr);
+        if (dtISO) datasUnicas.add(dtISO);
+    });
+
+    // Ordenar datas
+    const datasOrdenadas = [...datasUnicas].sort();
+    let datasPermitidas = datasOrdenadas;
+
+    if (periodo !== 'all') {
+        const limite = parseInt(periodo, 10);
+        // Pegar apenas os X últimos dias de operação registrados no arquivo
+        datasPermitidas = datasOrdenadas.slice(-limite);
+    }
+
+    // Filtrar dados da base
+    const dadosFiltrados = dadosGlobaisBase.filter(linha => {
+        const dtISO = toISO(val(linha, 'data').split(' ')[0]);
+        return datasPermitidas.includes(dtISO);
+    });
+
+    renderPainel(dadosFiltrados);
+}
+
+// ── RENDERIZAÇÃO CENTRAL ─────────────────────────────────────────
+function renderPainel(dados) {
     let total = 0, pilotCount = 0, pilotNoShow = 0, concluidos = 0, impedidos = 0, agendados = 0, emAndamento = 0, antecipados = 0;
     let totalTratativas = 0, semContatoCount = 0;
     let tratativasMap = {}, pilotStatusMap = {}, prestadoresSet = new Set();
     let prestadoresMap = {}, prestadoresSemContato = {}, datasSet = new Set(), volumeDia = {};
-
-    function toISO(s) {
-        if (!s) return '';
-        if (/^\d{2}[/\-]\d{2}[/\-]\d{4}/.test(s)) {
-            const parts = s.split(/[/\-]/);
-            return `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
-        }
-        if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0,10);
-        return s;
-    }
 
     dados.forEach(linha => {
         const alocacao     = val(linha, 'aloca');
@@ -567,10 +656,13 @@ function processarDados(dados) {
         const dataStr      = val(linha, 'data').split(' ')[0];
 
         const alocLower    = alocacao.toLowerCase();
+        const tratLower    = tratativaRaw.toLowerCase();
         const hasNoShow    = /no[\s-]?show/i.test(tratativaRaw);
-        const tratVazia    = !tratativaRaw || ['-','nan','null',''].includes(tratativaRaw.toLowerCase());
+        const tratVazia    = !tratativaRaw || ['-','nan','null',''].includes(tratLower);
 
+        // 🛑 REGRA DO CANCELADO (Se for tratativa = cancelado, pula e não contabiliza)
         if (alocLower.includes('cancelad') && tratVazia) return;
+        if (tratLower.includes('cancelad')) return; // Descarta totalmente do painel
 
         const dataISO = toISO(dataStr);
         if (dataISO) { datasSet.add(dataISO); volumeDia[dataISO] = (volumeDia[dataISO] || 0) + 1; }
@@ -582,11 +674,11 @@ function processarDados(dados) {
         if (alocLower.includes('agendad'))  agendados++;
         if (alocLower.includes('andamento') || alocLower.includes('em atend')) emAndamento++;
 
-        // Nova checagem para o card Antecipado (pode vir em alocação ou tratativa)
-        const isAntecipado = alocLower.includes('antecipad') || tratativaRaw.toLowerCase().includes('antecipad');
+        // ⏱️ REGRA ANTECIPADO (Abarca antecipado, antecipada, antecipação...)
+        const isAntecipado = alocLower.includes('antecipa') || tratLower.includes('antecipa');
         if (isAntecipado) antecipados++;
 
-        // Tratativa limpa
+        // Tratativa limpa para contagem e lista
         const tratLimpa = tratativaRaw.replace(/^\d{2}\/\d{2}[^—\-]*(—|-)\s*/, '').trim();
         if (tratLimpa && !tratVazia) {
             tratativasMap[tratLimpa] = (tratativasMap[tratLimpa] || 0) + 1;
@@ -694,13 +786,13 @@ function processarDados(dados) {
         return dow === 0 || dow === 6;
     }
 
-    // ── BLOCOS SECUNDÁRIOS REMANEJADOS ──
+    // ── BLOCOS SECUNDÁRIOS UNIDOS (As 4 colunas) ──
     const diasOrds = Object.keys(volumeDia).sort();
     const fdsDias  = diasOrds.filter(d => isFimDeSemana(d));
     const fdsTotal = fdsDias.reduce((s, d) => s + (volumeDia[d] || 0), 0);
     const fdsPct   = total > 0 ? ((fdsTotal / total) * 100).toFixed(1) : 0;
     
-    // FDS Card
+    // 1. FDS
     const fdsTotEl = document.getElementById('fds-totais-novo');
     if (fdsDias.length === 0) {
         fdsTotEl.innerHTML = `<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum fim de semana</div>`;
@@ -716,7 +808,7 @@ function processarDados(dados) {
             <div style="margin-top:8px;font-size:10px;color:var(--muted);">${fdsDias.length} dia${fdsDias.length>1?'s':''} de fim de semana</div>`;
     }
 
-    // Sem Contato Card
+    // 2. Sem Contato
     const scTotEl = document.getElementById('sc-totais-novo');
     const txSC = total > 0 ? ((semContatoCount / total) * 100).toFixed(1) : 0;
     if (semContatoCount === 0) {
@@ -732,11 +824,11 @@ function processarDados(dados) {
             </div>`;
     }
 
-    // Detalhes Pilot
+    // 3. Detalhes Pilot
     const ulPilot = document.getElementById('lista-pilot-novo');
     ulPilot.innerHTML = '';
     if (pilotNoShow > 0) {
-        ulPilot.innerHTML += `<div class="pilot-row warn"><span>🚨 Pilotos com No-Show</span><span class="count">${pilotNoShow}</span></div>`;
+        ulPilot.innerHTML += `<div class="pilot-row warn" style="margin-bottom:8px;"><span>🚨 Pilotos com No-Show</span><span class="count">${pilotNoShow}</span></div>`;
     }
     if (Object.keys(pilotStatusMap).length === 0 && pilotNoShow === 0) {
         ulPilot.innerHTML += '<div class="empty">Nenhum pilot encontrado.</div>';
@@ -746,18 +838,21 @@ function processarDados(dados) {
         });
     }
 
-    // No Show Reincidente
-    const ulNoShow = document.getElementById('lista-no-show-novo');
+    // 4. No Show Reincidente (Resumo)
+    const ulNoShowCount = document.getElementById('resumo-no-show');
     const noShowArr = [...prestadoresSet];
     if (noShowArr.length === 0) {
-        ulNoShow.innerHTML = '<div style="font-size:11px;color:var(--accent-cyan);display:flex;align-items:center;gap:5px;">✅ Nenhum reincidente</div>';
+        ulNoShowCount.innerHTML = '<div style="font-size:11px;color:var(--accent-cyan);display:flex;align-items:center;gap:5px;">✅ Nenhum reincidente detectado</div>';
     } else {
-        ulNoShow.innerHTML = noShowArr.map(p =>
-            `<div style="font-size:11px;padding:4px 8px;background:rgba(240,26,26,0.08);border-left:2px solid var(--accent-red);border-radius:3px;color:var(--text);">${p}</div>`
-        ).join('');
+        ulNoShowCount.innerHTML = `
+            <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;">
+                <span style="font-size:28px;font-weight:700;color:#F04040;line-height:1;">${noShowArr.length}</span>
+                <span style="font-size:11px;color:var(--muted);">prestadores reincidentes</span>
+            </div>
+            <div style="margin-top:8px;font-size:10px;color:var(--muted);">Verifique a lista no final da página</div>`;
     }
 
-    // ── LISTA TRATATIVAS ──
+    // ── LISTA TRATATIVAS (Cancelados já foram removidos na raiz) ──
     const removePrefixo = nome => nome.replace(/^agendamento\s*[-–—]\s*/i, '').trim();
     const tratsArr = Object.entries(tratativasMap)
         .map(([nome, qtd]) => {
@@ -775,7 +870,7 @@ function processarDados(dados) {
     const maxTrat = tratsArr[0]?.qtd || 1;
     const ulTrat = document.getElementById('lista-tratativas');
     if (tratsArr.length === 0) {
-        ulTrat.innerHTML = '<div class="empty">Sem dados de tratativa.</div>';
+        ulTrat.innerHTML = '<div class="empty">Sem dados de tratativa para o período.</div>';
     } else {
         ulTrat.innerHTML = tratsArr.map(t => `
             <div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:2px 0;">
@@ -813,17 +908,20 @@ function processarDados(dados) {
         }).join('');
     }
 
+    // ── PRESTADORES NO-SHOW REINCIDENTES (RODAPÉ) ──
+    const blocoNoShowRodape = document.getElementById('bloco-noshow-nomes');
+    const ulNoShowTags = document.getElementById('lista-no-show-novo');
+    if (noShowArr.length === 0) {
+        blocoNoShowRodape.style.display = 'none';
+    } else {
+        blocoNoShowRodape.style.display = 'block';
+        ulNoShowTags.innerHTML = noShowArr.map(p => `<span class="noshow-tag">${p}</span>`).join('');
+    }
+
     // ── PREPARAÇÃO DE DADOS PARA GRÁFICOS DE DIA ──
     const labels   = diasOrds.map(d => fmtData(d));
     const dataLine = diasOrds.map(d => volumeDia[d]);
     const isFdsArr = diasOrds.map(d => isFimDeSemana(d));
-    
-    // Configurações Globais do Chart Bar Fino
-    volumeGlobalData = {
-        labels: labels,
-        dataLine: dataLine,
-        barColors: isFdsArr.map(fds => fds ? '#F01A1A' : '#7F8DDB')
-    };
 
     // ── GRÁFICO LINHA (Evolução) ──
     const ptBg     = isFdsArr.map(fds => fds ? '#F01A1A' : '#07074E');
@@ -890,59 +988,18 @@ function processarDados(dados) {
             <span style="width:10px;height:10px;border-radius:50%;background:#F01A1A;display:inline-block;"></span> Fim de semana
         </span>`;
 
-    // Renderiza gráfico de barras com filtro default (all)
-    renderChartVolume();
-
-    // ── SLACK TEXT ──
-    let txt = `*📊 PAINEL DE PERFORMANCE — COBLI (${textoData})*\n\n`;
-    txt += `*Resumo Geral:*\n• Total Analisado: ${total}\n• Total Pilot: ${pilotCount} (${txPilot}%)\n• Concluídos: ${concluidos} (${txConclusao}%)\n• Impedidos: ${impedidos} (${txImpedidos}%)\n• Antecipados: ${antecipados} (${txAntecipado}%)\n\n`;
-    txt += `*📊 Taxas:*\n• Taxa de Conclusão: ${txConclusao}%\n• No-Show entre Pilots: ${txNoShow}%\n\n`;
-    txt += `*🚀 Detalhes Pilot:*\n`;
-    if (pilotNoShow > 0) txt += `• *🚨 PILOTOS COM NO-SHOW: ${pilotNoShow}*\n`;
-    Object.entries(pilotStatusMap).sort((a,b)=>b[1]-a[1]).forEach(([s,q]) => txt += `• ${s}: ${q}\n`);
-    if (semContatoCount > 0) {
-        txt += `\n*⚡ Sem Contato:*\n• Total sem contato: ${semContatoCount} (${txSC}% do total)\n`;
-    }
-    txt += `\n*📋 Últimas Tratativas:*\n`;
-    tratsArr.forEach(t => txt += `• ${t.nome}: ${t.qtd} (${t.pct}%)\n`);
-    if (noShowArr.length > 0) {
-        txt += `\n*⚠️ No-Show Reincidente (90d):*\n`;
-        noShowArr.forEach(p => txt += `• ${p}\n`);
-    } else {
-        txt += `\n*✅ Nenhum reincidente de No-Show identificado.*\n`;
-    }
-    document.getElementById('texto-slack-preview').value = txt;
-}
-
-// ── RENDERIZAR GRÁFICO DE BARRAS DE VOLUME (COM FILTRO) ─────────
-function renderChartVolume() {
-    if (!volumeGlobalData.labels) return;
-    
-    const range = document.getElementById('filtro-volume-dia').value;
-    let len = volumeGlobalData.labels.length;
-    let sliceStart = 0;
-
-    if (range !== 'all') {
-        const n = parseInt(range, 10);
-        sliceStart = len > n ? len - n : 0;
-    }
-
-    const lbls = volumeGlobalData.labels.slice(sliceStart);
-    const vals = volumeGlobalData.dataLine.slice(sliceStart);
-    const bg   = volumeGlobalData.barColors.slice(sliceStart);
-
+    // ── GRÁFICO BARRAS (Volume) ──
     const ctxBar = document.getElementById('graficoVolumeBar').getContext('2d');
     if (chartBar) chartBar.destroy();
-
     chartBar = new Chart(ctxBar, {
         type: 'bar',
         data: {
-            labels: lbls,
+            labels: labels,
             datasets: [{
-                data: vals,
-                backgroundColor: bg,
+                data: dataLine,
+                backgroundColor: isFdsArr.map(fds => fds ? '#F01A1A' : '#7F8DDB'),
                 borderRadius: 4,
-                barThickness: 10 // Barra fininha
+                barThickness: 10
             }]
         },
         options: {
@@ -966,6 +1023,26 @@ function renderChartVolume() {
             }
         }
     });
+
+    // ── SLACK TEXT ──
+    let txt = `*📊 PAINEL DE PERFORMANCE — COBLI (${textoData})*\n\n`;
+    txt += `*Resumo Geral:*\n• Total Analisado: ${total}\n• Total Pilot: ${pilotCount} (${txPilot}%)\n• Concluídos: ${concluidos} (${txConclusao}%)\n• Impedidos: ${impedidos} (${txImpedidos}%)\n• Antecipados: ${antecipados} (${txAntecipado}%)\n\n`;
+    txt += `*📊 Taxas:*\n• Taxa de Conclusão: ${txConclusao}%\n• No-Show entre Pilots: ${txNoShow}%\n\n`;
+    txt += `*🚀 Detalhes Pilot:*\n`;
+    if (pilotNoShow > 0) txt += `• *🚨 PILOTOS COM NO-SHOW: ${pilotNoShow}*\n`;
+    Object.entries(pilotStatusMap).sort((a,b)=>b[1]-a[1]).forEach(([s,q]) => txt += `• ${s}: ${q}\n`);
+    if (semContatoCount > 0) {
+        txt += `\n*⚡ Sem Contato:*\n• Total sem contato: ${semContatoCount} (${txSC}% do total)\n`;
+    }
+    txt += `\n*📋 Últimas Tratativas:*\n`;
+    tratsArr.forEach(t => txt += `• ${t.nome}: ${t.qtd} (${t.pct}%)\n`);
+    if (noShowArr.length > 0) {
+        txt += `\n*⚠️ No-Show Reincidente (90d):*\n`;
+        noShowArr.forEach(p => txt += `• ${p}\n`);
+    } else {
+        txt += `\n*✅ Nenhum reincidente de No-Show identificado.*\n`;
+    }
+    document.getElementById('texto-slack-preview').value = txt;
 }
 
 // ── FUNÇÕES DE CONTROLE ─────────────────────────────────────────
