@@ -10,57 +10,107 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
     <style>
         :root {
+            /* Cobli brand */
             --cobli-navy:   #07074E;   
             --cobli-mid:    #1F1F5F;   
-            --bg:           #0F0F2A;         
-            --card:         #181830;         
-            --card2:        #13132A;         
-            --surface:      #1E1E3A;         
-            --text:         #F0F0F8;         
-            --muted:        #7A7FA8;         
-            --subtle:       #3A3A60;         
-            --border:       rgba(255,255,255,0.07);
-            --border-strong:rgba(255,255,255,0.12);
-            --accent-cyan:  #0FFDC9;
-            --accent-green: #1FEF51;
-            --accent-blue:  #7F8DDB;
-            --accent-red:   #F04040;
-            --accent-yellow:#F5C519;
-            --accent-purple:#C084FC;
+
+            /* Paleta clean */
+            --bg:     #0F0F2A;         
+            --card:   #181830;         
+            --card2:  #13132A;         
+            --surface:#1E1E3A;         
+
+            /* Texto */
+            --text:   #F0F0F8;         
+            --muted:  #7A7FA8;         
+            --subtle: #3A3A60;         
+
+            /* Bordas */
+            --border: rgba(255,255,255,0.07);
+            --border-strong: rgba(255,255,255,0.12);
+
+            /* Acentos */
+            --accent-cyan:   #0FFDC9;
+            --accent-green:  #1FEF51;
+            --accent-blue:   #7F8DDB;
+            --accent-red:    #F04040;
+            --accent-yellow: #F5C519;
+            --accent-purple: #C084FC;
+
             --font: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; }
 
-        /* ── UPLOAD AREA ── */
-        #upload-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 40px 20px; gap: 24px; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font);
+            min-height: 100vh;
+        }
+
+        /* ── UPLOAD AREA ─────────────────────────────────────────────── */
+        #upload-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+            gap: 24px;
+        }
+
         .upload-logo { font-size: 13px; font-weight: 700; letter-spacing: 4px; color: var(--accent-cyan); text-transform: uppercase; }
         .upload-title { font-size: 28px; font-weight: 700; text-align: center; color: var(--text); }
         .upload-sub { font-size: 14px; color: var(--muted); text-align: center; max-width: 420px; }
-        .upload-box { background: var(--card); border: 2px dashed var(--border); border-radius: 16px; padding: 48px 64px; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; max-width: 460px; width: 100%; }
+
+        .upload-box {
+            background: var(--card); border: 2px dashed var(--border); border-radius: 16px;
+            padding: 48px 64px; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s;
+            max-width: 460px; width: 100%;
+        }
         .upload-box:hover { border-color: var(--accent-cyan); background: rgba(15,253,201,0.05); }
         .upload-box .icon { font-size: 40px; margin-bottom: 12px; }
         .upload-box p { font-size: 14px; color: var(--muted); margin-top: 8px; }
+
         .input-row { display: flex; align-items: center; gap: 12px; width: 100%; max-width: 460px; }
         .input-row label { font-size: 12px; color: var(--muted); white-space: nowrap; }
-        .input-row input[type="text"] { flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--text); font-size: 13px; outline: none; }
+        .input-row input[type="text"] {
+            flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+            padding: 10px 14px; color: var(--text); font-size: 13px; outline: none;
+        }
         .input-row input[type="text"]:focus { border-color: var(--accent-cyan); }
         #csvFileInput { display: none; }
 
-        /* ── DASHBOARD ── */
+        /* ── DASHBOARD ───────────────────────────────────────────────── */
         #dashboard-screen { display: none; }
+
         .top-bar-outer { background: var(--card2); border-bottom: 1px solid var(--border); }
-        .top-bar { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 14px 28px; flex-wrap: wrap; gap: 16px; }
+        .top-bar {
+            max-width: 1100px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 14px 28px; flex-wrap: wrap; gap: 16px;
+        }
+
         .top-bar-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; flex: 1; }
-        .cobli-badge { font-size: 11px; font-weight: 700; letter-spacing: 3px; color: var(--accent-cyan); text-transform: uppercase; background: rgba(15,253,201,0.08); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(15,253,201,0.15); }
+        .cobli-badge {
+            font-size: 11px; font-weight: 700; letter-spacing: 3px; color: var(--accent-cyan);
+            text-transform: uppercase; background: rgba(15,253,201,0.08); padding: 4px 10px;
+            border-radius: 6px; border: 1px solid rgba(15,253,201,0.15);
+        }
         #topbar-date { font-size: 13px; font-weight: 600; color: var(--muted); }
         .badge { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
         .badge-cyan { background: rgba(15,253,201,0.1); color: var(--accent-cyan); border: 1px solid rgba(15,253,201,0.2); }
 
         /* FILTROS (BOTÕES PÍLULA) */
-        .filter-group { display: flex; gap: 4px; background: var(--card); padding: 4px; border-radius: 8px; border: 1px solid var(--border-strong); }
-        .filter-btn { background: transparent; color: var(--muted); border: none; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .filter-group {
+            display: flex; gap: 4px; background: var(--card); padding: 4px; 
+            border-radius: 8px; border: 1px solid var(--border-strong);
+        }
+        .filter-btn {
+            background: transparent; color: var(--muted); border: none; padding: 6px 14px;
+            border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+        }
         .filter-btn.active { background: var(--accent-cyan); color: var(--cobli-navy); }
         .filter-btn:hover:not(.active) { color: var(--text); background: rgba(255,255,255,0.05); }
 
@@ -71,8 +121,9 @@
         .btn-slack { background: #4A154B; color: #fff; }
         .btn-reload { background: transparent; border: 1px solid var(--border); color: var(--muted); }
 
-        /* ── MAIN PANEL ── */
+        /* ── MAIN PANEL ──────────────────────────────────────────────── */
         #painel-cobli { background: var(--bg); padding: 28px 32px 36px; max-width: 1100px; margin: 0 auto; }
+        
         .kpi-row { display: grid; gap: 12px; margin-bottom: 14px; }
         .kpi-row-5 { grid-template-columns: repeat(5, 1fr); }
         .kpi-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; position: relative; overflow: hidden; border-left: 3px solid var(--kpi-accent, var(--accent-blue)); }
@@ -82,6 +133,7 @@
         .kpi-icon { position: absolute; top: 14px; right: 16px; font-size: 20px; opacity: 0.08; }
 
         .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 14px; }
+
         .panel-block { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; }
         .panel-block-title { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
         .panel-block-title .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
@@ -117,6 +169,7 @@
         .slack-outer { background: var(--card2); border-top: 1px solid var(--border); }
         #texto-slack-preview { width: 100%; height: 180px; background: #111; border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; color: #ccc; font-family: monospace; font-size: 12px; resize: vertical; outline: none; }
 
+        /* RESPONSIVO */
         @media (max-width: 950px) {
             .kpi-row-5 { grid-template-columns: repeat(2, 1fr); }
             .grid-2 { grid-template-columns: 1fr; }
@@ -125,6 +178,7 @@
             .four-col-item:nth-child(1), .four-col-item:nth-child(2) { border-bottom: 1px solid var(--border); }
             .top-bar-left, .top-bar-actions { justify-content: center; }
         }
+
         .empty { color: var(--muted); font-size: 12px; font-style: italic; padding: 8px 0; }
     </style>
 </head>
@@ -345,7 +399,7 @@ function renderPainel(dados) {
         const tratVazia    = !tratativaRaw || ['-','nan','null',''].includes(tratativaRaw.toLowerCase());
         const hasNoShow    = /no[\s-]?show/i.test(tratativaRaw);
 
-        // REGRA 1: Ignorar completamente "AGENDAMENTO - CANCELADO"
+        // 🛑 REGRA 1: IGNORAR EXATAMENTE "AGENDAMENTO - CANCELADO" (Proporções puras)
         if (alocLower.includes('cancelad') && tratVazia) return;
         if (tratUpper.includes('AGENDAMENTO - CANCELADO')) return; 
 
@@ -354,25 +408,24 @@ function renderPainel(dados) {
 
         if (dataISO) { datasSet.add(dataISO); volumeDia[dataISO] = (volumeDia[dataISO] || 0) + 1; }
 
-        total++; // Incrementa total SOMENTE se não for cancelado.
+        total++; 
 
         if (alocLower.includes('conclu')) concluidos++;
         if (/imped/i.test(alocacao.normalize('NFD').replace(/[\u0300-\u036f]/g,''))) impedidos++;
         
-        // REGRA DE ANTECIPADO EXATA
         const isAntecipado = alocLower.includes('antecipa') || tratUpper.includes('AGENDAMENTO - ANTECIPADO');
         if (isAntecipado) antecipados++;
 
-        // REGRA 2: Fim de Semana = Sem Contato, ignora tratativa
+        // 📵 REGRA SEM CONTATO CORRIGIDA (Apenas se contiver no texto. FDS NÃO entra automático)
         let tratLimpa = tratativaRaw.replace(/^\d{2}\/\d{2}[^—\-]*(—|-)\s*/, '').trim();
-        let isSemContato = /sem[\s\-]?contato/i.test(tratLimpa) || /sem[\s\-]?contato/i.test(tratativaRaw);
+        const isSemContato = tratUpper.includes('SEM CONTATO');
 
+        // Se for fim de semana, a tratativa não vai para a lista de últimas tratativas (conforme solicitado anteriormente)
         if (fds) {
-            isSemContato = true;
-            tratLimpa = ''; // Ignora a string da tratativa para não poluir a lista de últimas tratativas
+            tratLimpa = ''; 
         }
 
-        // Soma Tratativas válidas
+        // Soma Tratativas válidas para a lista
         if (tratLimpa && !tratVazia && tratLimpa.toLowerCase() !== 'nan' && tratLimpa.toLowerCase() !== 'null') {
             tratativasMap[tratLimpa] = (tratativasMap[tratLimpa] || 0) + 1;
             totalTratativas++;
@@ -439,7 +492,7 @@ function renderPainel(dados) {
         { label: 'Antecipados', value: antecipados, sub: txAntecipado+'% do total', accent: 'var(--accent-purple)', icon: '⏳', extra: '' }
     ].map(k => `<div class="kpi-card" style="--kpi-accent:${k.accent}"><div class="kpi-label">${k.label}</div><div class="kpi-value">${k.value}</div><div class="kpi-sub">${k.sub}</div>${k.extra}<div class="kpi-icon">${k.icon}</div></div>`).join('');
 
-    // ── 4 COLUNAS (FDS, Sem Contato, Pilot, NoShow) ──
+    // ── 4 COLUNAS (Com as % corretas e ajustadas) ──
     const diasOrds = Object.keys(volumeDia).sort();
     const fdsDias = diasOrds.filter(d => isFimDeSemana(d));
     const fdsTotal = fdsDias.reduce((s,d) => s+(volumeDia[d]||0),0);
@@ -450,7 +503,6 @@ function renderPainel(dados) {
     else fdsEl.innerHTML = `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;"><span style="font-size:28px;font-weight:700;color:#F01A1A;line-height:1;">${fdsTotal}</span><span style="font-size:11px;color:var(--muted);">atends.</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:12px;background:rgba(240,26,26,0.15);color:#F01A1A;border:1px solid rgba(240,26,26,0.3);border-radius:20px;padding:3px 12px;font-weight:700;">${fdsPct}% do total</span></div><div style="margin-top:8px;font-size:10px;color:var(--muted);">${fdsDias.length} dias listados</div>`;
 
     const scEl = document.getElementById('sc-totais-novo');
-    const txSC = total > 0 ? ((semContatoCount / total) * 100).toFixed(1) : 0;
     if(semContatoCount===0) scEl.innerHTML = `<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum sem contato</div>`;
     else scEl.innerHTML = `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;"><span style="font-size:28px;font-weight:700;color:#F5C519;line-height:1;">${semContatoCount}</span><span style="font-size:11px;color:var(--muted);">atends.</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:12px;background:rgba(245,197,25,0.12);color:#F5C519;border:1px solid rgba(245,197,25,0.25);border-radius:20px;padding:3px 12px;font-weight:700;">${txSC}% do total</span></div>`;
 
@@ -462,7 +514,7 @@ function renderPainel(dados) {
     const nsArr = [...prestadoresSet];
     const nsEl = document.getElementById('resumo-no-show');
     if(nsArr.length===0) nsEl.innerHTML = '<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum reincidente</div>';
-    else nsEl.innerHTML = `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;"><span style="font-size:28px;font-weight:700;color:#F04040;line-height:1;">${nsArr.length}</span><span style="font-size:11px;color:var(--muted);">prestadores</span></div><div style="margin-top:8px;font-size:10px;color:var(--muted);">Ver lista no rodapé</div>`;
+    else nsEl.innerHTML = `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;"><span style="font-size:28px;font-weight:700;color:#F04040;line-height:1;">${nsArr.length}</span><span style="font-size:11px;color:var(--muted);">prestadores</span></div><div style="margin-top:8px;font-size:10px;color:var(--muted);".>Ver lista no rodapé</div>`;
 
     // ── TRATATIVAS ──
     const removePrefixo = n => n.replace(/^agendamento\s*[-–—]\s*/i, '').trim();
@@ -497,7 +549,7 @@ function renderPainel(dados) {
     const isFdsArr = diasOrds.map(d => isFimDeSemana(d));
     const scLineData = diasOrds.map(d => semContatoPorDia[d] || 0);
 
-    // Evolução
+    // Evolução (Linha)
     const ctxLine = document.getElementById('graficoEvolucao').getContext('2d');
     if(chartLine) chartLine.destroy();
     chartLine = new Chart(ctxLine, {
@@ -512,7 +564,7 @@ function renderPainel(dados) {
 
     document.getElementById('grafico-legenda').innerHTML = `<span style="font-size:11px;color:#9095c4;"><span style="width:10px;height:10px;border-radius:50%;background:#0FFDC9;display:inline-block;"></span> Dia útil</span>&nbsp;&nbsp;<span style="font-size:11px;color:#9095c4;"><span style="width:10px;height:10px;border-radius:50%;background:#F01A1A;display:inline-block;"></span> Fim de semana</span>`;
 
-    // Barras com Overlay de Badges "Sem Contato"
+    // Volume por Dia (Barras com selo apenas onde é Sem Contato real)
     const ctxBar = document.getElementById('graficoVolumeBar').getContext('2d');
     if(chartBar) chartBar.destroy();
     chartBar = new Chart(ctxBar, {
@@ -537,7 +589,7 @@ function renderPainel(dados) {
                         align: 'top', anchor: 'end', offset: 6,
                         formatter: (v, ctx) => {
                             const isFds = isFdsArr[ctx.dataIndex];
-                            if (isFds) return null; // Oculta a badge amarela se for final de semana
+                            if (isFds) return null; // CORREÇÃO: Oculta a badge amarela se for final de semana
 
                             const sc = scLineData[ctx.dataIndex];
                             if (!sc || sc === 0) return null;
@@ -550,7 +602,7 @@ function renderPainel(dados) {
         },
         options: {
             responsive: true, maintainAspectRatio: false, animation: false, layout: { padding: { top: 35 } },
-            plugins: { legend: { display: false }, tooltip: { enabled: false } },
+            plugins: { legend: { display: false } },
             scales: { x: { ticks:{color:'#7A7FA8',font:{size:10}}, grid:{display:false}, border:{color:'rgba(255,255,255,0.06)'} }, y: { ticks:{color:'#7A7FA8',font:{size:10}}, grid:{color:'rgba(255,255,255,0.04)'}, border:{color:'rgba(255,255,255,0.06)'}, beginAtZero:true } }
         }
     });
@@ -559,7 +611,7 @@ function renderPainel(dados) {
     let txt = `*📊 PAINEL DE PERFORMANCE — COBLI (${textoData})*\n\n*Resumo Geral:*\n• Total Analisado: ${total}\n• Total Pilot: ${pilotCount} (${txPilot}%)\n• Concluídos: ${concluidos} (${txConclusao}%)\n• Impedidos: ${impedidos} (${txImpedidos}%)\n• Antecipados: ${antecipados} (${txAntecipado}%)\n\n*📊 Taxas:*\n• Taxa de Conclusão: ${txConclusao}%\n• No-Show entre Pilots: ${txNoShow}%\n\n*🚀 Detalhes Pilot:*\n`;
     if(pilotNoShow>0) txt += `• *🚨 PILOTOS COM NO-SHOW: ${pilotNoShow}*\n`;
     Object.entries(pilotStatusMap).sort((a,b)=>b[1]-a[1]).forEach(([s,q]) => txt += `• ${s}: ${q}\n`);
-    if(semContatoCount>0) txt += `\n*⚡ Sem Contato:*\n• Total sem contato: ${semContatoCount}\n`;
+    if(semContatoCount>0) txt += `\n*⚡ Sem Contato:*\n• Total sem contato: ${semContatoCount} (${txSC}% do total)\n`;
     txt += `\n*📋 Últimas Tratativas:*\n`;
     tratsArr.forEach(t => txt += `• ${t.nome}: ${t.qtd} (${t.pct}%)\n`);
     if(nsArr.length>0){ txt+=`\n*⚠️ No-Show Reincidente (90d):*\n`; nsArr.forEach(p=>txt+=`• ${p}\n`); }
