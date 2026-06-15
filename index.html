@@ -10,7 +10,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
     <style>
         :root {
-            /* Identidade Visual Cobli */
             --cobli-navy:   #07074E;   
             --cobli-mid:    #1F1F5F;   
             --bg:           #0F0F2A;         
@@ -19,23 +18,22 @@
             --surface:      #1E1E3A;         
             --text:         #F0F0F8;         
             --muted:        #7A7FA8;         
-            --border: rgba(255,255,255,0.07);
-            --border-strong: rgba(255,255,255,0.12);
-
-            --accent-cyan:   #0FFDC9;
-            --accent-green:  #1FEF51;
-            --accent-blue:   #7F8DDB;
-            --accent-red:    #F04040;
-            --accent-yellow: #F5C519;
-            --accent-purple: #C084FC;
-
+            --subtle:       #3A3A60;         
+            --border:       rgba(255,255,255,0.07);
+            --border-strong:rgba(255,255,255,0.12);
+            --accent-cyan:  #0FFDC9;
+            --accent-green: #1FEF51;
+            --accent-blue:  #7F8DDB;
+            --accent-red:   #F04040;
+            --accent-yellow:#F5C519;
+            --accent-purple:#C084FC;
             --font: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; }
 
-        /* ── TELA DE UPLOAD ── */
+        /* ── UPLOAD AREA ── */
         #upload-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 40px 20px; gap: 24px; }
         .upload-logo { font-size: 13px; font-weight: 700; letter-spacing: 4px; color: var(--accent-cyan); text-transform: uppercase; }
         .upload-title { font-size: 28px; font-weight: 700; text-align: center; color: var(--text); }
@@ -44,31 +42,39 @@
         .upload-box:hover { border-color: var(--accent-cyan); background: rgba(15,253,201,0.05); }
         .upload-box .icon { font-size: 40px; margin-bottom: 12px; }
         .upload-box p { font-size: 14px; color: var(--muted); margin-top: 8px; }
-        .upload-box strong { color: var(--accent-cyan); }
         .input-row { display: flex; align-items: center; gap: 12px; width: 100%; max-width: 460px; }
         .input-row label { font-size: 12px; color: var(--muted); white-space: nowrap; }
         .input-row input[type="text"] { flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--text); font-size: 13px; outline: none; }
         .input-row input[type="text"]:focus { border-color: var(--accent-cyan); }
         #csvFileInput { display: none; }
 
-        /* ── TELA DO DASHBOARD ── */
-        #dashboard-screen { display: none; background: var(--bg); }
+        /* ── DASHBOARD ── */
+        #dashboard-screen { display: none; }
         .top-bar-outer { background: var(--card2); border-bottom: 1px solid var(--border); }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 16px 28px; flex-wrap: wrap; gap: 12px; max-width: 1100px; margin: 0 auto; }
-        .top-bar-left { display: flex; align-items: center; gap: 16px; }
+        .top-bar { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 14px 28px; flex-wrap: wrap; gap: 16px; }
+        .top-bar-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; flex: 1; }
         .cobli-badge { font-size: 11px; font-weight: 700; letter-spacing: 3px; color: var(--accent-cyan); text-transform: uppercase; background: rgba(15,253,201,0.08); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(15,253,201,0.15); }
-        #topbar-date { font-size: 13px; color: var(--text); font-weight: 500; }
-        .top-bar-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-        .btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: 8px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
+        #topbar-date { font-size: 13px; font-weight: 600; color: var(--muted); }
+        .badge { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        .badge-cyan { background: rgba(15,253,201,0.1); color: var(--accent-cyan); border: 1px solid rgba(15,253,201,0.2); }
+
+        /* FILTROS (BOTÕES PÍLULA) */
+        .filter-group { display: flex; gap: 4px; background: var(--card); padding: 4px; border-radius: 8px; border: 1px solid var(--border-strong); }
+        .filter-btn { background: transparent; color: var(--muted); border: none; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .filter-btn.active { background: var(--accent-cyan); color: var(--cobli-navy); }
+        .filter-btn:hover:not(.active) { color: var(--text); background: rgba(255,255,255,0.05); }
+
+        .top-bar-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; flex: 1; }
+        .btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: 8px; border: none; font-size: 12px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
         .btn:hover { opacity: 0.85; }
         .btn-outline { background: rgba(255,255,255,0.04); border: 1px solid var(--border-strong); color: var(--text); }
         .btn-slack { background: #4A154B; color: #fff; }
-        .btn-reload { background: transparent; border: 1px solid var(--border); color: var(--muted); font-size: 12px; }
+        .btn-reload { background: transparent; border: 1px solid var(--border); color: var(--muted); }
 
+        /* ── MAIN PANEL ── */
         #painel-cobli { background: var(--bg); padding: 28px 32px 36px; max-width: 1100px; margin: 0 auto; }
-
-        /* LINHA DE CARD DOS KPIs */
-        .kpi-row { display: grid; gap: 14px; margin-bottom: 14px; }
+        
+        .kpi-row { display: grid; gap: 12px; margin-bottom: 14px; }
         .kpi-row-5 { grid-template-columns: repeat(5, 1fr); }
         .kpi-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; position: relative; overflow: hidden; border-left: 3px solid var(--kpi-accent, var(--accent-blue)); }
         .kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
@@ -76,48 +82,45 @@
         .kpi-sub { font-size: 11px; color: var(--kpi-accent, var(--muted)); margin-top: 6px; font-weight: 600; }
         .kpi-icon { position: absolute; top: 14px; right: 16px; font-size: 20px; opacity: 0.08; }
 
-        /* NOVAS GRIDS SOLICITADAS */
-        .grid-4-cols { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 14px; }
-        .grid-2-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 0; }
-        
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 14px; }
+
         .panel-block { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; }
         .panel-block-title { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
         .panel-block-title .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 
-        /* LISTAS DE INFORMAÇÕES INTERNAS */
-        .tratativa-list, .pilot-list, .noshow-list { display: flex; flex-direction: column; gap: 0; }
+        /* LISTAS */
+        .tratativa-list { display: flex; flex-direction: column; gap: 0; }
         .tratativa-item { display: flex; align-items: center; gap: 10px; font-size: 12px; padding: 5px 0; border-bottom: 1px solid var(--border); }
         .tratativa-item:last-child { border-bottom: none; }
         .tratativa-bar-wrap { flex: 1; height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
         .tratativa-bar { height: 100%; border-radius: 3px; background: var(--accent-blue); }
         .tratativa-name { flex: 1; min-width: 0; color: var(--text); font-size:12px; }
-        .tratativa-count { flex-shrink: 0; text-align: right; color: var(--accent-cyan); font-weight: 700; white-space: nowrap; font-size: 12px; }
+        .tratativa-count { flex-shrink: 0; text-align: right; color: var(--accent-cyan); font-weight: 700; font-size: 12px; }
 
+        /* PILOT */
+        .pilot-list { display: flex; flex-direction: column; gap: 4px; }
         .pilot-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; padding: 5px 8px; border-radius: 6px; border-left: 2px solid transparent; color: var(--text); }
         .pilot-row:not(.warn):hover { background: rgba(255,255,255,0.03); }
         .pilot-row.warn { background: rgba(240,64,64,0.08); border-left-color: var(--accent-red); color: var(--accent-red); font-weight: 700; }
-        .pilot-row .count { font-weight: 700; font-size: 14px; }
-        .noshow-item { font-size: 11px; padding: 4px 8px; background: rgba(240,26,26,0.08); border-left: 2px solid var(--accent-red); border-radius: 3px; color: var(--text); margin-bottom: 5px; }
 
-        /* COMPONENTES DE FILTRO DO GRÁFICO */
-        .chart-wrap { position: relative; height: 230px; width: 100%; }
-        .btn-filter { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .btn-filter.active { background: var(--accent-blue); color: #fff; border-color: var(--accent-blue); }
-        .btn-filter:hover:not(.active) { background: rgba(255,255,255,0.05); }
+        /* NO-SHOW TAGS */
+        .noshow-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+        .noshow-tag { font-size: 11px; padding: 5px 12px; background: rgba(240,26,26,0.08); border: 1px solid rgba(240,26,26,0.2); border-left: 3px solid var(--accent-red); border-radius: 4px; color: var(--text); font-weight: 500; }
 
-        /* ABA DO SLACK PREVIEW */
+        .chart-row { display: grid; grid-template-columns: 1fr; gap: 14px; margin-bottom: 14px; }
+        .chart-wrap { position: relative; height: 240px; width: 100%; }
+
+        #slack-section { display: none; background: #222; padding: 20px 28px; }
         .slack-outer { background: var(--card2); border-top: 1px solid var(--border); }
-        #slack-section { display: none; max-width: 1100px; margin: 0 auto; padding: 20px 28px; }
-        .slack-header { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
         #texto-slack-preview { width: 100%; height: 180px; background: #111; border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; color: #ccc; font-family: monospace; font-size: 12px; resize: vertical; outline: none; }
-        .badge-cyan { background: rgba(15,253,201,0.1); color: var(--accent-cyan); border: 1px solid rgba(15,253,201,0.2); padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
-        .empty { color: var(--muted); font-size: 12px; font-style: italic; padding: 8px 0; }
 
-        @media (max-width: 900px) {
+        @media (max-width: 950px) {
             .kpi-row-5 { grid-template-columns: repeat(2, 1fr); }
-            .grid-4-cols { grid-template-columns: 1fr 1fr; }
-            .grid-2-cols { grid-template-columns: 1fr; }
+            .grid-2, .grid-4 { grid-template-columns: 1fr; }
+            .top-bar-left, .top-bar-actions { justify-content: center; }
         }
+        .empty { color: var(--muted); font-size: 12px; font-style: italic; padding: 8px 0; }
     </style>
 </head>
 <body>
@@ -129,7 +132,7 @@
 
     <div class="upload-box" onclick="document.getElementById('csvFileInput').click()">
         <div class="icon">📂</div>
-        <div style="font-size:15px; font-weight:600; color: var(--text);" id="upload-text">Clique para importar o CSV</div>
+        <div style="font-size:15px; font-weight:600; color: var(--text);">Clique para importar o CSV</div>
         <p>Ou arraste o arquivo aqui<br><strong>Formatos aceitos: .csv</strong></p>
     </div>
 
@@ -141,24 +144,31 @@
 </div>
 
 <div id="dashboard-screen">
-    <div class="top-bar-outer">
-        <div class="top-bar">
-            <div class="top-bar-left">
-                <span class="cobli-badge">Cobli</span>
-                <span id="topbar-date">—</span>
-                <span id="topbar-total" class="badge-cyan"></span>
-            </div>
-            <div class="top-bar-actions">
-                <button class="btn btn-reload" onclick="recarregar()">↩ Novo CSV</button>
-                <button class="btn btn-outline" onclick="toggleSlack()">📝 Texto Slack</button>
-                <button class="btn btn-outline" onclick="baixarImagem()">📸 Baixar Imagem</button>
-                <button class="btn btn-slack" onclick="enviarParaSlack()">💬 Enviar ao Slack</button>
+    <div class="top-bar-outer"><div class="top-bar">
+        <div class="top-bar-left">
+            <span class="cobli-badge">Cobli</span>
+            <span id="topbar-date">—</span>
+            <span id="topbar-total" class="badge badge-cyan"></span>
+        </div>
+        
+        <div style="display:flex; justify-content:center; flex:1;">
+            <div class="filter-group" id="filter-group">
+                <button class="filter-btn" onclick="aplicarFiltro('7', this)">7 dias</button>
+                <button class="filter-btn" onclick="aplicarFiltro('15', this)">15 dias</button>
+                <button class="filter-btn" onclick="aplicarFiltro('30', this)">30 dias</button>
+                <button class="filter-btn active" onclick="aplicarFiltro('all', this)">Todo o período</button>
             </div>
         </div>
-    </div>
+
+        <div class="top-bar-actions">
+            <button class="btn btn-reload" onclick="recarregar()">↩ Novo CSV</button>
+            <button class="btn btn-outline" onclick="toggleSlack()">📝 Slack</button>
+            <button class="btn btn-outline" onclick="baixarImagem()">📸 Imagem</button>
+            <button class="btn btn-slack" onclick="enviarParaSlack()">💬 Enviar</button>
+        </div>
+    </div></div>
 
     <div id="painel-cobli">
-
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;padding-bottom:16px;border-bottom:1px solid var(--border);">
             <div>
                 <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent-cyan);margin-bottom:4px;">Performance Report</div>
@@ -172,51 +182,47 @@
 
         <div class="kpi-row kpi-row-5" id="kpi-row-main"></div>
 
-        <div class="grid-4-cols" id="blocos-detalhes" style="display:none;">
-            <div class="panel-block" style="padding: 16px;">
-                <div class="panel-block-title" style="color:var(--accent-red); margin-bottom: 12px;">
-                    <span class="dot"></span> Fim de Semana
-                </div>
-                <div id="fds-totais"></div>
+        <div class="grid-4">
+            <div class="panel-block" style="padding:16px 20px;">
+                <div class="panel-block-title" style="color:var(--accent-red); margin-bottom:10px;"><span class="dot"></span>Fim de Semana</div>
+                <div id="fds-totais-novo"></div>
             </div>
-            <div class="panel-block" style="padding: 16px;">
-                <div class="panel-block-title" style="color:var(--accent-yellow); margin-bottom: 12px;">
-                    <span class="dot"></span> Sem Contato
-                </div>
-                <div id="sc-totais"></div>
+            <div class="panel-block" style="padding:16px 20px;">
+                <div class="panel-block-title" style="color:var(--accent-yellow); margin-bottom:10px;"><span class="dot"></span>Sem Contato</div>
+                <div id="sc-totais-novo"></div>
             </div>
-            <div class="panel-block" style="padding: 16px;">
-                <div class="panel-block-title" style="color:var(--accent-green); margin-bottom: 12px;">
-                    <span class="dot"></span> Detalhes Pilot
-                </div>
-                <div class="pilot-list" id="lista-pilot"></div>
+            <div class="panel-block" style="padding:16px 20px;">
+                <div class="panel-block-title" style="color:var(--accent-green); margin-bottom:10px;"><span class="dot"></span>Detalhes Pilot</div>
+                <div class="pilot-list" id="lista-pilot-novo"></div>
             </div>
-            <div class="panel-block" style="padding: 16px;">
-                <div class="panel-block-title" style="color:var(--accent-red); margin-bottom: 12px;">
-                    <span class="dot"></span> Reincid. No-Show
-                </div>
-                <div class="noshow-list" id="lista-no-show"></div>
+            <div class="panel-block" style="padding:16px 20px;">
+                <div class="panel-block-title" style="color:var(--muted); margin-bottom:10px;"><span class="dot" style="color:var(--accent-red)"></span>No-Show Reincidente (90d)</div>
+                <div id="resumo-no-show"></div>
             </div>
         </div>
 
-        <div class="panel-block" id="bloco-grafico-evolucao" style="margin-bottom:14px; display:none;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-                <div class="panel-block-title" style="color:var(--accent-blue); margin-bottom:0;">
+        <div class="chart-row">
+            <div class="panel-block">
+                <div class="panel-block-title" style="color:var(--accent-blue);">
                     <span class="dot"></span> Evolução de Chamados por Dia
                 </div>
-                <div style="display:flex; gap: 8px;">
-                    <button class="btn-filter" onclick="filtrarGrafico('7', this)">7 Dias</button>
-                    <button class="btn-filter" onclick="filtrarGrafico('15', this)">15 Dias</button>
-                    <button class="btn-filter" onclick="filtrarGrafico('30', this)">30 Dias</button>
-                    <button class="btn-filter active" id="btn-filter-all" onclick="filtrarGrafico('all', this)">Tudo</button>
+                <div style="display:flex;justify-content:flex-end;gap:16px;margin-bottom:10px;" id="grafico-legenda"></div>
+                <div class="chart-wrap">
+                    <canvas id="graficoEvolucao"></canvas>
                 </div>
-            </div>
-            <div class="chart-wrap">
-                <canvas id="graficoEvolucao"></canvas>
             </div>
         </div>
 
-        <div class="grid-2-cols" id="blocos-listas" style="display:none;">
+        <div class="panel-block" style="margin-bottom:14px;">
+            <div class="panel-block-title" style="color:var(--accent-blue);">
+                <span class="dot"></span> Volume por Dia
+            </div>
+            <div class="chart-wrap">
+                <canvas id="graficoVolumeBar"></canvas>
+            </div>
+        </div>
+
+        <div class="grid-2" style="margin-bottom:14px;">
             <div class="panel-block">
                 <div class="panel-block-title" style="color:var(--accent-blue);">
                     <span class="dot"></span> Últimas Tratativas
@@ -225,104 +231,105 @@
             </div>
             <div class="panel-block">
                 <div class="panel-block-title" style="color:var(--accent-purple);">
-                    <span class="dot"></span> Top 10 Prestadores
+                    <span class="dot"></span> Top 10 Prestadores — Volume & Sem Contato
                 </div>
                 <div class="tratativa-list" id="lista-prestadores"></div>
             </div>
         </div>
 
-    </div>
-
-    <div class="slack-outer">
-        <div id="slack-section">
-            <div class="slack-header">📝 Pré-visualização do texto para Slack</div>
-            <textarea id="texto-slack-preview"></textarea>
+        <div class="panel-block" id="bloco-noshow-nomes" style="margin-bottom:0; display:none;">
+            <div class="panel-block-title" style="color:var(--accent-red);">
+                <span class="dot"></span> Prestadores com No-Show Reincidente (Últimos 90 dias)
+            </div>
+            <div class="noshow-tags" id="lista-tags-noshow"></div>
         </div>
+
     </div>
 
+    <div class="slack-outer"><div id="slack-section">
+        <div style="font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px;">📝 Pré-visualização do texto para Slack</div>
+        <textarea id="texto-slack-preview"></textarea>
+    </div></div>
 </div>
 
 <script>
 let chartLine = null;
-window.chartData = { dias: [], vol: {} }; 
+let chartBar = null;
+let dadosGlobaisBase = [];
 
-// CONFIGURAÇÃO DOS EVENTOS DE ARRASTAR E SOLTAR O ARQUIVO CSV
 const uploadBox = document.querySelector('.upload-box');
-uploadBox.addEventListener('dragover', function(e) { e.preventDefault(); uploadBox.style.borderColor = 'var(--accent-cyan)'; });
-uploadBox.addEventListener('dragleave', function() { uploadBox.style.borderColor = ''; });
-uploadBox.addEventListener('drop', function(e) { 
-    e.preventDefault(); 
-    uploadBox.style.borderColor = ''; 
-    const file = e.dataTransfer.files[0]; 
-    if (file) parseCSV(file); 
-});
-
-document.getElementById('csvFileInput').addEventListener('change', function(e) { 
-    if (e.target.files[0]) {
-        parseCSV(e.target.files[0]); 
-    }
-    // RESETAR o input previne o bug de subir o mesmo arquivo duas vezes e ele não ler
-    e.target.value = ''; 
-});
+uploadBox.addEventListener('dragover', e => { e.preventDefault(); uploadBox.style.borderColor = 'var(--accent-cyan)'; });
+uploadBox.addEventListener('dragleave', () => { uploadBox.style.borderColor = ''; });
+uploadBox.addEventListener('drop', e => { e.preventDefault(); uploadBox.style.borderColor = ''; if (e.dataTransfer.files[0]) parseCSV(e.dataTransfer.files[0]); });
+document.getElementById('csvFileInput').addEventListener('change', e => { if (e.target.files[0]) parseCSV(e.target.files[0]); });
 
 function parseCSV(file) {
-    document.getElementById('upload-text').innerText = "Carregando planilha...";
-    Papa.parse(file, { 
-        header: true, 
-        skipEmptyLines: true, 
-        transformHeader: function(h) { return h.trim(); }, 
-        complete: function(r) { 
-            try {
-                processarDados(r.data); 
-            } catch(erro) {
-                alert("Erro ao processar dados! Verifique se a planilha tem os cabeçalhos corretos.\n\nDetalhe do erro: " + erro.message);
-                console.error(erro);
-                document.getElementById('upload-text').innerText = "Clique para importar o CSV";
-            }
-        },
-        error: function(err) {
-            alert("Erro ao ler o arquivo CSV: " + err.message);
-        }
+    Papa.parse(file, {
+        header: true, skipEmptyLines: true, transformHeader: h => h.trim(),
+        complete: r => { dadosGlobaisBase = r.data; aplicarFiltro('all', null); }
     });
 }
 
 function val(linha, pedaco) {
-    const k = Object.keys(linha).find(function(key) { return key.toLowerCase().includes(pedaco.toLowerCase()); });
+    const k = Object.keys(linha).find(k => k.toLowerCase().includes(pedaco.toLowerCase()));
     return k ? (linha[k] || '').toString().trim() : '';
+}
+
+// Converte datas para ISO formato yyyy-mm-dd
+function toISO(s) {
+    if (!s) return '';
+    if (/^\d{2}[/\-]\d{2}[/\-]\d{4}/.test(s)) {
+        const p = s.split(/[/\-]/);
+        return `${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;
+    }
+    if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0,10);
+    return s;
 }
 
 function isFimDeSemana(isoStr) {
     if (!isoStr || !isoStr.includes('-')) return false;
-    const parts = isoStr.split('-');
-    const y = parseInt(parts[0]);
-    const m = parseInt(parts[1]);
-    const d = parseInt(parts[2]);
-    const dow = new Date(y, m - 1, d).getDay(); 
-    return (dow === 0 || dow === 6);
+    const [y, m, d] = isoStr.split('-').map(Number);
+    const dow = new Date(y, m - 1, d).getDay();
+    return dow === 0 || dow === 6;
 }
 
-const fmtData = function(d) { 
-    return d.match(/^\d{4}-\d{2}-\d{2}/) ? d.slice(5).split('-').reverse().join('/') : d; 
-};
-
-// MOTOR DE TRATAMENTO E CONSOLIDAÇÃO DE REGRAS DE NEGÓCIO
-function processarDados(dados) {
-    let total = 0, pilotCount = 0, pilotNoShow = 0, concluidos = 0, impedidos = 0, antecipados = 0;
-    let totalTratativas = 0, semContatoCount = 0;
-    let tratativasMap = {}, pilotStatusMap = {}, prestadoresSet = new Set(), prestadoresMap = {}, prestadoresSemContato = {};
-    let semContatoPorDia = {}, datasSet = new Set(), volumeDia = {};
-
-    function toISO(s) {
-        if (!s) return '';
-        if (/^\d{2}[/\-]\d{2}[/\-]\d{4}/.test(s)) {
-            const parts = s.split(/[/\-]/);
-            return parts[2] + '-' + parts[1].padStart(2,'0') + '-' + parts[0].padStart(2,'0');
-        }
-        if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0,10);
-        return s;
+// ── FILTRO GLOBAL E RENDERIZAÇÃO ──
+function aplicarFiltro(periodo, btnElement) {
+    if (btnElement) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btnElement.classList.add('active');
+    } else {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        const btns = document.querySelectorAll('.filter-btn');
+        if (btns.length > 0) btns[btns.length - 1].classList.add('active');
     }
 
-    dados.forEach(function(linha) {
+    if (!dadosGlobaisBase || dadosGlobaisBase.length === 0) return;
+
+    const datasUnicas = new Set();
+    dadosGlobaisBase.forEach(linha => {
+        const dtISO = toISO(val(linha, 'data').split(' ')[0]);
+        if (dtISO) datasUnicas.add(dtISO);
+    });
+
+    const datasOrdenadas = [...datasUnicas].sort();
+    let datasPermitidas = datasOrdenadas;
+    if (periodo !== 'all') datasPermitidas = datasOrdenadas.slice(-parseInt(periodo, 10));
+
+    const dadosFiltrados = dadosGlobaisBase.filter(linha => {
+        return datasPermitidas.includes(toISO(val(linha, 'data').split(' ')[0]));
+    });
+
+    renderPainel(dadosFiltrados);
+}
+
+function renderPainel(dados) {
+    let total = 0, pilotCount = 0, pilotNoShow = 0, concluidos = 0, impedidos = 0, antecipados = 0, noShowTotal = 0;
+    let totalTratativas = 0, semContatoCount = 0;
+    let tratativasMap = {}, pilotStatusMap = {}, prestadoresSet = new Set();
+    let prestadoresMap = {}, prestadoresSemContato = {}, datasSet = new Set(), volumeDia = {}, semContatoPorDia = {};
+
+    dados.forEach(linha => {
         const alocacao     = val(linha, 'aloca');
         const tratativaRaw = val(linha, 'tratativa');
         const classe       = val(linha, 'classe').toLowerCase();
@@ -331,348 +338,262 @@ function processarDados(dados) {
         const dataStr      = val(linha, 'data').split(' ')[0];
 
         const alocLower    = alocacao.toLowerCase();
-        const tratLower    = tratativaRaw.toLowerCase();
+        const tratUpper    = tratativaRaw.toUpperCase();
+        const tratVazia    = !tratativaRaw || ['-','nan','null',''].includes(tratativaRaw.toLowerCase());
         const hasNoShow    = /no[\s-]?show/i.test(tratativaRaw);
-        const tratVazia    = !tratativaRaw || ['-','nan','null',''].includes(tratLower);
 
-        // REGRA DE EXCLUSÃO MESTRA: Cancelado sem tratativa é descartado completamente
+        // 🛑 REGRA 1: IGNORAR ABSOLUTAMENTE "AGENDAMENTO - CANCELADO"
         if (alocLower.includes('cancelad') && tratVazia) return;
+        if (tratUpper.includes('AGENDAMENTO - CANCELADO')) return; 
 
         const dataISO = toISO(dataStr);
-        if (dataISO) { datasSet.add(dataISO); volumeDia[dataISO] = (volumeDia[dataISO] || 0) + 1; }
+        const fds = isFimDeSemana(dataISO);
 
-        total++;
-        if (alocLower.includes('conclu')) concluidos++;
-        if (/imped/i.test(alocacao.normalize('NFD').replace(/[\u0300-\u036f]/g,''))) impedidos++;
-        
-        // CÁLCULO DO FILTRO DE ANTECIPADOS
-        if (alocLower.includes('antecipad') || tratLower.includes('antecipad')) antecipados++;
+        // Identifica as condições
+        const isAntecipado = alocLower.includes('antecipa') || tratUpper.includes('AGENDAMENTO - ANTECIPADO');
+        let isConcluido = alocLower.includes('conclu');
+        let isImpedido = /imped/i.test(alocacao.normalize('NFD').replace(/[\u0300-\u036f]/g,''));
 
-        // Limpeza de Caracteres/Data das Tratativas para Agrupar de Forma Inteligente
-        const tratLimpa = tratativaRaw.replace(/^\d{2}\/\d{2}[^—\-]*(—|-)\s*/, '').trim();
-        if (tratLimpa && !tratVazia) {
-            tratativasMap[tratLimpa] = (tratativasMap[tratLimpa] || 0) + 1;
-            totalTratativas++;
+        // Regra específica: Antecipado é forçado como Concluído
+        if (isAntecipado) {
+            antecipados++;
+            isConcluido = true;
         }
 
-        if (prestador) prestadoresMap[prestador] = (prestadoresMap[prestador] || 0) + 1;
+        // Universo operacional estrito (Para a conta fechar em 100%)
+        if (isConcluido || isImpedido || hasNoShow) {
+            if (dataISO) { datasSet.add(dataISO); volumeDia[dataISO] = (volumeDia[dataISO] || 0) + 1; }
 
-        const isSemContato = /sem[\s\-]?contato/i.test(tratLimpa) || /sem[\s\-]?contato/i.test(tratativaRaw);
-        if (isSemContato) {
-            semContatoCount++;
-            if (prestador) prestadoresSemContato[prestador] = (prestadoresSemContato[prestador] || 0) + 1;
-            if (dataISO) semContatoPorDia[dataISO] = (semContatoPorDia[dataISO] || 0) + 1;
-        }
+            if (isConcluido) concluidos++;
+            if (isImpedido) impedidos++;
+            if (hasNoShow) noShowTotal++;
 
-        // REGRA REFINADA PARA PILOTOS (DUPLICAÇÃO IMPEDIDA)
-        if (classe.includes('pilot')) {
-            pilotCount++;
-            if (hasNoShow) {
-                pilotNoShow++;
-            } else {
-                const s = alocacao || 'Sem Status';
-                pilotStatusMap[s] = (pilotStatusMap[s] || 0) + 1;
+            let tratLimpa = tratativaRaw.replace(/^\d{2}\/\d{2}[^—\-]*(—|-)\s*/, '').trim();
+            const isSemContato = tratUpper.includes('SEM CONTATO');
+
+            // Ignora a tratativa em finais de semana
+            if (fds) {
+                tratLimpa = ''; 
             }
-        }
 
-        if (noShow90d === 'sim' && hasNoShow && prestador) prestadoresSet.add(prestador);
+            // Mapeia Tratativas válidas
+            if (tratLimpa && !tratVazia && tratLimpa.toLowerCase() !== 'nan' && tratLimpa.toLowerCase() !== 'null') {
+                tratativasMap[tratLimpa] = (tratativasMap[tratLimpa] || 0) + 1;
+                totalTratativas++;
+            }
+
+            if (prestador) prestadoresMap[prestador] = (prestadoresMap[prestador] || 0) + 1;
+
+            if (isSemContato) {
+                semContatoCount++;
+                if (prestador) prestadoresSemContato[prestador] = (prestadoresSemContato[prestador] || 0) + 1;
+                if (dataISO) semContatoPorDia[dataISO] = (semContatoPorDia[dataISO] || 0) + 1;
+            }
+
+            if (classe.includes('pilot')) {
+                pilotCount++;
+                if (hasNoShow) { pilotNoShow++; } 
+                else { const s = alocacao || 'Sem Status'; pilotStatusMap[s] = (pilotStatusMap[s] || 0) + 1; }
+            }
+
+            if (noShow90d === 'sim' && hasNoShow && prestador) prestadoresSet.add(prestador);
+        }
     });
 
-    const realizados   = concluidos + impedidos;
-    const txRealizados = total > 0 ? ((realizados  / total) * 100).toFixed(1) : 0;
-    const txConclusao  = total > 0 ? ((concluidos  / total) * 100).toFixed(1) : 0;
-    const txImpedidos  = total > 0 ? ((impedidos   / total) * 100).toFixed(1) : 0;
-    const txAntecipados= total > 0 ? ((antecipados / total) * 100).toFixed(1) : 0;
-    const txNoShow     = pilotCount > 0 ? ((pilotNoShow / pilotCount) * 100).toFixed(1) : 0;
-    const txPilot      = total > 0 ? ((pilotCount  / total) * 100).toFixed(1) : 0;
+    // 📐 UNIVERSO FECHADO MATEMÁTICO (Soma total exata)
+    total = concluidos + impedidos + noShowTotal;
+    const realizados = concluidos + impedidos;
 
-    const datas = Array.from(datasSet).sort();
+    const txRealizados = total > 0 ? ((realizados / total) * 100).toFixed(1) : 0;
+    const txImpedidos  = total > 0 ? ((impedidos / total) * 100).toFixed(1) : 0;
+    const txNoShow     = pilotCount > 0 ? ((pilotNoShow / pilotCount) * 100).toFixed(1) : 0;
+    const txPilot      = total > 0 ? ((pilotCount / total) * 100).toFixed(1) : 0;
+    const txAntecipado = total > 0 ? ((antecipados / total) * 100).toFixed(1) : 0;
+    const txSC         = total > 0 ? ((semContatoCount / total) * 100).toFixed(1) : 0;
+
+    const datas = [...datasSet].sort();
+    const fmtData = d => d.match(/^\d{4}-\d{2}-\d{2}/) ? d.slice(5).split('-').reverse().join('/') : d;
     let textoData = 'Múltiplos Dias';
     if (datas.length === 1 && datas[0]) textoData = fmtData(datas[0]);
-    else if (datas.length > 1) textoData = fmtData(datas[0]) + ' – ' + fmtData(datas[datas.length-1]);
+    else if (datas.length > 1) textoData = `${fmtData(datas[0])} – ${fmtData(datas[datas.length-1])}`;
 
-    document.getElementById('upload-screen').style.display = 'none';
-    document.getElementById('dashboard-screen').style.display = 'block';
+    // Atualização do Cabeçalho
     document.getElementById('topbar-date').textContent = textoData;
-    document.getElementById('topbar-total').textContent = total + ' chamados';
-    document.getElementById('painel-titulo-data').textContent = 'Cobli — ' + textoData;
-    
+    document.getElementById('topbar-total').textContent = `${total} chamados`;
+    document.getElementById('painel-titulo-data').textContent = `Cobli — ${textoData}`;
     const agora = new Date();
     document.getElementById('painel-gerado-em').textContent = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
 
-    const pilotConc = Object.entries(pilotStatusMap).filter(function(e) { return /conclu/i.test(e[0]); }).reduce(function(a,e){ return a+e[1]; },0);
-    const pilotImp  = Object.entries(pilotStatusMap).filter(function(e) { return /imped/i.test(e[0].normalize('NFD').replace(/[\u0300-\u036f]/g,'')); }).reduce(function(a,e){ return a+e[1]; },0);
-    const txPilotConc   = pilotCount > 0 ? ((pilotConc    / pilotCount) * 100).toFixed(0) : 0;
-    const txPilotImp    = pilotCount > 0 ? ((pilotImp     / pilotCount) * 100).toFixed(0) : 0;
-    const txPilotNoShow = pilotCount > 0 ? ((pilotNoShow  / pilotCount) * 100).toFixed(0) : 0;
+    // Injeção de KPIs Principais
+    const pilotConc = Object.entries(pilotStatusMap).filter(([s])=>/conclu/i.test(s)).reduce((a,[,q])=>a+q,0);
+    const pilotImp  = Object.entries(pilotStatusMap).filter(([s])=>/imped/i.test(s.normalize('NFD').replace(/[\u0300-\u036f]/g,''))).reduce((a,[,q])=>a+q,0);
+    const pilotExtra = `<div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;gap:4px;">
+        <div style="display:flex;justify-content:space-between;font-size:11px;">
+            <span style="color:#7A7FA8;">Concluídos</span><span style="color:#1FEF51;font-weight:700;">${pilotConc}</span>
+        </div>
+        ${pilotImp > 0 ? `<div style="display:flex;justify-content:space-between;font-size:11px;"><span style="color:#7A7FA8;">Impedidos</span><span style="color:#F5C519;font-weight:700;">${pilotImp}</span></div>` : ''}
+        <div style="display:flex;justify-content:space-between;font-size:11px;">
+            <span style="color:#7A7FA8;">No-Show</span><span style="color:#F04040;font-weight:700;">${pilotNoShow}</span>
+        </div>
+    </div>`;
 
-    const pilotExtra = '<div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;gap:4px;">' +
-        '<div style="display:flex;justify-content:space-between;font-size:11px;">' +
-            '<span style="color:#7A7FA8;">Concluídos</span>' +
-            '<span style="color:#1FEF51;font-weight:700;">' + pilotConc + ' <span style="font-weight:400;color:#7A7FA8;">(' + txPilotConc + '%)</span></span>' +
-        '</div>' +
-        (pilotImp > 0 ? ('<div style="display:flex;justify-content:space-between;font-size:11px;">' +
-            '<span style="color:#7A7FA8;">Impedidos</span>' +
-            '<span style="color:#F5C519;font-weight:700;">' + pilotImp + ' <span style="font-weight:400;color:#7A7FA8;">(' + txPilotImp + '%)</span></span>' +
-        '</div>') : '') +
-        '<div style="display:flex;justify-content:space-between;font-size:11px;">' +
-            '<span style="color:#7A7FA8;">No-Show</span>' +
-            '<span style="color:#F04040;font-weight:700;">' + pilotNoShow + ' <span style="font-weight:400;color:#7A7FA8;">(' + txPilotNoShow + '%)</span></span>' +
-        '</div>' +
-    '</div>';
+    document.getElementById('kpi-row-main').innerHTML = [
+        { label: 'Total Analisado', value: total, sub: '&nbsp;', accent: 'var(--accent-cyan)', icon: '📋', extra: '' },
+        { label: 'Total Pilot', value: pilotCount, sub: txPilot+'% do total', accent: 'var(--accent-blue)', icon: '🚀', extra: pilotExtra },
+        { label: 'Realizados', value: realizados, sub: txRealizados+'% do total', accent: 'var(--accent-green)', icon: '⚡', extra: '' },
+        { label: 'Impedidos', value: impedidos, sub: txImpedidos+'% do total', accent: 'var(--accent-red)', icon: '🚫', extra: '' },
+        { label: 'Antecipados', value: antecipados, sub: txAntecipado+'% do total', accent: 'var(--accent-purple)', icon: '⏳', extra: '' }
+    ].map(k => `<div class="kpi-card" style="--kpi-accent:${k.accent}"><div class="kpi-label">${k.label}</div><div class="kpi-value">${k.value}</div><div class="kpi-sub">${k.sub}</div>${k.extra}<div class="kpi-icon">${k.icon}</div></div>`).join('');
 
-    const kpis = [
-        { label: 'Total Analisado', value: total,       sub: '&nbsp;',                   accent: 'var(--accent-cyan)',  icon: '📋', extra: '' },
-        { label: 'Antecipados',     value: antecipados, sub: txAntecipados + '% do total', accent: 'var(--accent-purple)', icon: '⏳', extra: '' },
-        { label: 'Total Pilot',     value: pilotCount,  sub: txPilot + '% do total',       accent: 'var(--accent-blue)', icon: '🚀', extra: pilotExtra },
-        { label: 'Realizados',      value: realizados,  sub: txRealizados + '% do total',  accent: 'var(--accent-green)',icon: '⚡', extra: '' },
-        { label: 'Impedidos',       value: impedidos,   sub: txImpedidos + '% do total',   accent: 'var(--accent-red)',  icon: '🚫', extra: '' },
-    ];
-    
-    document.getElementById('kpi-row-main').innerHTML = kpis.map(function(k) {
-        return '<div class="kpi-card" style="--kpi-accent:' + k.accent + '">' +
-            '<div class="kpi-label">' + k.label + '</div>' +
-            '<div class="kpi-value">' + k.value + '</div>' +
-            '<div class="kpi-sub">' + k.sub + '</div>' +
-            k.extra +
-            '<div class="kpi-icon">' + k.icon + '</div>' +
-        '</div>';
-    }).join('');
-
-    // RENDERIZAÇÃO DOS DADOS NOS NOVOS QUADROS DO ITEM 3
+    // Blocos Secundários (FDS, SC, Pilot, Reincidente)
+    const diasOrds = Object.keys(volumeDia).sort();
+    const fdsDias = diasOrds.filter(d => isFimDeSemana(d));
+    const fdsTotal = fdsDias.reduce((s,d) => s+(volumeDia[d]||0),0);
     const fdsPct = total > 0 ? ((fdsTotal / total) * 100).toFixed(1) : 0;
-    const fdsTotEl = document.getElementById('fds-totais');
-    if (fdsDias.length === 0) {
-        fdsTotEl.innerHTML = '<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum FDS no período</div>';
-    } else {
-        fdsTotEl.innerHTML = '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;">' +
-                '<span style="font-size:28px;font-weight:700;color:#F01A1A;line-height:1;">' + fdsTotal + '</span>' +
-                '<span style="font-size:11px;color:var(--muted);">chamados</span>' +
-            '</div>' +
-            '<div style="display:flex;align-items:center;gap:8px;">' +
-                '<span style="font-size:12px;background:rgba(240,26,26,0.15);color:#F01A1A;border:1px solid rgba(240,26,26,0.3);border-radius:20px;padding:3px 12px;font-weight:700;">' + fdsPct + '% do total</span>' +
-            '</div>';
+
+    const fdsEl = document.getElementById('fds-totais-novo');
+    if(fdsEl) fdsEl.innerHTML = fdsDias.length===0 ? `<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum fim de semana</div>` : `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;"><span style="font-size:28px;font-weight:700;color:#F01A1A;line-height:1;">${fdsTotal}</span><span style="font-size:11px;color:var(--muted);">atends.</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:12px;background:rgba(240,26,26,0.15);color:#F01A1A;border:1px solid rgba(240,26,26,0.3);border-radius:20px;padding:3px 12px;font-weight:700;">${fdsPct}% do total</span></div>`;
+
+    const scEl = document.getElementById('sc-totais-novo');
+    if(scEl) scEl.innerHTML = semContatoCount===0 ? `<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum sem contato</div>` : `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;"><span style="font-size:28px;font-weight:700;color:#F5C519;line-height:1;">${semContatoCount}</span><span style="font-size:11px;color:var(--muted);">atends.</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:12px;background:rgba(245,197,25,0.12);color:#F5C519;border:1px solid rgba(245,197,25,0.25);border-radius:20px;padding:3px 12px;font-weight:700;">${txSC}% do total</span></div>`;
+
+    const ulPilot = document.getElementById('lista-pilot-novo');
+    if(ulPilot) {
+        ulPilot.innerHTML = pilotNoShow > 0 ? `<div class="pilot-row warn" style="margin-bottom:8px;"><span>🚨 Pilotos com No-Show</span><span class="count">${pilotNoShow}</span></div>` : '';
+        if(Object.keys(pilotStatusMap).length===0 && pilotNoShow===0) ulPilot.innerHTML += '<div class="empty">Nenhum pilot encontrado.</div>';
+        else Object.entries(pilotStatusMap).sort((a,b)=>b[1]-a[1]).forEach(([s,q]) => ulPilot.innerHTML+=`<div class="pilot-row"><span style="color:var(--text)">${s}</span><span class="count" style="color:var(--accent-green)">${q}</span></div>`);
     }
 
-    const txSC = total > 0 ? ((semContatoCount / total) * 100).toFixed(1) : 0;
-    const scTotEl = document.getElementById('sc-totais');
-    if (semContatoCount === 0) {
-        scTotEl.innerHTML = '<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum sem contato</div>';
-    } else {
-        scTotEl.innerHTML = '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;">' +
-                '<span style="font-size:28px;font-weight:700;color:#F5C519;line-height:1;">' + semContatoCount + '</span>' +
-                '<span style="font-size:11px;color:var(--muted);">chamados</span>' +
-            '</div>' +
-            '<div style="display:flex;align-items:center;gap:8px;">' +
-                '<span style="font-size:12px;background:rgba(245,197,25,0.12);color:#F5C519;border:1px solid rgba(245,197,25,0.25);border-radius:20px;padding:3px 12px;font-weight:700;">' + txSC + '% do total</span>' +
-            '</div>';
+    const nsArr = [...prestadoresSet];
+    const nsEl = document.getElementById('resumo-no-show');
+    if(nsEl) nsEl.innerHTML = nsArr.length===0 ? '<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum reincidente</div>' : `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;"><span style="font-size:28px;font-weight:700;color:#F04040;line-height:1;">${nsArr.length}</span><span style="font-size:11px;color:var(--muted);">prestadores</span></div>`;
+
+    // ── LISTAGEM DE TRATATIVAS REAIS ──
+    const removePrefixo = n => n.replace(/^agendamento\s*[-–—]\s*/i, '').trim();
+    const tratsArr = Object.entries(tratativasMap).map(([nome, qtd]) => ({ nome: removePrefixo(nome), qtd, pct: ((qtd/totalTratativas)*100).toFixed(1) }))
+        .reduce((acc, t) => { const ex = acc.find(x=>x.nome===t.nome); if(ex){ ex.qtd+=t.qtd; ex.pct=((ex.qtd/totalTratativas)*100).toFixed(1); } else acc.push(t); return acc; }, []).sort((a,b)=>b.qtd-a.qtd);
+    
+    const ulTrat = document.getElementById('lista-tratativas');
+    const maxTrat = tratsArr[0]?.qtd || 1;
+    if(ulTrat) {
+        if(tratsArr.length===0) ulTrat.innerHTML = '<div class="empty">Sem dados de tratativa.</div>';
+        else ulTrat.innerHTML = tratsArr.map(t => `<div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:2px 0;"><span style="flex:3;min-width:0;color:var(--text);line-height:1.4;">${t.nome}</span><div style="flex:2;height:6px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden;"><div style="width:${(t.qtd/maxTrat*100).toFixed(1)}%;height:100%;background:var(--accent-blue);"></div></div><span style="flex-shrink:0;min-width:28px;text-align:right;color:var(--accent-cyan);font-weight:700;">${t.qtd}</span><span style="flex-shrink:0;min-width:44px;text-align:right;color:var(--muted);">(${t.pct}%)</span></div>`).join('');
     }
 
-    const ulPilot = document.getElementById('lista-pilot');
-    ulPilot.innerHTML = '';
-    if (pilotNoShow > 0) {
-        ulPilot.innerHTML += '<div class="pilot-row warn"><span>🚨 No-Show Pilot</span><span class="count">' + pilotNoShow + '</span></div>';
+    // ── LISTAGEM TOP PRESTADORES ──
+    const topPrest = Object.entries(prestadoresMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    const maxPrest = topPrest[0]?.[1] || 1;
+    const ulPrest = document.getElementById('lista-prestadores');
+    if(ulPrest) {
+        if(topPrest.length===0) ulPrest.innerHTML = '<div class="empty">Sem dados de prestador.</div>';
+        else ulPrest.innerHTML = topPrest.map(([nome, qtd]) => {
+            const sc = prestadoresSemContato[nome] || 0;
+            const scBadge = sc > 0 ? `<span style="margin-left:6px;font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">${sc} s/cont (${Math.round((sc/qtd)*100)}%)</span>` : '';
+            return `<div class="tratativa-item"><span class="tratativa-name" style="width:140px;">${nome}</span><div class="tratativa-bar-wrap"><div class="tratativa-bar" style="width:${(qtd/maxPrest*100).toFixed(1)}%;background:var(--accent-purple)"></div></div><span class="tratativa-count" style="color:var(--accent-purple);width:32px;">${qtd}</span>${scBadge}</div>`;
+        }).join('');
     }
-    if (Object.keys(pilotStatusMap).length === 0 && pilotNoShow === 0) {
-        ulPilot.innerHTML += '<div class="empty">Nenhum pilot encontrado.</div>';
-    } else {
-        Object.entries(pilotStatusMap).sort(function(a,b) { return b[1]-a[1]; }).forEach(function(e) {
-            ulPilot.innerHTML += '<div class="pilot-row"><span style="color:var(--text)">' + e[0] + '</span><span class="count" style="color:var(--accent-green)">' + e[1] + '</span></div>';
+
+    // Tags de reincidentes do rodapé
+    const blocoNoShow = document.getElementById('bloco-noshow-nomes');
+    const listaTags = document.getElementById('lista-tags-noshow');
+    if(blocoNoShow && listaTags) {
+        if(nsArr.length===0) blocoNoShow.style.display = 'none';
+        else { blocoNoShow.style.display = 'block'; listaTags.innerHTML = nsArr.map(p => `<span class="noshow-tag">${p}</span>`).join(''); }
+    }
+
+    // ── CONFIGURAÇÕES DOS GRÁFICOS CHANNELS ──
+    const labels = diasOrds.map(d => fmtData(d));
+    const dataLine = diasOrds.map(d => volumeDia[d]);
+    const isFdsArr = diasOrds.map(d => isFimDeSemana(d));
+    const scLineData = diasOrds.map(d => semContatoPorDia[d] || 0);
+
+    // Linha (Evolução)
+    const chartEvol = document.getElementById('graficoEvolucao');
+    if (chartEvol) {
+        const ctxLine = chartEvol.getContext('2d');
+        if(chartLine) chartLine.destroy();
+        chartLine = new Chart(ctxLine, {
+            type: 'line',
+            data: { labels, datasets: [{ data: dataLine, borderColor: '#0FFDC9', backgroundColor: 'rgba(15,253,201,0.05)', borderWidth: 2, pointBackgroundColor: isFdsArr.map(f=>f?'#F01A1A':'#07074E'), pointBorderColor: isFdsArr.map(f=>f?'#F01A1A':'#0FFDC9'), pointBorderWidth: isFdsArr.map(f=>f?2:1.5), pointRadius: isFdsArr.map(f=>f?7:6), fill: true, tension: 0.35 }] },
+            options: {
+                responsive: true, maintainAspectRatio: false, animation: false, layout: { padding: { top: 28 } },
+                plugins: { legend: { display: false }, tooltip: { callbacks: { title: i => isFdsArr[i[0].dataIndex] ? labels[i[0].dataIndex]+' ⛔ FDS' : labels[i[0].dataIndex] } }, datalabels: { align: 'top', anchor: 'end', color: isFdsArr.map(f=>f?'#F01A1A':'#0FFDC9'), font: { size: 11, weight: 'bold' }, formatter: v=>v } },
+                scales: { x: { ticks:{color:'#7A7FA8',font:{size:11}}, grid:{color:'rgba(255,255,255,0.04)'}, border:{color:'rgba(255,255,255,0.06)'} }, y: { ticks:{color:'#7A7FA8',font:{size:11}}, grid:{color:'rgba(255,255,255,0.04)'}, border:{color:'rgba(255,255,255,0.06)'}, beginAtZero:true } }
+            }
         });
     }
 
-    const ulNoShow = document.getElementById('lista-no-show');
-    const noShowArr = Array.from(prestadoresSet);
-    if (noShowArr.length === 0) {
-        ulNoShow.innerHTML = '<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum reincidente</div>';
-    } else {
-        ulNoShow.innerHTML = noShowArr.map(function(p) { return '<div class="noshow-item">' + p + '</div>'; }).join('');
-    }
+    const legenda = document.getElementById('grafico-legenda');
+    if (legenda) legenda.innerHTML = `<span style="font-size:11px;color:#9095c4;"><span style="width:10px;height:10px;border-radius:50%;background:#0FFDC9;display:inline-block;"></span> Dia útil</span>&nbsp;&nbsp;<span style="font-size:11px;color:#9095c4;"><span style="width:10px;height:10px;border-radius:50%;background:#F01A1A;display:inline-block;"></span> Fim de semana</span>`;
 
-    // LISTAGEM DE TRATATIVAS
-    const removePrefixo = function(nome) { return nome.replace(/^agendamento\s*[-–—]\s*/i, '').trim(); };
-    const tratsArr = Object.entries(tratativasMap).map(function(e) {
-        const nomeClean = removePrefixo(e[0]);
-        return { nome: nomeClean, qtd: e[1], pct: ((e[1]/totalTratativas)*100).toFixed(1) };
-    }).reduce(function(acc, t) {
-        const ex = acc.find(function(x) { return x.nome === t.nome; });
-        if (ex) {
-            ex.qtd += t.qtd;
-            ex.pct = ((ex.qtd/totalTratativas)*100).toFixed(1);
-        } else {
-            acc.push(t);
-        }
-        return acc;
-    }, []).sort(function(a,b) { return b.qtd - a.qtd; });
-
-    const maxTrat = (tratsArr.length > 0) ? tratsArr[0].qtd : 1;
-    const ulTrat = document.getElementById('lista-tratativas');
-    if (tratsArr.length === 0) {
-        ulTrat.innerHTML = '<div class="empty">Sem dados de tratativa.</div>';
-    } else {
-        ulTrat.innerHTML = tratsArr.map(function(t) {
-            return '<div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:2px 0;">' +
-                '<span style="flex:3;min-width:0;color:var(--text);line-height:1.4;">' + t.nome + '</span>' +
-                '<div style="flex:2;min-width:60px;height:6px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden;">' +
-                    '<div style="width:' + ((t.qtd/maxTrat)*100).toFixed(1) + '%;height:100%;border-radius:3px;background:var(--accent-blue);"></div>' +
-                '</div>' +
-                '<span style="flex-shrink:0;min-width:28px;text-align:right;color:var(--accent-cyan);font-weight:700;">' + t.qtd + '</span>' +
-                '<span style="flex-shrink:0;min-width:44px;text-align:right;color:var(--muted);">(' + t.pct + '%)</span>' +
-            '</div>';
-        }).join('');
-    }
-
-    // LISTAGEM DOS PRESTADORES
-    const topPrest = Object.entries(prestadoresMap).sort(function(a,b){ return b[1]-a[1]; }).slice(0,10);
-    const maxPrest = (topPrest.length > 0) ? topPrest[0][1] : 1;
-    const ulPrest = document.getElementById('lista-prestadores');
-    if (topPrest.length === 0) {
-        ulPrest.innerHTML = '<div class="empty">Sem dados de prestador.</div>';
-    } else {
-        ulPrest.innerHTML = topPrest.map(function(e) {
-            const nome = e[0];
-            const qtd = e[1];
-            const sc = prestadoresSemContato[nome] || 0;
-            const scPct = qtd > 0 ? ((sc / qtd) * 100).toFixed(0) : 0;
-            const scBadge = sc > 0 ? ('<span style="margin-left:6px;font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">' + sc + ' s/contato (' + scPct + '%)</span>') : '';
-            return '<div class="tratativa-item" style="align-items:center;">' +
-                '<span class="tratativa-name" title="' + nome + '" style="width:140px;">' + nome + '</span>' +
-                '<div class="tratativa-bar-wrap">' +
-                    '<div class="tratativa-bar" style="width:' + ((qtd/maxPrest)*100).toFixed(1) + '%;background:var(--accent-purple)"></div>' +
-                '</div>' +
-                '<span class="tratativa-count" style="color:var(--accent-purple);width:32px;">' + qtd + '</span>' +
-                scBadge +
-            '</div>';
-        }).join('');
-    }
-
-    document.getElementById('blocos-detalhes').style.display = 'grid';
-    document.getElementById('bloco-grafico-evolucao').style.display = 'block';
-    document.getElementById('blocos-listas').style.display = 'grid';
-
-    window.chartData.dias = datas;
-    window.chartData.vol = volumeDia;
-    
-    const btnAll = document.getElementById('btn-filter-all');
-    filtrarGrafico('all', btnAll);
-
-    // COMPOSIÇÃO DA MENSAGEM DO SLACK
-    let txt = `*📊 PAINEL DE PERFORMANCE — COBLI (${textoData})*\n\n`;
-    txt += `*Resumo Geral:*\n• Total Analisado: ${total}\n• Antecipados: ${antecipados} (${txAntecipados}%)\n• Total Pilot: ${pilotCount} (${txPilot}%)\n• Concluídos: ${concluidos} (${txConclusao}%)\n• Impedidos: ${impedidos} (${txImpedidos}%)\n\n`;
-    txt += `*🚀 Detalhes Pilot:*\n`;
-    if (pilotNoShow > 0) txt += `• *🚨 PILOTOS COM NO-SHOW: ${pilotNoShow}*\n`;
-    Object.entries(pilotStatusMap).sort(function(a,b){ return b[1]-a[1]; }).forEach(function(e) { txt += `• ${e[0]}: ${e[1]}\n`; });
-    if (semContatoCount > 0) txt += `\n*⚡ Sem Contato:*\n• Total sem contato: ${semContatoCount} (${txSC}% do total)\n`;
-    txt += `\n*📋 Últimas Tratativas:*\n`;
-    tratsArr.forEach(function(t) { txt += `• ${t.nome}: ${t.qtd} (${t.pct}%)\n`; });
-    if (noShowArr.length > 0) { 
-        txt += `\n*⚠️ No-Show Reincidente (90d):\n`; 
-        noShowArr.forEach(function(p) { txt += `• ${p}\n`; }); 
-    } else { 
-        txt += `\n*✅ Nenhum reincidente de No-Show identificado.*\n`; 
-    }
-    document.getElementById('texto-slack-preview').value = txt;
-}
-
-// FILTRO AVANÇADO DO GRÁFICO (BARRAS FINAS E LIMITADAS)
-window.filtrarGrafico = function(dias, btnEl) {
-    if(btnEl) {
-        document.querySelectorAll('.btn-filter').forEach(function(b) { b.classList.remove('active'); });
-        btnEl.classList.add('active');
-    }
-
-    let diasArr = window.chartData.dias;
-    if(dias !== 'all') {
-        diasArr = diasArr.slice(-parseInt(dias)); 
-    }
-
-    const labels = diasArr.map(function(d) { return fmtData(d); });
-    const dataLine = diasArr.map(function(d) { return window.chartData.vol[d]; });
-    const bgColors = diasArr.map(function(d) { return isFimDeSemana(d) ? '#F04040' : '#0FFDC9'; });
-
-    const ctxLine = document.getElementById('graficoEvolucao').getContext('2d');
-    if (chartLine) chartLine.destroy();
-    
-    if (typeof ChartDataLabels !== 'undefined') {
-        Chart.register(ChartDataLabels);
-    }
-    
-    chartLine = new Chart(ctxLine, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Chamados',
-                data: dataLine,
-                backgroundColor: bgColors,
-                borderRadius: 4,
-                maxBarThickness: 16 
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        title: function(items) {
-                            const idx = items[0].dataIndex;
-                            const fds = isFimDeSemana(diasArr[idx]);
-                            return fds ? labels[idx] + '  ⛔ Fim de semana' : labels[idx];
+    // Barras Fino
+    const chartVol = document.getElementById('graficoVolumeBar');
+    if (chartVol) {
+        const ctxBar = chartVol.getContext('2d');
+        if(chartBar) chartBar.destroy();
+        chartBar = new Chart(ctxBar, {
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        type: 'bar',
+                        data: dataLine,
+                        backgroundColor: isFdsArr.map(f => f ? '#F01A1A' : '#7F8DDB'),
+                        borderRadius: 4,
+                        barThickness: 10,
+                        datalabels: { color: '#FFF', anchor: 'end', align: 'bottom', offset: 4, font: { size: 10, weight: 'bold' }, formatter: v => v }
+                    },
+                    {
+                        type: 'line', 
+                        data: dataLine, 
+                        borderColor: 'transparent',
+                        pointRadius: 0,
+                        datalabels: {
+                            backgroundColor: 'rgba(245,197,25,0.12)', borderColor: 'rgba(245,197,25,0.3)', borderWidth: 1, borderRadius: 20, color: '#F5C519', font: { size: 9, weight: 'bold' }, padding: {top: 2, bottom: 2, left: 6, right: 6},
+                            align: 'top', anchor: 'end', offset: 6,
+                            formatter: (v, ctx) => {
+                                if (isFdsArr[ctx.dataIndex]) return null; 
+                                const sc = scLineData[ctx.dataIndex];
+                                if (!sc || sc === 0) return null;
+                                return `${sc} s/c (${Math.round((sc/v)*100)}%)`;
+                            }
                         }
                     }
-                },
-                datalabels: {
-                    align: 'end',
-                    anchor: 'end',
-                    color: bgColors,
-                    font: { size: 10, weight: 'bold' },
-                    formatter: function(v) { return v; }
-                }
+                ]
             },
-            scales: {
-                x: { ticks: { color: '#7A7FA8', font: { size: 10 } }, grid: { display: false } },
-                y: { ticks: { color: '#7A7FA8', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' }, beginAtZero: true, suggestedMax: Math.max.apply(null, dataLine) * 1.2 }
+            options: {
+                responsive: true, maintainAspectRatio: false, animation: false, layout: { padding: { top: 35 } },
+                plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                scales: { x: { ticks:{color:'#7A7FA8',font:{size:10}}, grid:{display:false}, border:{color:'rgba(255,255,255,0.06)'} }, y: { ticks:{color:'#7A7FA8',font:{size:10}}, grid:{color:'rgba(255,255,255,0.04)'}, border:{color:'rgba(255,255,255,0.06)'}, beginAtZero:true } }
             }
-        }
-    });
-};
+        });
+    }
 
-function toggleSlack() { 
-    const s = document.getElementById('slack-section'); 
-    s.style.display = s.style.display === 'none' ? 'block' : 'none'; 
+    // Texto do Slack
+    let txt = `*📊 PAINEL DE PERFORMANCE — COBLI (${textoData})*\n\n*Resumo Geral:*\n• Total Analisado: ${total}\n• Total Pilot: ${pilotCount} (${txPilot}%)\n• Concluídos: ${concluidos} (${txConclusao}%)\n• Impedidos: ${impedidos} (${txImpedidos}%)\n• Antecipados: ${antecipados} (${txAntecipado}%)\n\n*📊 Taxas:*\n• Taxa de Conclusão: ${txConclusao}%\n• No-Show entre Pilots: ${txNoShow}%\n\n*🚀 Detalhes Pilot:*\n`;
+    if(pilotNoShow>0) txt += `• *🚨 PILOTOS COM NO-SHOW: ${pilotNoShow}*\n`;
+    Object.entries(pilotStatusMap).sort((a,b)=>b[1]-a[1]).forEach(([s,q]) => txt += `• ${s}: ${q}\n`);
+    if(semContatoCount>0) txt += `\n*⚡ Sem Contato:*\n• Total sem contato: ${semContatoCount} (${txSC}% do total)\n`;
+    txt += `\n*📋 Últimas Tratativas:*\n`;
+    tratsArr.forEach(t => txt += `• ${t.nome}: ${t.qtd} (${t.pct}%)\n`);
+    if(nsArr.length>0){ txt+=`\n*⚠️ No-Show Reincidente (90d):*\n`; nsArr.forEach(p=>txt+=`• ${p}\n`); }
+    
+    const slackArea = document.getElementById('texto-slack-preview');
+    if (slackArea) slackArea.value = txt;
 }
 
-function recarregar() { 
-    location.reload(); 
-}
-
+function toggleSlack() { const s = document.getElementById('slack-section'); if(s) s.style.display = s.style.display === 'none' ? 'block' : 'none'; }
+function recarregar() { location.reload(); }
 function baixarImagem() {
-    const painel = document.getElementById('painel-cobli');
-    html2canvas(painel, { backgroundColor: '#07074E', scale: 2, useCORS: true }).then(function(canvas) {
-        const link = document.createElement('a');
-        link.download = `Cobli_Painel_${Date.now()}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
+    html2canvas(document.getElementById('painel-cobli'), { backgroundColor: '#07074E', scale: 2, useCORS: true }).then(canvas => {
+        const link = document.createElement('a'); link.download = `Cobli_Painel_${Date.now()}.png`; link.href = canvas.toDataURL('image/png'); link.click();
     });
 }
-
 function enviarParaSlack() {
     const url = document.getElementById('slackWebhook').value.trim();
-    if (!url) { alert('⚠️ Insira a URL do Webhook do Slack na tela de upload.'); return; }
-    const texto = document.getElementById('texto-slack-preview').value;
-    fetch(url, { 
-        method: 'POST', 
-        mode: 'no-cors', 
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, 
-        body: JSON.stringify({ text: texto }) 
-    }).then(function() { 
-        alert('✅ Notificação disparada! Verifique seu canal.'); 
-    }).catch(function(e) { 
-        alert('❌ Erro: ' + e); 
-    });
+    if (!url) { alert('⚠️ Insira a URL do Webhook do Slack.'); return; }
+    fetch(url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: JSON.stringify({ text: document.getElementById('texto-slack-preview').value }) })
+    .then(() => alert('✅ Notificação disparada!')).catch(e => alert('❌ Erro: ' + e));
 }
 </script>
 </body>
