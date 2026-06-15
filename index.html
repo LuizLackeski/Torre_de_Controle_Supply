@@ -10,116 +10,375 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
     <style>
         :root {
-            --cobli-navy:   #07074E;   
-            --cobli-mid:    #1F1F5F;   
-            --bg:           #0F0F2A;         
-            --card:         #181830;         
-            --card2:        #13132A;         
-            --surface:      #1E1E3A;         
-            --text:         #F0F0F8;         
-            --muted:        #7A7FA8;         
-            --subtle:       #3A3A60;         
-            --border:       rgba(255,255,255,0.07);
-            --border-strong:rgba(255,255,255,0.12);
-            --accent-cyan:  #0FFDC9;
-            --accent-green: #1FEF51;
-            --accent-blue:  #7F8DDB;
-            --accent-red:   #F04040;
-            --accent-yellow:#F5C519;
-            --accent-purple:#C084FC;
+            /* Cobli brand */
+            --cobli-navy:   #07074E;   /* brand azul escuro */
+            --cobli-mid:    #1F1F5F;   /* brand médio */
+
+            /* Paleta clean para o painel */
+            --bg:     #0F0F2A;         /* fundo geral */
+            --card:   #181830;         /* cards */
+            --card2:  #13132A;         /* topbar */
+            --surface:#1E1E3A;         /* blocos internos */
+
+            /* Texto */
+            --text:   #F0F0F8;         /* texto principal */
+            --muted:  #7A7FA8;         /* texto secundário */
+            --subtle: #3A3A60;         /* texto e bordas muito sutis */
+
+            /* Bordas */
+            --border: rgba(255,255,255,0.07);
+            --border-strong: rgba(255,255,255,0.12);
+
+            /* Acentos Cobli */
+            --accent-cyan:   #0FFDC9;
+            --accent-green:  #1FEF51;
+            --accent-blue:   #7F8DDB;
+            --accent-red:    #F04040;
+            --accent-yellow: #F5C519;
+            --accent-purple: #C084FC;
+
             --font: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; }
 
-        /* ── UPLOAD AREA ── */
-        #upload-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 40px 20px; gap: 24px; }
-        .upload-logo { font-size: 13px; font-weight: 700; letter-spacing: 4px; color: var(--accent-cyan); text-transform: uppercase; }
-        .upload-title { font-size: 28px; font-weight: 700; text-align: center; color: var(--text); }
-        .upload-sub { font-size: 14px; color: var(--muted); text-align: center; max-width: 420px; }
-        .upload-box { background: var(--card); border: 2px dashed var(--border); border-radius: 16px; padding: 48px 64px; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; max-width: 460px; width: 100%; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font);
+            min-height: 100vh;
+        }
+
+        /* ── UPLOAD AREA ─────────────────────────────────────────────── */
+        #upload-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+            gap: 24px;
+        }
+
+        .upload-logo {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 4px;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+        }
+
+        .upload-title {
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            color: var(--text);
+        }
+
+        .upload-sub {
+            font-size: 14px;
+            color: var(--muted);
+            text-align: center;
+            max-width: 420px;
+        }
+
+        .upload-box {
+            background: var(--card);
+            border: 2px dashed var(--border);
+            border-radius: 16px;
+            padding: 48px 64px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            max-width: 460px;
+            width: 100%;
+        }
         .upload-box:hover { border-color: var(--accent-cyan); background: rgba(15,253,201,0.05); }
         .upload-box .icon { font-size: 40px; margin-bottom: 12px; }
         .upload-box p { font-size: 14px; color: var(--muted); margin-top: 8px; }
-        .input-row { display: flex; align-items: center; gap: 12px; width: 100%; max-width: 460px; }
+        .upload-box strong { color: var(--accent-cyan); }
+
+        .input-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            max-width: 460px;
+        }
         .input-row label { font-size: 12px; color: var(--muted); white-space: nowrap; }
-        .input-row input[type="text"] { flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--text); font-size: 13px; outline: none; }
+        .input-row input[type="text"] {
+            flex: 1;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: var(--text);
+            font-size: 13px;
+            outline: none;
+        }
         .input-row input[type="text"]:focus { border-color: var(--accent-cyan); }
+        .input-row input[type="text"]::placeholder { color: var(--muted); }
+
         #csvFileInput { display: none; }
 
-        /* ── DASHBOARD ── */
+        /* ── DASHBOARD ───────────────────────────────────────────────── */
         #dashboard-screen { display: none; }
-        .top-bar-outer { background: var(--card2); border-bottom: 1px solid var(--border); }
-        .top-bar { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 14px 28px; flex-wrap: wrap; gap: 16px; }
-        .top-bar-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; flex: 1; }
-        .cobli-badge { font-size: 11px; font-weight: 700; letter-spacing: 3px; color: var(--accent-cyan); text-transform: uppercase; background: rgba(15,253,201,0.08); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(15,253,201,0.15); }
-        #topbar-date { font-size: 13px; font-weight: 600; color: var(--muted); }
-        .badge { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
-        .badge-cyan { background: rgba(15,253,201,0.1); color: var(--accent-cyan); border: 1px solid rgba(15,253,201,0.2); }
 
-        /* FILTROS (BOTÕES PÍLULA) */
-        .filter-group { display: flex; gap: 4px; background: var(--card); padding: 4px; border-radius: 8px; border: 1px solid var(--border-strong); }
-        .filter-btn { background: transparent; color: var(--muted); border: none; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-        .filter-btn.active { background: var(--accent-cyan); color: var(--cobli-navy); }
-        .filter-btn:hover:not(.active) { color: var(--text); background: rgba(255,255,255,0.05); }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 28px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
 
-        .top-bar-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; flex: 1; }
-        .btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: 8px; border: none; font-size: 12px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
+        .top-bar-left { display: flex; align-items: center; gap: 16px; }
+        .cobli-badge {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            background: rgba(15,253,201,0.08);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(15,253,201,0.15);
+        }
+        #topbar-date { font-size: 13px; color: var(--text); font-weight: 500; }
+
+        .top-bar-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 9px 16px;
+            border-radius: 8px;
+            border: none;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
         .btn:hover { opacity: 0.85; }
-        .btn-outline { background: rgba(255,255,255,0.04); border: 1px solid var(--border-strong); color: var(--text); }
+        .btn-outline {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border-strong);
+            color: var(--text);
+        }
+        .btn-cyan { background: var(--accent-cyan); color: #07074E; }
         .btn-slack { background: #4A154B; color: #fff; }
-        .btn-reload { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+        .btn-reload { background: transparent; border: 1px solid var(--border); color: var(--muted); font-size: 12px; }
 
-        /* ── MAIN PANEL ── */
-        #painel-cobli { background: var(--bg); padding: 28px 32px 36px; max-width: 1100px; margin: 0 auto; }
-        
-        .kpi-row { display: grid; gap: 12px; margin-bottom: 14px; }
+        /* ── MAIN PANEL ──────────────────────────────────────────────── */
+        #painel-cobli {
+            background: var(--bg);
+            padding: 28px 32px 36px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        #dashboard-screen { background: var(--bg); }
+        #slack-section { max-width: 1100px; margin: 0 auto; border-top: none; }
+        .slack-outer { background: var(--card2); border-top: 1px solid var(--border); }
+        .top-bar-outer { background: var(--card2); border-bottom: 1px solid var(--border); }
+        .top-bar { max-width: 1100px; margin: 0 auto; background: transparent; border-bottom: none; }
+
+        /* KPI ROW */
+        .kpi-row {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+        .kpi-row-4 { grid-template-columns: repeat(4, 1fr); }
         .kpi-row-5 { grid-template-columns: repeat(5, 1fr); }
-        .kpi-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; position: relative; overflow: hidden; border-left: 3px solid var(--kpi-accent, var(--accent-blue)); }
-        .kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
-        .kpi-value { font-size: 32px; font-weight: 700; color: var(--text); line-height: 1; }
-        .kpi-sub { font-size: 11px; color: var(--kpi-accent, var(--muted)); margin-top: 6px; font-weight: 600; }
-        .kpi-icon { position: absolute; top: 14px; right: 16px; font-size: 20px; opacity: 0.08; }
 
-        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
-        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 14px; }
+        .kpi-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 22px;
+            position: relative;
+            overflow: hidden;
+            border-left: 3px solid var(--kpi-accent, var(--accent-blue));
+        }
+        .kpi-label {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+        .kpi-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1;
+        }
+        .kpi-sub {
+            font-size: 11px;
+            color: var(--kpi-accent, var(--muted));
+            margin-top: 6px;
+            font-weight: 600;
+        }
+        .kpi-icon {
+            position: absolute;
+            top: 14px; right: 16px;
+            font-size: 20px;
+            opacity: 0.08;
+        }
 
-        .panel-block { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; }
-        .panel-block-title { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-        .panel-block-title .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+        /* GRIDS GERAIS */
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 14px;
+        }
 
-        /* LISTAS */
+        .panel-block {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 22px;
+        }
+        .panel-block-title {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .panel-block-title .dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+            flex-shrink: 0;
+        }
+
+        /* LISTA TRATATIVAS */
         .tratativa-list { display: flex; flex-direction: column; gap: 0; }
-        .tratativa-item { display: flex; align-items: center; gap: 10px; font-size: 12px; padding: 5px 0; border-bottom: 1px solid var(--border); }
+        .tratativa-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            padding: 5px 0;
+            border-bottom: 1px solid var(--border);
+        }
         .tratativa-item:last-child { border-bottom: none; }
-        .tratativa-bar-wrap { flex: 1; height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+        .tratativa-bar-wrap {
+            flex: 1;
+            height: 4px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 2px;
+            overflow: hidden;
+        }
         .tratativa-bar { height: 100%; border-radius: 3px; background: var(--accent-blue); }
         .tratativa-name { flex: 1; min-width: 0; color: var(--text); font-size:12px; }
-        .tratativa-count { flex-shrink: 0; text-align: right; color: var(--accent-cyan); font-weight: 700; font-size: 12px; }
+        .tratativa-count { flex-shrink: 0; text-align: right; color: var(--accent-cyan); font-weight: 700; white-space: nowrap; font-size: 12px; }
 
-        /* PILOT */
+        /* PILOT DETAILS */
         .pilot-list { display: flex; flex-direction: column; gap: 4px; }
-        .pilot-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; padding: 5px 8px; border-radius: 6px; border-left: 2px solid transparent; color: var(--text); }
-        .pilot-row:not(.warn):hover { background: rgba(255,255,255,0.03); }
-        .pilot-row.warn { background: rgba(240,64,64,0.08); border-left-color: var(--accent-red); color: var(--accent-red); font-weight: 700; }
-
-        /* NO-SHOW TAGS */
-        .noshow-tags { display: flex; flex-wrap: wrap; gap: 8px; }
-        .noshow-tag { font-size: 11px; padding: 5px 12px; background: rgba(240,26,26,0.08); border: 1px solid rgba(240,26,26,0.2); border-left: 3px solid var(--accent-red); border-radius: 4px; color: var(--text); font-weight: 500; }
-
-        .chart-row { display: grid; grid-template-columns: 1fr; gap: 14px; margin-bottom: 14px; }
-        .chart-wrap { position: relative; height: 240px; width: 100%; }
-
-        #slack-section { display: none; background: #222; padding: 20px 28px; }
-        .slack-outer { background: var(--card2); border-top: 1px solid var(--border); }
-        #texto-slack-preview { width: 100%; height: 180px; background: #111; border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; color: #ccc; font-family: monospace; font-size: 12px; resize: vertical; outline: none; }
-
-        @media (max-width: 950px) {
-            .kpi-row-5 { grid-template-columns: repeat(2, 1fr); }
-            .grid-2, .grid-4 { grid-template-columns: 1fr; }
-            .top-bar-left, .top-bar-actions { justify-content: center; }
+        .pilot-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            padding: 5px 8px;
+            border-radius: 6px;
+            border-left: 2px solid transparent;
+            color: var(--text);
         }
+        .pilot-row:not(.warn):hover { background: rgba(255,255,255,0.03); }
+        .pilot-row.warn {
+            background: rgba(240,64,64,0.08);
+            border-left-color: var(--accent-red);
+            color: var(--accent-red);
+            font-weight: 700;
+        }
+        .pilot-row .count {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        /* NO-SHOW ALERT */
+        .noshow-list { display: flex; flex-direction: column; gap: 5px; }
+
+        /* CHART ROW */
+        .chart-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+        .chart-wrap { position: relative; height: 220px; width: 100%; }
+
+        /* SLACK PREVIEW */
+        #slack-section {
+            display: none;
+            background: #222;
+            border-top: 1px solid var(--border);
+            padding: 20px 28px;
+        }
+        .slack-header { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+        #texto-slack-preview {
+            width: 100%;
+            height: 180px;
+            background: #111;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 14px;
+            color: #ccc;
+            font-family: monospace;
+            font-size: 12px;
+            resize: vertical;
+            outline: none;
+        }
+
+        /* BADGE */
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .badge-cyan { background: rgba(15,253,201,0.1); color: var(--accent-cyan); border: 1px solid rgba(15,253,201,0.2); }
+
+        /* Select customizado */
+        select.custom-select {
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border-strong);
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 11px;
+            outline: none;
+            cursor: pointer;
+        }
+        select.custom-select:focus { border-color: var(--accent-cyan); }
+
+        /* RESPONSIVO */
+        @media (max-width: 900px) {
+            .kpi-row-4, .kpi-row-5 { grid-template-columns: repeat(2, 1fr); }
+            .grid-4, .grid-2 { grid-template-columns: 1fr; }
+        }
+
+        /* EMPTY STATE */
         .empty { color: var(--muted); font-size: 12px; font-style: italic; padding: 8px 0; }
     </style>
 </head>
@@ -140,35 +399,28 @@
         <label>Webhook Slack</label>
         <input type="text" id="slackWebhook" placeholder="https://hooks.slack.com/services/...">
     </div>
+
     <input type="file" id="csvFileInput" accept=".csv">
 </div>
 
 <div id="dashboard-screen">
+
     <div class="top-bar-outer"><div class="top-bar">
         <div class="top-bar-left">
             <span class="cobli-badge">Cobli</span>
             <span id="topbar-date">—</span>
             <span id="topbar-total" class="badge badge-cyan"></span>
         </div>
-        
-        <div style="display:flex; justify-content:center; flex:1;">
-            <div class="filter-group" id="filter-group">
-                <button class="filter-btn" onclick="aplicarFiltro('7', this)">7 dias</button>
-                <button class="filter-btn" onclick="aplicarFiltro('15', this)">15 dias</button>
-                <button class="filter-btn" onclick="aplicarFiltro('30', this)">30 dias</button>
-                <button class="filter-btn active" onclick="aplicarFiltro('all', this)">Todo o período</button>
-            </div>
-        </div>
-
         <div class="top-bar-actions">
             <button class="btn btn-reload" onclick="recarregar()">↩ Novo CSV</button>
-            <button class="btn btn-outline" onclick="toggleSlack()">📝 Slack</button>
-            <button class="btn btn-outline" onclick="baixarImagem()">📸 Imagem</button>
-            <button class="btn btn-slack" onclick="enviarParaSlack()">💬 Enviar</button>
+            <button class="btn btn-outline" onclick="toggleSlack()">📝 Texto Slack</button>
+            <button class="btn btn-outline" onclick="baixarImagem()">📸 Baixar Imagem</button>
+            <button class="btn btn-slack" onclick="enviarParaSlack()">💬 Enviar ao Slack</button>
         </div>
     </div></div>
 
     <div id="painel-cobli">
+
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;padding-bottom:16px;border-bottom:1px solid var(--border);">
             <div>
                 <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent-cyan);margin-bottom:4px;">Performance Report</div>
@@ -196,8 +448,10 @@
                 <div class="pilot-list" id="lista-pilot-novo"></div>
             </div>
             <div class="panel-block" style="padding:16px 20px;">
-                <div class="panel-block-title" style="color:var(--muted); margin-bottom:10px;"><span class="dot" style="color:var(--accent-red)"></span>No-Show Reincidente (90d)</div>
-                <div id="resumo-no-show"></div>
+                <div class="panel-block-title" style="color:var(--muted); margin-bottom:10px;">
+                    <span class="dot" style="color:var(--accent-red)"></span>No-Show Reincidente (90d)
+                </div>
+                <div class="noshow-list" id="lista-no-show-novo"></div>
             </div>
         </div>
 
@@ -208,27 +462,36 @@
                 </div>
                 <div style="display:flex;justify-content:flex-end;gap:16px;margin-bottom:10px;" id="grafico-legenda"></div>
                 <div class="chart-wrap">
-                    <canvas id="graficoEvolucao"></canvas>
+                    <canvas id="graficoEvolucao" role="img" aria-label="Gráfico de linha"></canvas>
                 </div>
             </div>
         </div>
 
         <div class="panel-block" style="margin-bottom:14px;">
-            <div class="panel-block-title" style="color:var(--accent-blue);">
-                <span class="dot"></span> Volume por Dia
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <div class="panel-block-title" style="margin:0; color:var(--accent-blue);">
+                    <span class="dot"></span> Volume por Dia
+                </div>
+                <select id="filtro-volume-dia" class="custom-select" onchange="renderChartVolume()">
+                    <option value="7">Últimos 7 dias</option>
+                    <option value="15">Últimos 15 dias</option>
+                    <option value="30">Últimos 30 dias</option>
+                    <option value="all" selected>Todo o período</option>
+                </select>
             </div>
-            <div class="chart-wrap">
+            <div class="chart-wrap" style="height: 190px;">
                 <canvas id="graficoVolumeBar"></canvas>
             </div>
         </div>
 
-        <div class="grid-2" style="margin-bottom:14px;">
+        <div class="grid-2" style="margin-bottom:0;">
             <div class="panel-block">
                 <div class="panel-block-title" style="color:var(--accent-blue);">
                     <span class="dot"></span> Últimas Tratativas
                 </div>
                 <div class="tratativa-list" id="lista-tratativas"></div>
             </div>
+            
             <div class="panel-block">
                 <div class="panel-block-title" style="color:var(--accent-purple);">
                     <span class="dot"></span> Top 10 Prestadores — Volume & Sem Contato
@@ -237,97 +500,63 @@
             </div>
         </div>
 
-        <div class="panel-block" id="bloco-noshow-nomes" style="margin-bottom:0; display:none;">
-            <div class="panel-block-title" style="color:var(--accent-red);">
-                <span class="dot"></span> Prestadores com No-Show Reincidente (Últimos 90 dias)
-            </div>
-            <div class="noshow-tags" id="lista-tags-noshow"></div>
-        </div>
-
-    </div>
-
-    <div class="slack-outer"><div id="slack-section">
-        <div style="font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px;">📝 Pré-visualização do texto para Slack</div>
+    </div><div class="slack-outer"><div id="slack-section">
+        <div class="slack-header">📝 Pré-visualização do texto para Slack</div>
         <textarea id="texto-slack-preview"></textarea>
     </div></div>
-</div>
 
-<script>
+</div><script>
 let chartLine = null;
 let chartBar = null;
-let dadosGlobaisBase = [];
 
+// Objeto global para armazenar dados de volume e permitir o filtro do ChartJS
+let volumeGlobalData = {};
+
+// ── DRAG & DROP ──────────────────────────────────────────────────
 const uploadBox = document.querySelector('.upload-box');
 uploadBox.addEventListener('dragover', e => { e.preventDefault(); uploadBox.style.borderColor = 'var(--accent-cyan)'; });
 uploadBox.addEventListener('dragleave', () => { uploadBox.style.borderColor = ''; });
-uploadBox.addEventListener('drop', e => { e.preventDefault(); uploadBox.style.borderColor = ''; if (e.dataTransfer.files[0]) parseCSV(e.dataTransfer.files[0]); });
-document.getElementById('csvFileInput').addEventListener('change', e => { if (e.target.files[0]) parseCSV(e.target.files[0]); });
+uploadBox.addEventListener('drop', e => {
+    e.preventDefault(); uploadBox.style.borderColor = '';
+    const file = e.dataTransfer.files[0];
+    if (file) parseCSV(file);
+});
+
+document.getElementById('csvFileInput').addEventListener('change', function(e) {
+    if (e.target.files[0]) parseCSV(e.target.files[0]);
+});
 
 function parseCSV(file) {
     Papa.parse(file, {
-        header: true, skipEmptyLines: true, transformHeader: h => h.trim(),
-        complete: r => { dadosGlobaisBase = r.data; aplicarFiltro('all', null); }
+        header: true,
+        skipEmptyLines: true,
+        transformHeader: h => h.trim(),
+        complete: r => processarDados(r.data)
     });
 }
 
+// ── HELPER: busca parcial de coluna ────────────────────────────
 function val(linha, pedaco) {
     const k = Object.keys(linha).find(k => k.toLowerCase().includes(pedaco.toLowerCase()));
     return k ? (linha[k] || '').toString().trim() : '';
 }
 
-// Converte datas para ISO formato yyyy-mm-dd
-function toISO(s) {
-    if (!s) return '';
-    if (/^\d{2}[/\-]\d{2}[/\-]\d{4}/.test(s)) {
-        const p = s.split(/[/\-]/);
-        return `${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;
-    }
-    if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0,10);
-    return s;
-}
-
-function isFimDeSemana(isoStr) {
-    if (!isoStr || !isoStr.includes('-')) return false;
-    const [y, m, d] = isoStr.split('-').map(Number);
-    const dow = new Date(y, m - 1, d).getDay();
-    return dow === 0 || dow === 6;
-}
-
-// ── FILTRO GLOBAL E RENDERIZAÇÃO ──
-function aplicarFiltro(periodo, btnElement) {
-    if (btnElement) {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btnElement.classList.add('active');
-    } else {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        const btns = document.querySelectorAll('.filter-btn');
-        if (btns.length > 0) btns[btns.length - 1].classList.add('active');
-    }
-
-    if (!dadosGlobaisBase || dadosGlobaisBase.length === 0) return;
-
-    const datasUnicas = new Set();
-    dadosGlobaisBase.forEach(linha => {
-        const dtISO = toISO(val(linha, 'data').split(' ')[0]);
-        if (dtISO) datasUnicas.add(dtISO);
-    });
-
-    const datasOrdenadas = [...datasUnicas].sort();
-    let datasPermitidas = datasOrdenadas;
-    if (periodo !== 'all') datasPermitidas = datasOrdenadas.slice(-parseInt(periodo, 10));
-
-    const dadosFiltrados = dadosGlobaisBase.filter(linha => {
-        return datasPermitidas.includes(toISO(val(linha, 'data').split(' ')[0]));
-    });
-
-    renderPainel(dadosFiltrados);
-}
-
-function renderPainel(dados) {
-    let total = 0, pilotCount = 0, pilotNoShow = 0, concluidos = 0, impedidos = 0, antecipados = 0, noShowTotal = 0;
+// ── PROCESSAMENTO ───────────────────────────────────────────────
+function processarDados(dados) {
+    let total = 0, pilotCount = 0, pilotNoShow = 0, concluidos = 0, impedidos = 0, agendados = 0, emAndamento = 0, antecipados = 0;
     let totalTratativas = 0, semContatoCount = 0;
     let tratativasMap = {}, pilotStatusMap = {}, prestadoresSet = new Set();
-    let prestadoresMap = {}, prestadoresSemContato = {}, datasSet = new Set(), volumeDia = {}, semContatoPorDia = {};
+    let prestadoresMap = {}, prestadoresSemContato = {}, datasSet = new Set(), volumeDia = {};
+
+    function toISO(s) {
+        if (!s) return '';
+        if (/^\d{2}[/\-]\d{2}[/\-]\d{4}/.test(s)) {
+            const parts = s.split(/[/\-]/);
+            return `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
+        }
+        if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0,10);
+        return s;
+    }
 
     dados.forEach(linha => {
         const alocacao     = val(linha, 'aloca');
@@ -338,262 +567,436 @@ function renderPainel(dados) {
         const dataStr      = val(linha, 'data').split(' ')[0];
 
         const alocLower    = alocacao.toLowerCase();
-        const tratUpper    = tratativaRaw.toUpperCase();
-        const tratVazia    = !tratativaRaw || ['-','nan','null',''].includes(tratativaRaw.toLowerCase());
         const hasNoShow    = /no[\s-]?show/i.test(tratativaRaw);
+        const tratVazia    = !tratativaRaw || ['-','nan','null',''].includes(tratativaRaw.toLowerCase());
 
-        // 🛑 REGRA 1: IGNORAR ABSOLUTAMENTE "AGENDAMENTO - CANCELADO"
         if (alocLower.includes('cancelad') && tratVazia) return;
-        if (tratUpper.includes('AGENDAMENTO - CANCELADO')) return; 
 
         const dataISO = toISO(dataStr);
-        const fds = isFimDeSemana(dataISO);
+        if (dataISO) { datasSet.add(dataISO); volumeDia[dataISO] = (volumeDia[dataISO] || 0) + 1; }
 
-        // Identifica as condições
-        const isAntecipado = alocLower.includes('antecipa') || tratUpper.includes('AGENDAMENTO - ANTECIPADO');
-        let isConcluido = alocLower.includes('conclu');
-        let isImpedido = /imped/i.test(alocacao.normalize('NFD').replace(/[\u0300-\u036f]/g,''));
+        total++;
 
-        // Regra específica: Antecipado é forçado como Concluído
-        if (isAntecipado) {
-            antecipados++;
-            isConcluido = true;
+        if (alocLower.includes('conclu'))   concluidos++;
+        if (/imped/i.test(alocacao.normalize('NFD').replace(/[\u0300-\u036f]/g,''))) impedidos++;
+        if (alocLower.includes('agendad'))  agendados++;
+        if (alocLower.includes('andamento') || alocLower.includes('em atend')) emAndamento++;
+
+        // Nova checagem para o card Antecipado (pode vir em alocação ou tratativa)
+        const isAntecipado = alocLower.includes('antecipad') || tratativaRaw.toLowerCase().includes('antecipad');
+        if (isAntecipado) antecipados++;
+
+        // Tratativa limpa
+        const tratLimpa = tratativaRaw.replace(/^\d{2}\/\d{2}[^—\-]*(—|-)\s*/, '').trim();
+        if (tratLimpa && !tratVazia) {
+            tratativasMap[tratLimpa] = (tratativasMap[tratLimpa] || 0) + 1;
+            totalTratativas++;
         }
 
-        // Universo operacional estrito (Para a conta fechar em 100%)
-        if (isConcluido || isImpedido || hasNoShow) {
-            if (dataISO) { datasSet.add(dataISO); volumeDia[dataISO] = (volumeDia[dataISO] || 0) + 1; }
+        if (prestador) prestadoresMap[prestador] = (prestadoresMap[prestador] || 0) + 1;
 
-            if (isConcluido) concluidos++;
-            if (isImpedido) impedidos++;
-            if (hasNoShow) noShowTotal++;
-
-            let tratLimpa = tratativaRaw.replace(/^\d{2}\/\d{2}[^—\-]*(—|-)\s*/, '').trim();
-            const isSemContato = tratUpper.includes('SEM CONTATO');
-
-            // Ignora a tratativa em finais de semana
-            if (fds) {
-                tratLimpa = ''; 
-            }
-
-            // Mapeia Tratativas válidas
-            if (tratLimpa && !tratVazia && tratLimpa.toLowerCase() !== 'nan' && tratLimpa.toLowerCase() !== 'null') {
-                tratativasMap[tratLimpa] = (tratativasMap[tratLimpa] || 0) + 1;
-                totalTratativas++;
-            }
-
-            if (prestador) prestadoresMap[prestador] = (prestadoresMap[prestador] || 0) + 1;
-
-            if (isSemContato) {
-                semContatoCount++;
-                if (prestador) prestadoresSemContato[prestador] = (prestadoresSemContato[prestador] || 0) + 1;
-                if (dataISO) semContatoPorDia[dataISO] = (semContatoPorDia[dataISO] || 0) + 1;
-            }
-
-            if (classe.includes('pilot')) {
-                pilotCount++;
-                if (hasNoShow) { pilotNoShow++; } 
-                else { const s = alocacao || 'Sem Status'; pilotStatusMap[s] = (pilotStatusMap[s] || 0) + 1; }
-            }
-
-            if (noShow90d === 'sim' && hasNoShow && prestador) prestadoresSet.add(prestador);
+        const isSemContato = /sem[\s\-]?contato/i.test(tratLimpa) || /sem[\s\-]?contato/i.test(tratativaRaw);
+        if (isSemContato) {
+            semContatoCount++;
+            if (prestador) prestadoresSemContato[prestador] = (prestadoresSemContato[prestador] || 0) + 1;
         }
+
+        // Pilot
+        if (classe.includes('pilot')) {
+            pilotCount++;
+            if (hasNoShow) {
+                pilotNoShow++;
+            } else {
+                const s = alocacao || 'Sem Status';
+                pilotStatusMap[s] = (pilotStatusMap[s] || 0) + 1;
+            }
+        }
+
+        // No-Show reincidente
+        if (noShow90d === 'sim' && hasNoShow && prestador) prestadoresSet.add(prestador);
     });
 
-    // 📐 UNIVERSO FECHADO MATEMÁTICO (Soma total exata)
-    total = concluidos + impedidos + noShowTotal;
-    const realizados = concluidos + impedidos;
-
-    const txRealizados = total > 0 ? ((realizados / total) * 100).toFixed(1) : 0;
-    const txImpedidos  = total > 0 ? ((impedidos / total) * 100).toFixed(1) : 0;
+    // ── TAXAS ──
+    const realizados   = concluidos + impedidos;
+    const txRealizados = total > 0 ? ((realizados  / total) * 100).toFixed(1) : 0;
+    const txConclusao  = total > 0 ? ((concluidos  / total) * 100).toFixed(1) : 0;
+    const txImpedidos  = total > 0 ? ((impedidos   / total) * 100).toFixed(1) : 0;
     const txNoShow     = pilotCount > 0 ? ((pilotNoShow / pilotCount) * 100).toFixed(1) : 0;
-    const txPilot      = total > 0 ? ((pilotCount / total) * 100).toFixed(1) : 0;
+    const txPilot      = total > 0 ? ((pilotCount  / total) * 100).toFixed(1) : 0;
     const txAntecipado = total > 0 ? ((antecipados / total) * 100).toFixed(1) : 0;
-    const txSC         = total > 0 ? ((semContatoCount / total) * 100).toFixed(1) : 0;
 
+    // ── DATA DO TÍTULO ──
     const datas = [...datasSet].sort();
     const fmtData = d => d.match(/^\d{4}-\d{2}-\d{2}/) ? d.slice(5).split('-').reverse().join('/') : d;
     let textoData = 'Múltiplos Dias';
-    if (datas.length === 1 && datas[0]) textoData = fmtData(datas[0]);
-    else if (datas.length > 1) textoData = `${fmtData(datas[0])} – ${fmtData(datas[datas.length-1])}`;
+    if (datas.length === 1 && datas[0]) {
+        textoData = fmtData(datas[0]);
+    } else if (datas.length > 1) {
+        textoData = `${fmtData(datas[0])} – ${fmtData(datas[datas.length-1])}`;
+    }
 
-    // Atualização do Cabeçalho
+    document.getElementById('upload-screen').style.display = 'none';
+    document.getElementById('dashboard-screen').style.display = 'block';
     document.getElementById('topbar-date').textContent = textoData;
     document.getElementById('topbar-total').textContent = `${total} chamados`;
-    document.getElementById('painel-titulo-data').textContent = `Cobli — ${textoData}`;
-    const agora = new Date();
-    document.getElementById('painel-gerado-em').textContent = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+    const tituloEl = document.getElementById('painel-titulo-data');
+    if (tituloEl) tituloEl.textContent = `Cobli — ${textoData}`;
+    const geradoEl = document.getElementById('painel-gerado-em');
+    if (geradoEl) {
+        const agora = new Date();
+        geradoEl.textContent = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+    }
 
-    // Injeção de KPIs Principais
-    const pilotConc = Object.entries(pilotStatusMap).filter(([s])=>/conclu/i.test(s)).reduce((a,[,q])=>a+q,0);
-    const pilotImp  = Object.entries(pilotStatusMap).filter(([s])=>/imped/i.test(s.normalize('NFD').replace(/[\u0300-\u036f]/g,''))).reduce((a,[,q])=>a+q,0);
+    // ── KPIs PRINCIPAIS (5 CARDS, com Antecipado incluído) ──
+    const pilotConc  = Object.entries(pilotStatusMap).filter(([s]) => /conclu/i.test(s)).reduce((a,[,q])=>a+q,0);
+    const pilotImp   = Object.entries(pilotStatusMap).filter(([s]) => /imped/i.test(s.normalize('NFD').replace(/[\u0300-\u036f]/g,''))).reduce((a,[,q])=>a+q,0);
+    const txPilotConc   = pilotCount > 0 ? ((pilotConc    / pilotCount) * 100).toFixed(0) : 0;
+    const txPilotImp    = pilotCount > 0 ? ((pilotImp     / pilotCount) * 100).toFixed(0) : 0;
+    const txPilotNoShow = pilotCount > 0 ? ((pilotNoShow  / pilotCount) * 100).toFixed(0) : 0;
+
     const pilotExtra = `<div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;gap:4px;">
         <div style="display:flex;justify-content:space-between;font-size:11px;">
-            <span style="color:#7A7FA8;">Concluídos</span><span style="color:#1FEF51;font-weight:700;">${pilotConc}</span>
+            <span style="color:#7A7FA8;">Concluídos</span>
+            <span style="color:#1FEF51;font-weight:700;">${pilotConc} <span style="font-weight:400;color:#7A7FA8;">(${txPilotConc}%)</span></span>
         </div>
-        ${pilotImp > 0 ? `<div style="display:flex;justify-content:space-between;font-size:11px;"><span style="color:#7A7FA8;">Impedidos</span><span style="color:#F5C519;font-weight:700;">${pilotImp}</span></div>` : ''}
+        ${pilotImp > 0 ? `<div style="display:flex;justify-content:space-between;font-size:11px;">
+            <span style="color:#7A7FA8;">Impedidos</span>
+            <span style="color:#F5C519;font-weight:700;">${pilotImp} <span style="font-weight:400;color:#7A7FA8;">(${txPilotImp}%)</span></span>
+        </div>` : ''}
         <div style="display:flex;justify-content:space-between;font-size:11px;">
-            <span style="color:#7A7FA8;">No-Show</span><span style="color:#F04040;font-weight:700;">${pilotNoShow}</span>
+            <span style="color:#7A7FA8;">No-Show</span>
+            <span style="color:#F04040;font-weight:700;">${pilotNoShow} <span style="font-weight:400;color:#7A7FA8;">(${txPilotNoShow}%)</span></span>
         </div>
     </div>`;
 
-    document.getElementById('kpi-row-main').innerHTML = [
-        { label: 'Total Analisado', value: total, sub: '&nbsp;', accent: 'var(--accent-cyan)', icon: '📋', extra: '' },
-        { label: 'Total Pilot', value: pilotCount, sub: txPilot+'% do total', accent: 'var(--accent-blue)', icon: '🚀', extra: pilotExtra },
-        { label: 'Realizados', value: realizados, sub: txRealizados+'% do total', accent: 'var(--accent-green)', icon: '⚡', extra: '' },
-        { label: 'Impedidos', value: impedidos, sub: txImpedidos+'% do total', accent: 'var(--accent-red)', icon: '🚫', extra: '' },
-        { label: 'Antecipados', value: antecipados, sub: txAntecipado+'% do total', accent: 'var(--accent-purple)', icon: '⏳', extra: '' }
-    ].map(k => `<div class="kpi-card" style="--kpi-accent:${k.accent}"><div class="kpi-label">${k.label}</div><div class="kpi-value">${k.value}</div><div class="kpi-sub">${k.sub}</div>${k.extra}<div class="kpi-icon">${k.icon}</div></div>`).join('');
+    const kpis = [
+        { label: 'Total Analisado', value: total,      sub: '&nbsp;',                   accent: 'var(--accent-cyan)',   icon: '📋', extra: '' },
+        { label: 'Total Pilot',     value: pilotCount, sub: txPilot + '% do total',     accent: 'var(--accent-blue)',   icon: '🚀', extra: pilotExtra },
+        { label: 'Realizados',      value: realizados, sub: txRealizados + '% do total',accent: 'var(--accent-green)',  icon: '⚡', extra: '' },
+        { label: 'Impedidos',       value: impedidos,  sub: txImpedidos + '% do total', accent: 'var(--accent-red)',    icon: '🚫', extra: '' },
+        { label: 'Antecipados',     value: antecipados,sub: txAntecipado + '% do total',accent: 'var(--accent-purple)', icon: '⏳', extra: '' },
+    ];
+    document.getElementById('kpi-row-main').innerHTML = kpis.map(k => `
+        <div class="kpi-card" style="--kpi-accent:${k.accent}">
+            <div class="kpi-label">${k.label}</div>
+            <div class="kpi-value">${k.value}</div>
+            <div class="kpi-sub">${k.sub}</div>
+            ${k.extra}
+            <div class="kpi-icon">${k.icon}</div>
+        </div>
+    `).join('');
 
-    // Blocos Secundários (FDS, SC, Pilot, Reincidente)
+    // ── Helper FDS ──
+    function isFimDeSemana(isoStr) {
+        if (!isoStr || !isoStr.includes('-')) return false;
+        const [y, m, d] = isoStr.split('-').map(Number);
+        const dow = new Date(y, m - 1, d).getDay();
+        return dow === 0 || dow === 6;
+    }
+
+    // ── BLOCOS SECUNDÁRIOS REMANEJADOS ──
     const diasOrds = Object.keys(volumeDia).sort();
-    const fdsDias = diasOrds.filter(d => isFimDeSemana(d));
-    const fdsTotal = fdsDias.reduce((s,d) => s+(volumeDia[d]||0),0);
-    const fdsPct = total > 0 ? ((fdsTotal / total) * 100).toFixed(1) : 0;
-
-    const fdsEl = document.getElementById('fds-totais-novo');
-    if(fdsEl) fdsEl.innerHTML = fdsDias.length===0 ? `<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum fim de semana</div>` : `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;"><span style="font-size:28px;font-weight:700;color:#F01A1A;line-height:1;">${fdsTotal}</span><span style="font-size:11px;color:var(--muted);">atends.</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:12px;background:rgba(240,26,26,0.15);color:#F01A1A;border:1px solid rgba(240,26,26,0.3);border-radius:20px;padding:3px 12px;font-weight:700;">${fdsPct}% do total</span></div>`;
-
-    const scEl = document.getElementById('sc-totais-novo');
-    if(scEl) scEl.innerHTML = semContatoCount===0 ? `<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum sem contato</div>` : `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;"><span style="font-size:28px;font-weight:700;color:#F5C519;line-height:1;">${semContatoCount}</span><span style="font-size:11px;color:var(--muted);">atends.</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:12px;background:rgba(245,197,25,0.12);color:#F5C519;border:1px solid rgba(245,197,25,0.25);border-radius:20px;padding:3px 12px;font-weight:700;">${txSC}% do total</span></div>`;
-
-    const ulPilot = document.getElementById('lista-pilot-novo');
-    if(ulPilot) {
-        ulPilot.innerHTML = pilotNoShow > 0 ? `<div class="pilot-row warn" style="margin-bottom:8px;"><span>🚨 Pilotos com No-Show</span><span class="count">${pilotNoShow}</span></div>` : '';
-        if(Object.keys(pilotStatusMap).length===0 && pilotNoShow===0) ulPilot.innerHTML += '<div class="empty">Nenhum pilot encontrado.</div>';
-        else Object.entries(pilotStatusMap).sort((a,b)=>b[1]-a[1]).forEach(([s,q]) => ulPilot.innerHTML+=`<div class="pilot-row"><span style="color:var(--text)">${s}</span><span class="count" style="color:var(--accent-green)">${q}</span></div>`);
-    }
-
-    const nsArr = [...prestadoresSet];
-    const nsEl = document.getElementById('resumo-no-show');
-    if(nsEl) nsEl.innerHTML = nsArr.length===0 ? '<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum reincidente</div>' : `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;"><span style="font-size:28px;font-weight:700;color:#F04040;line-height:1;">${nsArr.length}</span><span style="font-size:11px;color:var(--muted);">prestadores</span></div>`;
-
-    // ── LISTAGEM DE TRATATIVAS REAIS ──
-    const removePrefixo = n => n.replace(/^agendamento\s*[-–—]\s*/i, '').trim();
-    const tratsArr = Object.entries(tratativasMap).map(([nome, qtd]) => ({ nome: removePrefixo(nome), qtd, pct: ((qtd/totalTratativas)*100).toFixed(1) }))
-        .reduce((acc, t) => { const ex = acc.find(x=>x.nome===t.nome); if(ex){ ex.qtd+=t.qtd; ex.pct=((ex.qtd/totalTratativas)*100).toFixed(1); } else acc.push(t); return acc; }, []).sort((a,b)=>b.qtd-a.qtd);
+    const fdsDias  = diasOrds.filter(d => isFimDeSemana(d));
+    const fdsTotal = fdsDias.reduce((s, d) => s + (volumeDia[d] || 0), 0);
+    const fdsPct   = total > 0 ? ((fdsTotal / total) * 100).toFixed(1) : 0;
     
-    const ulTrat = document.getElementById('lista-tratativas');
-    const maxTrat = tratsArr[0]?.qtd || 1;
-    if(ulTrat) {
-        if(tratsArr.length===0) ulTrat.innerHTML = '<div class="empty">Sem dados de tratativa.</div>';
-        else ulTrat.innerHTML = tratsArr.map(t => `<div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:2px 0;"><span style="flex:3;min-width:0;color:var(--text);line-height:1.4;">${t.nome}</span><div style="flex:2;height:6px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden;"><div style="width:${(t.qtd/maxTrat*100).toFixed(1)}%;height:100%;background:var(--accent-blue);"></div></div><span style="flex-shrink:0;min-width:28px;text-align:right;color:var(--accent-cyan);font-weight:700;">${t.qtd}</span><span style="flex-shrink:0;min-width:44px;text-align:right;color:var(--muted);">(${t.pct}%)</span></div>`).join('');
+    // FDS Card
+    const fdsTotEl = document.getElementById('fds-totais-novo');
+    if (fdsDias.length === 0) {
+        fdsTotEl.innerHTML = `<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum fim de semana</div>`;
+    } else {
+        fdsTotEl.innerHTML = `
+            <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;">
+                <span style="font-size:28px;font-weight:700;color:#F01A1A;line-height:1;">${fdsTotal}</span>
+                <span style="font-size:11px;color:var(--muted);">atendimentos</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:12px;background:rgba(240,26,26,0.15);color:#F01A1A;border:1px solid rgba(240,26,26,0.3);border-radius:20px;padding:3px 12px;font-weight:700;">${fdsPct}% do total</span>
+            </div>
+            <div style="margin-top:8px;font-size:10px;color:var(--muted);">${fdsDias.length} dia${fdsDias.length>1?'s':''} de fim de semana</div>`;
     }
 
-    // ── LISTAGEM TOP PRESTADORES ──
+    // Sem Contato Card
+    const scTotEl = document.getElementById('sc-totais-novo');
+    const txSC = total > 0 ? ((semContatoCount / total) * 100).toFixed(1) : 0;
+    if (semContatoCount === 0) {
+        scTotEl.innerHTML = `<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum sem contato</div>`;
+    } else {
+        scTotEl.innerHTML = `
+            <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;">
+                <span style="font-size:28px;font-weight:700;color:#F5C519;line-height:1;">${semContatoCount}</span>
+                <span style="font-size:11px;color:var(--muted);">atendimentos</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:12px;background:rgba(245,197,25,0.12);color:#F5C519;border:1px solid rgba(245,197,25,0.25);border-radius:20px;padding:3px 12px;font-weight:700;">${txSC}% do total</span>
+            </div>`;
+    }
+
+    // Detalhes Pilot
+    const ulPilot = document.getElementById('lista-pilot-novo');
+    ulPilot.innerHTML = '';
+    if (pilotNoShow > 0) {
+        ulPilot.innerHTML += `<div class="pilot-row warn"><span>🚨 Pilotos com No-Show</span><span class="count">${pilotNoShow}</span></div>`;
+    }
+    if (Object.keys(pilotStatusMap).length === 0 && pilotNoShow === 0) {
+        ulPilot.innerHTML += '<div class="empty">Nenhum pilot encontrado.</div>';
+    } else {
+        Object.entries(pilotStatusMap).sort((a,b) => b[1]-a[1]).forEach(([s, q]) => {
+            ulPilot.innerHTML += `<div class="pilot-row"><span style="color:var(--text)">${s}</span><span class="count" style="color:var(--accent-green)">${q}</span></div>`;
+        });
+    }
+
+    // No Show Reincidente
+    const ulNoShow = document.getElementById('lista-no-show-novo');
+    const noShowArr = [...prestadoresSet];
+    if (noShowArr.length === 0) {
+        ulNoShow.innerHTML = '<div style="font-size:11px;color:var(--accent-cyan);display:flex;align-items:center;gap:5px;">✅ Nenhum reincidente</div>';
+    } else {
+        ulNoShow.innerHTML = noShowArr.map(p =>
+            `<div style="font-size:11px;padding:4px 8px;background:rgba(240,26,26,0.08);border-left:2px solid var(--accent-red);border-radius:3px;color:var(--text);">${p}</div>`
+        ).join('');
+    }
+
+    // ── LISTA TRATATIVAS ──
+    const removePrefixo = nome => nome.replace(/^agendamento\s*[-–—]\s*/i, '').trim();
+    const tratsArr = Object.entries(tratativasMap)
+        .map(([nome, qtd]) => {
+            const nomeClean = removePrefixo(nome);
+            return { nome: nomeClean, nomeOrig: nome, qtd, pct: ((qtd/totalTratativas)*100).toFixed(1) };
+        })
+        .reduce((acc, t) => {
+            const ex = acc.find(x => x.nome === t.nome);
+            if (ex) { ex.qtd += t.qtd; ex.pct = ((ex.qtd/totalTratativas)*100).toFixed(1); }
+            else acc.push(t);
+            return acc;
+        }, [])
+        .sort((a,b) => b.qtd - a.qtd);
+
+    const maxTrat = tratsArr[0]?.qtd || 1;
+    const ulTrat = document.getElementById('lista-tratativas');
+    if (tratsArr.length === 0) {
+        ulTrat.innerHTML = '<div class="empty">Sem dados de tratativa.</div>';
+    } else {
+        ulTrat.innerHTML = tratsArr.map(t => `
+            <div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:2px 0;">
+                <span style="flex:3;min-width:0;color:var(--text);line-height:1.4;">${t.nome}</span>
+                <div style="flex:2;min-width:60px;height:6px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden;">
+                    <div style="width:${(t.qtd/maxTrat*100).toFixed(1)}%;height:100%;border-radius:3px;background:var(--accent-blue);"></div>
+                </div>
+                <span style="flex-shrink:0;min-width:28px;text-align:right;color:var(--accent-cyan);font-weight:700;">${t.qtd}</span>
+                <span style="flex-shrink:0;min-width:44px;text-align:right;color:var(--muted);">(${t.pct}%)</span>
+            </div>
+        `).join('');
+    }
+
+    // ── TOP 10 PRESTADORES ──
     const topPrest = Object.entries(prestadoresMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
     const maxPrest = topPrest[0]?.[1] || 1;
     const ulPrest = document.getElementById('lista-prestadores');
-    if(ulPrest) {
-        if(topPrest.length===0) ulPrest.innerHTML = '<div class="empty">Sem dados de prestador.</div>';
-        else ulPrest.innerHTML = topPrest.map(([nome, qtd]) => {
+    if (topPrest.length === 0) {
+        ulPrest.innerHTML = '<div class="empty">Sem dados de prestador.</div>';
+    } else {
+        ulPrest.innerHTML = topPrest.map(([nome, qtd]) => {
             const sc = prestadoresSemContato[nome] || 0;
-            const scBadge = sc > 0 ? `<span style="margin-left:6px;font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">${sc} s/cont (${Math.round((sc/qtd)*100)}%)</span>` : '';
-            return `<div class="tratativa-item"><span class="tratativa-name" style="width:140px;">${nome}</span><div class="tratativa-bar-wrap"><div class="tratativa-bar" style="width:${(qtd/maxPrest*100).toFixed(1)}%;background:var(--accent-purple)"></div></div><span class="tratativa-count" style="color:var(--accent-purple);width:32px;">${qtd}</span>${scBadge}</div>`;
+            const scPct = qtd > 0 ? ((sc / qtd) * 100).toFixed(0) : 0;
+            const scBadge = sc > 0
+                ? `<span style="margin-left:6px;font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">${sc} s/cont (${scPct}%)</span>`
+                : '';
+            return `<div class="tratativa-item" style="align-items:center;">
+                <span class="tratativa-name" title="${nome}" style="width:140px;">${nome}</span>
+                <div class="tratativa-bar-wrap">
+                    <div class="tratativa-bar" style="width:${(qtd/maxPrest*100).toFixed(1)}%;background:var(--accent-purple)"></div>
+                </div>
+                <span class="tratativa-count" style="color:var(--accent-purple);width:32px;">${qtd}</span>
+                ${scBadge}
+            </div>`;
         }).join('');
     }
 
-    // Tags de reincidentes do rodapé
-    const blocoNoShow = document.getElementById('bloco-noshow-nomes');
-    const listaTags = document.getElementById('lista-tags-noshow');
-    if(blocoNoShow && listaTags) {
-        if(nsArr.length===0) blocoNoShow.style.display = 'none';
-        else { blocoNoShow.style.display = 'block'; listaTags.innerHTML = nsArr.map(p => `<span class="noshow-tag">${p}</span>`).join(''); }
-    }
-
-    // ── CONFIGURAÇÕES DOS GRÁFICOS CHANNELS ──
-    const labels = diasOrds.map(d => fmtData(d));
+    // ── PREPARAÇÃO DE DADOS PARA GRÁFICOS DE DIA ──
+    const labels   = diasOrds.map(d => fmtData(d));
     const dataLine = diasOrds.map(d => volumeDia[d]);
     const isFdsArr = diasOrds.map(d => isFimDeSemana(d));
-    const scLineData = diasOrds.map(d => semContatoPorDia[d] || 0);
+    
+    // Configurações Globais do Chart Bar Fino
+    volumeGlobalData = {
+        labels: labels,
+        dataLine: dataLine,
+        barColors: isFdsArr.map(fds => fds ? '#F01A1A' : '#7F8DDB')
+    };
 
-    // Linha (Evolução)
-    const chartEvol = document.getElementById('graficoEvolucao');
-    if (chartEvol) {
-        const ctxLine = chartEvol.getContext('2d');
-        if(chartLine) chartLine.destroy();
-        chartLine = new Chart(ctxLine, {
-            type: 'line',
-            data: { labels, datasets: [{ data: dataLine, borderColor: '#0FFDC9', backgroundColor: 'rgba(15,253,201,0.05)', borderWidth: 2, pointBackgroundColor: isFdsArr.map(f=>f?'#F01A1A':'#07074E'), pointBorderColor: isFdsArr.map(f=>f?'#F01A1A':'#0FFDC9'), pointBorderWidth: isFdsArr.map(f=>f?2:1.5), pointRadius: isFdsArr.map(f=>f?7:6), fill: true, tension: 0.35 }] },
-            options: {
-                responsive: true, maintainAspectRatio: false, animation: false, layout: { padding: { top: 28 } },
-                plugins: { legend: { display: false }, tooltip: { callbacks: { title: i => isFdsArr[i[0].dataIndex] ? labels[i[0].dataIndex]+' ⛔ FDS' : labels[i[0].dataIndex] } }, datalabels: { align: 'top', anchor: 'end', color: isFdsArr.map(f=>f?'#F01A1A':'#0FFDC9'), font: { size: 11, weight: 'bold' }, formatter: v=>v } },
-                scales: { x: { ticks:{color:'#7A7FA8',font:{size:11}}, grid:{color:'rgba(255,255,255,0.04)'}, border:{color:'rgba(255,255,255,0.06)'} }, y: { ticks:{color:'#7A7FA8',font:{size:11}}, grid:{color:'rgba(255,255,255,0.04)'}, border:{color:'rgba(255,255,255,0.06)'}, beginAtZero:true } }
-            }
-        });
-    }
+    // ── GRÁFICO LINHA (Evolução) ──
+    const ptBg     = isFdsArr.map(fds => fds ? '#F01A1A' : '#07074E');
+    const ptBorder = isFdsArr.map(fds => fds ? '#F01A1A' : '#0FFDC9');
+    const ptRadius = isFdsArr.map(fds => fds ? 7 : 6);
+    const dlColor  = isFdsArr.map(fds => fds ? '#F01A1A' : '#0FFDC9');
 
-    const legenda = document.getElementById('grafico-legenda');
-    if (legenda) legenda.innerHTML = `<span style="font-size:11px;color:#9095c4;"><span style="width:10px;height:10px;border-radius:50%;background:#0FFDC9;display:inline-block;"></span> Dia útil</span>&nbsp;&nbsp;<span style="font-size:11px;color:#9095c4;"><span style="width:10px;height:10px;border-radius:50%;background:#F01A1A;display:inline-block;"></span> Fim de semana</span>`;
-
-    // Barras Fino
-    const chartVol = document.getElementById('graficoVolumeBar');
-    if (chartVol) {
-        const ctxBar = chartVol.getContext('2d');
-        if(chartBar) chartBar.destroy();
-        chartBar = new Chart(ctxBar, {
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        type: 'bar',
-                        data: dataLine,
-                        backgroundColor: isFdsArr.map(f => f ? '#F01A1A' : '#7F8DDB'),
-                        borderRadius: 4,
-                        barThickness: 10,
-                        datalabels: { color: '#FFF', anchor: 'end', align: 'bottom', offset: 4, font: { size: 10, weight: 'bold' }, formatter: v => v }
-                    },
-                    {
-                        type: 'line', 
-                        data: dataLine, 
-                        borderColor: 'transparent',
-                        pointRadius: 0,
-                        datalabels: {
-                            backgroundColor: 'rgba(245,197,25,0.12)', borderColor: 'rgba(245,197,25,0.3)', borderWidth: 1, borderRadius: 20, color: '#F5C519', font: { size: 9, weight: 'bold' }, padding: {top: 2, bottom: 2, left: 6, right: 6},
-                            align: 'top', anchor: 'end', offset: 6,
-                            formatter: (v, ctx) => {
-                                if (isFdsArr[ctx.dataIndex]) return null; 
-                                const sc = scLineData[ctx.dataIndex];
-                                if (!sc || sc === 0) return null;
-                                return `${sc} s/c (${Math.round((sc/v)*100)}%)`;
-                            }
+    const ctxLine  = document.getElementById('graficoEvolucao').getContext('2d');
+    if (chartLine) chartLine.destroy();
+    Chart.register(ChartDataLabels);
+    chartLine = new Chart(ctxLine, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Chamados',
+                data: dataLine,
+                borderColor: '#0FFDC9',
+                backgroundColor: 'rgba(15,253,201,0.05)',
+                borderWidth: 2,
+                pointBackgroundColor: ptBg,
+                pointBorderColor: ptBorder,
+                pointBorderWidth: isFdsArr.map(fds => fds ? 2 : 1.5),
+                pointRadius: ptRadius,
+                pointHoverRadius: 8,
+                fill: true,
+                tension: 0.35
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false,
+            layout: { padding: { top: 28 } },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        title: (items) => {
+                            const idx = items[0].dataIndex;
+                            return isFdsArr[idx] ? labels[idx] + '  ⛔ Fim de semana' : labels[idx];
                         }
                     }
-                ]
+                },
+                datalabels: {
+                    align: 'top', anchor: 'end', color: dlColor,
+                    font: { size: 11, weight: 'bold' },
+                    formatter: v => v
+                }
             },
-            options: {
-                responsive: true, maintainAspectRatio: false, animation: false, layout: { padding: { top: 35 } },
-                plugins: { legend: { display: false }, tooltip: { enabled: false } },
-                scales: { x: { ticks:{color:'#7A7FA8',font:{size:10}}, grid:{display:false}, border:{color:'rgba(255,255,255,0.06)'} }, y: { ticks:{color:'#7A7FA8',font:{size:10}}, grid:{color:'rgba(255,255,255,0.04)'}, border:{color:'rgba(255,255,255,0.06)'}, beginAtZero:true } }
+            scales: {
+                x: { ticks: { color: '#7A7FA8', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.04)' }, border: { color: 'rgba(255,255,255,0.06)' } },
+                y: { ticks: { color: '#7A7FA8', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.04)' }, border: { color: 'rgba(255,255,255,0.06)' }, beginAtZero: true }
             }
-        });
-    }
+        }
+    });
 
-    // Texto do Slack
-    let txt = `*📊 PAINEL DE PERFORMANCE — COBLI (${textoData})*\n\n*Resumo Geral:*\n• Total Analisado: ${total}\n• Total Pilot: ${pilotCount} (${txPilot}%)\n• Concluídos: ${concluidos} (${txConclusao}%)\n• Impedidos: ${impedidos} (${txImpedidos}%)\n• Antecipados: ${antecipados} (${txAntecipado}%)\n\n*📊 Taxas:*\n• Taxa de Conclusão: ${txConclusao}%\n• No-Show entre Pilots: ${txNoShow}%\n\n*🚀 Detalhes Pilot:*\n`;
-    if(pilotNoShow>0) txt += `• *🚨 PILOTOS COM NO-SHOW: ${pilotNoShow}*\n`;
+    const legEl = document.getElementById('grafico-legenda');
+    if (legEl) legEl.innerHTML = `
+        <span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;color:#9095c4;">
+            <span style="width:10px;height:10px;border-radius:50%;background:#0FFDC9;display:inline-block;"></span> Dia útil
+        </span>
+        <span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;color:#9095c4;">
+            <span style="width:10px;height:10px;border-radius:50%;background:#F01A1A;display:inline-block;"></span> Fim de semana
+        </span>`;
+
+    // Renderiza gráfico de barras com filtro default (all)
+    renderChartVolume();
+
+    // ── SLACK TEXT ──
+    let txt = `*📊 PAINEL DE PERFORMANCE — COBLI (${textoData})*\n\n`;
+    txt += `*Resumo Geral:*\n• Total Analisado: ${total}\n• Total Pilot: ${pilotCount} (${txPilot}%)\n• Concluídos: ${concluidos} (${txConclusao}%)\n• Impedidos: ${impedidos} (${txImpedidos}%)\n• Antecipados: ${antecipados} (${txAntecipado}%)\n\n`;
+    txt += `*📊 Taxas:*\n• Taxa de Conclusão: ${txConclusao}%\n• No-Show entre Pilots: ${txNoShow}%\n\n`;
+    txt += `*🚀 Detalhes Pilot:*\n`;
+    if (pilotNoShow > 0) txt += `• *🚨 PILOTOS COM NO-SHOW: ${pilotNoShow}*\n`;
     Object.entries(pilotStatusMap).sort((a,b)=>b[1]-a[1]).forEach(([s,q]) => txt += `• ${s}: ${q}\n`);
-    if(semContatoCount>0) txt += `\n*⚡ Sem Contato:*\n• Total sem contato: ${semContatoCount} (${txSC}% do total)\n`;
+    if (semContatoCount > 0) {
+        txt += `\n*⚡ Sem Contato:*\n• Total sem contato: ${semContatoCount} (${txSC}% do total)\n`;
+    }
     txt += `\n*📋 Últimas Tratativas:*\n`;
     tratsArr.forEach(t => txt += `• ${t.nome}: ${t.qtd} (${t.pct}%)\n`);
-    if(nsArr.length>0){ txt+=`\n*⚠️ No-Show Reincidente (90d):*\n`; nsArr.forEach(p=>txt+=`• ${p}\n`); }
-    
-    const slackArea = document.getElementById('texto-slack-preview');
-    if (slackArea) slackArea.value = txt;
+    if (noShowArr.length > 0) {
+        txt += `\n*⚠️ No-Show Reincidente (90d):*\n`;
+        noShowArr.forEach(p => txt += `• ${p}\n`);
+    } else {
+        txt += `\n*✅ Nenhum reincidente de No-Show identificado.*\n`;
+    }
+    document.getElementById('texto-slack-preview').value = txt;
 }
 
-function toggleSlack() { const s = document.getElementById('slack-section'); if(s) s.style.display = s.style.display === 'none' ? 'block' : 'none'; }
-function recarregar() { location.reload(); }
-function baixarImagem() {
-    html2canvas(document.getElementById('painel-cobli'), { backgroundColor: '#07074E', scale: 2, useCORS: true }).then(canvas => {
-        const link = document.createElement('a'); link.download = `Cobli_Painel_${Date.now()}.png`; link.href = canvas.toDataURL('image/png'); link.click();
+// ── RENDERIZAR GRÁFICO DE BARRAS DE VOLUME (COM FILTRO) ─────────
+function renderChartVolume() {
+    if (!volumeGlobalData.labels) return;
+    
+    const range = document.getElementById('filtro-volume-dia').value;
+    let len = volumeGlobalData.labels.length;
+    let sliceStart = 0;
+
+    if (range !== 'all') {
+        const n = parseInt(range, 10);
+        sliceStart = len > n ? len - n : 0;
+    }
+
+    const lbls = volumeGlobalData.labels.slice(sliceStart);
+    const vals = volumeGlobalData.dataLine.slice(sliceStart);
+    const bg   = volumeGlobalData.barColors.slice(sliceStart);
+
+    const ctxBar = document.getElementById('graficoVolumeBar').getContext('2d');
+    if (chartBar) chartBar.destroy();
+
+    chartBar = new Chart(ctxBar, {
+        type: 'bar',
+        data: {
+            labels: lbls,
+            datasets: [{
+                data: vals,
+                backgroundColor: bg,
+                borderRadius: 4,
+                barThickness: 10 // Barra fininha
+            }]
+        },
+        options: {
+            responsive: true, 
+            maintainAspectRatio: false,
+            animation: false,
+            layout: { padding: { top: 20 } },
+            plugins: {
+                legend: { display: false },
+                datalabels: {
+                    color: '#FFF',
+                    anchor: 'end',
+                    align: 'top',
+                    font: { size: 10, weight: 'bold' },
+                    formatter: v => v
+                }
+            },
+            scales: {
+                x: { ticks: { color: '#7A7FA8', font: {size: 10} }, grid: {display: false}, border: {color:'rgba(255,255,255,0.06)'} },
+                y: { ticks: { color: '#7A7FA8', font: {size: 10} }, grid: {color: 'rgba(255,255,255,0.04)'}, border: {color:'rgba(255,255,255,0.06)'}, beginAtZero: true}
+            }
+        }
     });
 }
+
+// ── FUNÇÕES DE CONTROLE ─────────────────────────────────────────
+function toggleSlack() {
+    const s = document.getElementById('slack-section');
+    s.style.display = s.style.display === 'none' ? 'block' : 'none';
+}
+
+function recarregar() {
+    location.reload();
+}
+
+function baixarImagem() {
+    const painel = document.getElementById('painel-cobli');
+    html2canvas(painel, { backgroundColor: '#07074E', scale: 2, useCORS: true }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `Cobli_Painel_${Date.now()}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    });
+}
+
 function enviarParaSlack() {
     const url = document.getElementById('slackWebhook').value.trim();
-    if (!url) { alert('⚠️ Insira a URL do Webhook do Slack.'); return; }
-    fetch(url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: JSON.stringify({ text: document.getElementById('texto-slack-preview').value }) })
-    .then(() => alert('✅ Notificação disparada!')).catch(e => alert('❌ Erro: ' + e));
+    if (!url) { alert('⚠️ Insira a URL do Webhook do Slack na tela de upload.'); return; }
+    const texto = document.getElementById('texto-slack-preview').value;
+    fetch(url, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: JSON.stringify({ text: texto })
+    }).then(() => alert('✅ Notificação disparada! Verifique seu canal.')).catch(e => alert('❌ Erro: ' + e));
 }
 </script>
 </body>
