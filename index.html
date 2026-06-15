@@ -275,6 +275,7 @@ function val(linha, pedaco) {
     return k ? (linha[k] || '').toString().trim() : '';
 }
 
+// Converte datas para ISO formato yyyy-mm-dd
 function toISO(s) {
     if (!s) return '';
     if (/^\d{2}[/\-]\d{2}[/\-]\d{4}/.test(s)) {
@@ -292,6 +293,7 @@ function isFimDeSemana(isoStr) {
     return dow === 0 || dow === 6;
 }
 
+// ── FILTRO GLOBAL E RENDERIZAÇÃO ──
 function aplicarFiltro(periodo, btnElement) {
     if (btnElement) {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -340,25 +342,25 @@ function renderPainel(dados) {
         const tratVazia    = !tratativaRaw || ['-','nan','null',''].includes(tratativaRaw.toLowerCase());
         const hasNoShow    = /no[\s-]?show/i.test(tratativaRaw);
 
-        // 🛑 FILTRO CANCELADOS EXATOS
+        // 🛑 REGRA 1: IGNORAR ABSOLUTAMENTE "AGENDAMENTO - CANCELADO"
         if (alocLower.includes('cancelad') && tratVazia) return;
         if (tratUpper.includes('AGENDAMENTO - CANCELADO')) return; 
 
         const dataISO = toISO(dataStr);
         const fds = isFimDeSemana(dataISO);
 
-        // Mapeamento das condições principais
+        // Identifica as condições
         const isAntecipado = alocLower.includes('antecipa') || tratUpper.includes('AGENDAMENTO - ANTECIPADO');
         let isConcluido = alocLower.includes('conclu');
         let isImpedido = /imped/i.test(alocacao.normalize('NFD').replace(/[\u0300-\u036f]/g,''));
 
-        // Regra específica: Antecipado entra como Concluído
+        // Regra específica: Antecipado é forçado como Concluído
         if (isAntecipado) {
             antecipados++;
             isConcluido = true;
         }
 
-        // Restringe o universo estritamente para o fechamento de 100% (Realizados ou No-shows)
+        // Universo operacional estrito (Para a conta fechar em 100%)
         if (isConcluido || isImpedido || hasNoShow) {
             if (dataISO) { datasSet.add(dataISO); volumeDia[dataISO] = (volumeDia[dataISO] || 0) + 1; }
 
@@ -369,10 +371,12 @@ function renderPainel(dados) {
             let tratLimpa = tratativaRaw.replace(/^\d{2}\/\d{2}[^—\-]*(—|-)\s*/, '').trim();
             const isSemContato = tratUpper.includes('SEM CONTATO');
 
+            // Ignora a tratativa em finais de semana
             if (fds) {
                 tratLimpa = ''; 
             }
 
+            // Mapeia Tratativas válidas
             if (tratLimpa && !tratVazia && tratLimpa.toLowerCase() !== 'nan' && tratLimpa.toLowerCase() !== 'null') {
                 tratativasMap[tratLimpa] = (tratativasMap[tratLimpa] || 0) + 1;
                 totalTratativas++;
@@ -396,7 +400,7 @@ function renderPainel(dados) {
         }
     });
 
-    // 📐 MATEMÁTICA PERFEITA: Universo fechado sem vazamentos
+    // 📐 UNIVERSO FECHADO MATEMÁTICO (Soma total exata)
     total = concluidos + impedidos + noShowTotal;
     const realizados = concluidos + impedidos;
 
@@ -405,6 +409,7 @@ function renderPainel(dados) {
     const txNoShow     = pilotCount > 0 ? ((pilotNoShow / pilotCount) * 100).toFixed(1) : 0;
     const txPilot      = total > 0 ? ((pilotCount / total) * 100).toFixed(1) : 0;
     const txAntecipado = total > 0 ? ((antecipados / total) * 100).toFixed(1) : 0;
+    const txSC         = total > 0 ? ((semContatoCount / total) * 100).toFixed(1) : 0;
 
     const datas = [...datasSet].sort();
     const fmtData = d => d.match(/^\d{4}-\d{2}-\d{2}/) ? d.slice(5).split('-').reverse().join('/') : d;
@@ -412,16 +417,14 @@ function renderPainel(dados) {
     if (datas.length === 1 && datas[0]) textoData = fmtData(datas[0]);
     else if (datas.length > 1) textoData = `${fmtData(datas[0])} – ${fmtData(datas[datas.length-1])}`;
 
-    document.getElementById('upload-screen').style.display = 'none';
-    document.getElementById('dashboard-screen').style.display = 'block';
-    
+    // Atualização do Cabeçalho
     document.getElementById('topbar-date').textContent = textoData;
     document.getElementById('topbar-total').textContent = `${total} chamados`;
     document.getElementById('painel-titulo-data').textContent = `Cobli — ${textoData}`;
     const agora = new Date();
     document.getElementById('painel-gerado-em').textContent = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
 
-    // ── KPIs ──
+    // Injeção de KPIs Principais
     const pilotConc = Object.entries(pilotStatusMap).filter(([s])=>/conclu/i.test(s)).reduce((a,[,q])=>a+q,0);
     const pilotImp  = Object.entries(pilotStatusMap).filter(([s])=>/imped/i.test(s.normalize('NFD').replace(/[\u0300-\u036f]/g,''))).reduce((a,[,q])=>a+q,0);
     const pilotExtra = `<div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;gap:4px;">
@@ -442,7 +445,8 @@ function renderPainel(dados) {
         { label: 'Antecipados', value: antecipados, sub: txAntecipado+'% do total', accent: 'var(--accent-purple)', icon: '⏳', extra: '' }
     ].map(k => `<div class="kpi-card" style="--kpi-accent:${k.accent}"><div class="kpi-label">${k.label}</div><div class="kpi-value">${k.value}</div><div class="kpi-sub">${k.sub}</div>${k.extra}<div class="kpi-icon">${k.icon}</div></div>`).join('');
 
-    // ── 4 COLUNAS ──
+    // Blocos Secundários (FDS, SC, Pilot, Reincidente)
+    const diasOrds = Object.keys(volumeDia).sort();
     const fdsDias = diasOrds.filter(d => isFimDeSemana(d));
     const fdsTotal = fdsDias.reduce((s,d) => s+(volumeDia[d]||0),0);
     const fdsPct = total > 0 ? ((fdsTotal / total) * 100).toFixed(1) : 0;
@@ -451,7 +455,7 @@ function renderPainel(dados) {
     if(fdsEl) fdsEl.innerHTML = fdsDias.length===0 ? `<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum fim de semana</div>` : `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;"><span style="font-size:28px;font-weight:700;color:#F01A1A;line-height:1;">${fdsTotal}</span><span style="font-size:11px;color:var(--muted);">atends.</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:12px;background:rgba(240,26,26,0.15);color:#F01A1A;border:1px solid rgba(240,26,26,0.3);border-radius:20px;padding:3px 12px;font-weight:700;">${fdsPct}% do total</span></div>`;
 
     const scEl = document.getElementById('sc-totais-novo');
-    if(scEl) scEl.innerHTML = semContatoCount===0 ? `<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum sem contato</div>` : `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;"><span style="font-size:28px;font-weight:700;color:#F5C519;line-height:1;">${semContatoCount}</span><span style="font-size:11px;color:var(--muted);">atends.</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:12px;background:rgba(245,197,25,0.12);color:#F5C519;border:1px solid rgba(245,197,25,0.25);border-radius:20px;padding:3px 12px;font-weight:700;">${total>0?((semContatoCount/total)*100).toFixed(1):0}% do total</span></div>`;
+    if(scEl) scEl.innerHTML = semContatoCount===0 ? `<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum sem contato</div>` : `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;"><span style="font-size:28px;font-weight:700;color:#F5C519;line-height:1;">${semContatoCount}</span><span style="font-size:11px;color:var(--muted);">atends.</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:12px;background:rgba(245,197,25,0.12);color:#F5C519;border:1px solid rgba(245,197,25,0.25);border-radius:20px;padding:3px 12px;font-weight:700;">${txSC}% do total</span></div>`;
 
     const ulPilot = document.getElementById('lista-pilot-novo');
     if(ulPilot) {
@@ -464,14 +468,21 @@ function renderPainel(dados) {
     const nsEl = document.getElementById('resumo-no-show');
     if(nsEl) nsEl.innerHTML = nsArr.length===0 ? '<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum reincidente</div>' : `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;"><span style="font-size:28px;font-weight:700;color:#F04040;line-height:1;">${nsArr.length}</span><span style="font-size:11px;color:var(--muted);">prestadores</span></div>`;
 
-    // ── TRATATIVAS ──
+    // ── LISTAGEM DE TRATATIVAS REAIS ──
+    const removePrefixo = n => n.replace(/^agendamento\s*[-–—]\s*/i, '').trim();
+    const tratsArr = Object.entries(tratativasMap).map(([nome, qtd]) => ({ nome: removePrefixo(nome), qtd, pct: ((qtd/totalTratativas)*100).toFixed(1) }))
+        .reduce((acc, t) => { const ex = acc.find(x=>x.nome===t.nome); if(ex){ ex.qtd+=t.qtd; ex.pct=((ex.qtd/totalTratativas)*100).toFixed(1); } else acc.push(t); return acc; }, []).sort((a,b)=>b.qtd-a.qtd);
+    
     const ulTrat = document.getElementById('lista-tratativas');
+    const maxTrat = tratsArr[0]?.qtd || 1;
     if(ulTrat) {
         if(tratsArr.length===0) ulTrat.innerHTML = '<div class="empty">Sem dados de tratativa.</div>';
         else ulTrat.innerHTML = tratsArr.map(t => `<div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:2px 0;"><span style="flex:3;min-width:0;color:var(--text);line-height:1.4;">${t.nome}</span><div style="flex:2;height:6px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden;"><div style="width:${(t.qtd/maxTrat*100).toFixed(1)}%;height:100%;background:var(--accent-blue);"></div></div><span style="flex-shrink:0;min-width:28px;text-align:right;color:var(--accent-cyan);font-weight:700;">${t.qtd}</span><span style="flex-shrink:0;min-width:44px;text-align:right;color:var(--muted);">(${t.pct}%)</span></div>`).join('');
     }
 
-    // ── PRESTADORES ──
+    // ── LISTAGEM TOP PRESTADORES ──
+    const topPrest = Object.entries(prestadoresMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    const maxPrest = topPrest[0]?.[1] || 1;
     const ulPrest = document.getElementById('lista-prestadores');
     if(ulPrest) {
         if(topPrest.length===0) ulPrest.innerHTML = '<div class="empty">Sem dados de prestador.</div>';
@@ -482,7 +493,7 @@ function renderPainel(dados) {
         }).join('');
     }
 
-    // ── TAGS RODAPÉ ──
+    // Tags de reincidentes do rodapé
     const blocoNoShow = document.getElementById('bloco-noshow-nomes');
     const listaTags = document.getElementById('lista-tags-noshow');
     if(blocoNoShow && listaTags) {
@@ -490,8 +501,13 @@ function renderPainel(dados) {
         else { blocoNoShow.style.display = 'block'; listaTags.innerHTML = nsArr.map(p => `<span class="noshow-tag">${p}</span>`).join(''); }
     }
 
-    // ── GRÁFICOS ──
-    Chart.register(ChartDataLabels);
+    // ── CONFIGURAÇÕES DOS GRÁFICOS CHANNELS ──
+    const labels = diasOrds.map(d => fmtData(d));
+    const dataLine = diasOrds.map(d => volumeDia[d]);
+    const isFdsArr = diasOrds.map(d => isFimDeSemana(d));
+    const scLineData = diasOrds.map(d => semContatoPorDia[d] || 0);
+
+    // Linha (Evolução)
     const chartEvol = document.getElementById('graficoEvolucao');
     if (chartEvol) {
         const ctxLine = chartEvol.getContext('2d');
@@ -507,6 +523,10 @@ function renderPainel(dados) {
         });
     }
 
+    const legenda = document.getElementById('grafico-legenda');
+    if (legenda) legenda.innerHTML = `<span style="font-size:11px;color:#9095c4;"><span style="width:10px;height:10px;border-radius:50%;background:#0FFDC9;display:inline-block;"></span> Dia útil</span>&nbsp;&nbsp;<span style="font-size:11px;color:#9095c4;"><span style="width:10px;height:10px;border-radius:50%;background:#F01A1A;display:inline-block;"></span> Fim de semana</span>`;
+
+    // Barras Fino
     const chartVol = document.getElementById('graficoVolumeBar');
     if (chartVol) {
         const ctxBar = chartVol.getContext('2d');
@@ -549,11 +569,11 @@ function renderPainel(dados) {
         });
     }
 
-    // ── SLACK TEXT ──
+    // Texto do Slack
     let txt = `*📊 PAINEL DE PERFORMANCE — COBLI (${textoData})*\n\n*Resumo Geral:*\n• Total Analisado: ${total}\n• Total Pilot: ${pilotCount} (${txPilot}%)\n• Concluídos: ${concluidos} (${txConclusao}%)\n• Impedidos: ${impedidos} (${txImpedidos}%)\n• Antecipados: ${antecipados} (${txAntecipado}%)\n\n*📊 Taxas:*\n• Taxa de Conclusão: ${txConclusao}%\n• No-Show entre Pilots: ${txNoShow}%\n\n*🚀 Detalhes Pilot:*\n`;
     if(pilotNoShow>0) txt += `• *🚨 PILOTOS COM NO-SHOW: ${pilotNoShow}*\n`;
     Object.entries(pilotStatusMap).sort((a,b)=>b[1]-a[1]).forEach(([s,q]) => txt += `• ${s}: ${q}\n`);
-    if(semContatoCount>0) txt += `\n*⚡ Sem Contato:*\n• Total sem contato: ${semContatoCount} (${total > 0 ? ((semContatoCount / total) * 100).toFixed(1) : 0}% do total)\n`;
+    if(semContatoCount>0) txt += `\n*⚡ Sem Contato:*\n• Total sem contato: ${semContatoCount} (${txSC}% do total)\n`;
     txt += `\n*📋 Últimas Tratativas:*\n`;
     tratsArr.forEach(t => txt += `• ${t.nome}: ${t.qtd} (${t.pct}%)\n`);
     if(nsArr.length>0){ txt+=`\n*⚠️ No-Show Reincidente (90d):*\n`; nsArr.forEach(p=>txt+=`• ${p}\n`); }
