@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de Performance — Cobli</title>
+    <title>Painel Torre de Controle — Cobli</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -36,7 +36,7 @@
         /* ── UPLOAD ── */
         #upload-screen { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; padding:40px 20px; gap:24px; }
         .upload-logo { font-size:13px; font-weight:700; letter-spacing:4px; color:var(--accent-cyan); text-transform:uppercase; }
-        .upload-title { font-size:28px; font-weight:700; color:var(--text); }
+        .upload-title { font-size:28px; font-weight:700; color:var(--text); text-align:center; }
         .upload-sub { font-size:14px; color:var(--muted); text-align:center; max-width:420px; }
         .upload-box { background:var(--card); border:2px dashed var(--border); border-radius:16px; padding:48px 64px; text-align:center; cursor:pointer; transition:border-color 0.2s,background 0.2s; max-width:460px; width:100%; }
         .upload-box:hover { border-color:var(--accent-cyan); background:rgba(15,253,201,0.05); }
@@ -101,7 +101,7 @@
         .scrollable-list::-webkit-scrollbar-thumb { background: var(--subtle); border-radius: 4px; }
         .scrollable-list::-webkit-scrollbar-thumb:hover { background: var(--muted); }
 
-        /* ── MODAL SLACK ── */
+        /* ── MODAIS ── */
         .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; justify-content:center; align-items:center; backdrop-filter:blur(3px); }
         .modal-content { background:var(--card); border:1px solid var(--border-strong); border-radius:12px; padding:24px 28px; width:100%; max-width:550px; box-shadow:0 10px 30px rgba(0,0,0,0.5); }
         .modal-title { font-size:18px; font-weight:700; color:var(--text); margin-bottom:20px; display:flex; align-items:center; gap:8px; }
@@ -111,14 +111,23 @@
         .modal-input-group input:focus { border-color:var(--accent-cyan); }
         .modal-input-group textarea { background:#111; border:1px solid var(--border); border-radius:8px; padding:12px 14px; color:#ccc; font-family:monospace; font-size:12px; resize:vertical; outline:none; height:180px; }
         .modal-actions { display:flex; justify-content:flex-end; gap:12px; margin-top:24px; }
+
+        /* Tabela Sem Conclusão */
+        .table-os { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
+        .table-os th { padding: 8px; border-bottom: 1px solid var(--border-strong); color: var(--muted); position: sticky; top: 0; background: var(--card); }
+        .table-os td { padding: 8px; border-bottom: 1px solid var(--border); color: var(--text); }
+        
+        /* Modal de Imagem */
+        #imagem-preview-container { min-height: 200px; display:flex; align-items:center; justify-content:center; background:#111; border:1px solid var(--border); border-radius:8px; margin-bottom: 16px; overflow:auto; max-height: 400px; }
+        #imagem-preview { display:none; max-width:100%; height:auto; object-fit: contain; }
     </style>
 </head>
 <body>
 
 <div id="upload-screen">
     <div class="upload-logo">Cobli</div>
-    <div class="upload-title">Painel de Performance</div>
-    <div class="upload-sub">Importe o arquivo CSV exportado do sistema para gerar o painel automaticamente.</div>
+    <div class="upload-title">Painel Torre de Controle</div>
+    <div class="upload-sub">Importe o arquivo CSV exportado do sistema para gerar o painel da Torre de Controle automaticamente.</div>
     <div class="upload-box" onclick="document.getElementById('csvFileInput').click()">
         <div class="icon">📂</div>
         <div style="font-size:15px;font-weight:600;color:var(--text);">Clique para importar o CSV</div>
@@ -144,7 +153,7 @@
         </div>
         <div class="top-bar-actions">
             <button class="btn btn-reload" onclick="recarregar()">↩ Novo CSV</button>
-            <button class="btn btn-outline" onclick="baixarImagem()">📸 Imagem</button>
+            <button class="btn btn-outline" onclick="abrirModalImagem()">📸 Imagem</button>
             <button class="btn btn-slack" onclick="abrirModalSlack()">💬 Enviar</button>
         </div>
     </div></div>
@@ -152,7 +161,7 @@
     <div id="painel-cobli">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;padding-bottom:16px;border-bottom:1px solid var(--border);">
             <div>
-                <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent-cyan);margin-bottom:4px;">Performance Report</div>
+                <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent-cyan);margin-bottom:4px;">Painel Torre de Controle</div>
                 <div style="font-size:18px;font-weight:700;color:var(--text);" id="painel-titulo-data">Cobli — Carregando...</div>
             </div>
             <div style="text-align:right;">
@@ -176,7 +185,7 @@
             </div>
             <div class="panel-block" style="padding:16px 20px;">
                 <div class="panel-block-title" style="color:var(--accent-red);margin-bottom:10px;"><span class="dot" style="color:var(--accent-red);background:var(--accent-red);"></span>No-Show</div>
-                <div id="lista-no-show-novo" class="scrollable-list" style="max-height:120px;overflow-y:auto;padding-right:5px;"></div>
+                <div id="lista-no-show-novo" class="scrollable-list" style="max-height:160px;overflow-y:auto;padding-right:5px;"></div>
             </div>
         </div>
 
@@ -189,7 +198,19 @@
             <div class="chart-wrap"><canvas id="graficoEvolucao"></canvas></div>
         </div>
 
-        <!-- Volume por Dia e Top 10 Prestadores -->
+        <!-- Prestadores e Antecipados -->
+        <div class="grid-2" style="margin-bottom:14px;">
+            <div class="panel-block">
+                <div class="panel-block-title" style="color:var(--accent-purple);"><span class="dot"></span>Top 10 Prestadores</div>
+                <div id="lista-prestadores" class="scrollable-list" style="max-height:240px;overflow-y:auto;padding-right:8px;"></div>
+            </div>
+            <div class="panel-block">
+                <div class="panel-block-title" style="color:var(--accent-green);"><span class="dot"></span>Top 10 Antecipados</div>
+                <div id="lista-antecipados" class="scrollable-list" style="max-height:240px;overflow-y:auto;padding-right:8px;"></div>
+            </div>
+        </div>
+
+        <!-- Volume por Dia e Fases de Tratativas -->
         <div class="grid-2" style="margin-bottom:14px;">
             <div class="panel-block">
                 <div class="panel-block-title" style="color:var(--accent-blue);">
@@ -202,15 +223,9 @@
                 <div id="lista-volume-dia" class="scrollable-list" style="max-height:240px;overflow-y:auto;padding-right:8px;"></div>
             </div>
             <div class="panel-block">
-                <div class="panel-block-title" style="color:var(--accent-purple);"><span class="dot"></span>Top 10 Prestadores</div>
-                <div id="lista-prestadores" class="scrollable-list" style="max-height:240px;overflow-y:auto;padding-right:8px;"></div>
+                <div class="panel-block-title" style="color:var(--accent-cyan);"><span class="dot"></span>Fases de Tratativas</div>
+                <div id="lista-tratativas" class="scrollable-list" style="max-height:240px;overflow-y:auto;padding-right:8px;"></div>
             </div>
-        </div>
-
-        <!-- Fases de Tratativas -->
-        <div class="panel-block" style="margin-bottom:14px;">
-            <div class="panel-block-title" style="color:var(--accent-cyan);"><span class="dot"></span>Fases de Tratativas</div>
-            <div id="lista-tratativas" class="scrollable-list" style="max-height:240px;overflow-y:auto;padding-right:8px;"></div>
         </div>
     </div>
 </div>
@@ -242,10 +257,57 @@
     </div>
 </div>
 
+<!-- Modal OSs Sem Conclusão -->
+<div id="semConclusaoModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-title" style="color: var(--accent-red);">🚨 OSs Sem Fase de Conclusão</div>
+        <p style="font-size: 12px; color: var(--muted); margin-bottom: 16px;">Lista de chamados que entraram na contagem geral, mas ficaram sem conclusão/status final mapeado.</p>
+        
+        <div class="scrollable-list" style="max-height: 350px; overflow-y: auto;">
+            <table class="table-os">
+                <thead>
+                    <tr>
+                        <th>OS / Chamado</th>
+                        <th>Prestador</th>
+                        <th>Data</th>
+                    </tr>
+                </thead>
+                <tbody id="lista-oss-sem-conclusao">
+                    <!-- Preenchido via JS -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="modal-actions">
+            <button class="btn btn-outline" onclick="fecharModalSemConclusao()">Fechar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Imagem -->
+<div id="imagemModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 800px;">
+        <div class="modal-title">📸 Imagem do Painel</div>
+        <p style="font-size: 12px; color: var(--muted); margin-bottom: 16px;">Você pode copiar a imagem diretamente para área de transferência e colar no Slack, ou baixar se preferir.</p>
+        
+        <div id="imagem-preview-container">
+            <span id="imagem-loading" style="color:var(--muted); font-size:12px;">Gerando painel... Aguarde.</span>
+            <img id="imagem-preview" />
+        </div>
+        
+        <div class="modal-actions">
+            <button class="btn btn-outline" onclick="fecharModalImagem()">Cancelar</button>
+            <button class="btn btn-outline" onclick="fazerDownloadImagem()">📥 Baixar Arquivo</button>
+            <button class="btn btn-slack" id="btn-copiar-img" onclick="copiarImagem()">📋 Copiar Imagem</button>
+        </div>
+    </div>
+</div>
+
 <script>
 let chartLine = null;
 let dadosGlobaisBase = [];
 let baseSlackMessage = "";
+let canvasGeradoGlobal = null;
 
 // ── DICIONÁRIO DE NOMES DE TRATATIVAS ──
 const dicionarioNomes = {
@@ -318,7 +380,6 @@ function aplicarFiltro(periodo, btnEl) {
 
 // ── RENDER ──
 function renderPainel(dados) {
-    // Definindo as regras de negócio / listas
     const setA = [
         'AGENDAMENTO - EM ANDAMENTO - SEM CONTATO',
         'AGENDAMENTO - NO-SHOW CLIENTE - SMARTOPS REAGENDAMENTO',
@@ -347,9 +408,14 @@ function renderPainel(dados) {
         'AGENDAMENTO - ANTECIPADO'
     ];
 
+    // Códigos explicitamente ignorados na hora de contabilizar os "Realizados"
+    const excluidosRealizados = [
+        'AGENDAMENTO - NO-SHOW CLIENTE - SMARTOPS REAGENDAMENTO',
+        'AGENDAMENTO - NO-SHOW TÉCNICO - SMARTOPS REAGENDAMENTO'
+    ];
+
     let checkInSet = (rawStr, list) => list.some(s => rawStr.includes(s));
 
-    // Variáveis de contagem
     let countLidos = 0;
     let totalGeral = 0, fasesSemConclusao = 0;
     let totalPiloto = 0, pilotoConcluido = 0, pilotoImpedido = 0, pilotoNoShow = 0;
@@ -362,9 +428,12 @@ function renderPainel(dados) {
     let semContatoPorDia = {};
     let prestadorRealizado = {};
     let prestadorSemContato = {};
+    let prestadorAntecipado = {};
     let tratativasCountMap = {};
     let noShowCountMap = {};
     let datasSet = new Set();
+    
+    let listaOSsSemConclusao = [];
 
     dados.forEach(linha => {
         const alocacaoRaw = val(linha, 'aloca');
@@ -374,8 +443,7 @@ function renderPainel(dados) {
         const prestador = val(linha, 'prestador');
         const dataStr = val(linha, 'data').split(' ')[0];
 
-        // Regra Global: Remover CANCELADO sem impacto nenhum
-        if (tratativaRaw.includes('AGENDAMENTO - CANCELADO')) return;
+        if (/AGENDAMENTO\s*[-–—]\s*CANCELADO/.test(tratativaRaw) || tratativaRaw.includes('CANCELADO')) return;
         
         countLidos++;
         const dataISO = toISO(dataStr);
@@ -386,21 +454,27 @@ function renderPainel(dados) {
         const isImpedido = alocacao.includes('IMPED');
         const isEmAndamento = alocacao.includes('ANDAMENTO');
 
-        // Check sets
         const isInSetA = checkInSet(tratativaRaw, setA);
         const isInSetB = checkInSet(tratativaRaw, setB);
         const isInSetC = checkInSet(tratativaRaw, setC);
         const isInSetD = checkInSet(tratativaRaw, setD);
+        const isExcluidoRealizado = checkInSet(tratativaRaw, excluidosRealizados);
 
-        // Regra 1: Total Geral
         const isSemConclusao = (isConcluido || isImpedido || isEmAndamento) && !isInSetA;
         const qualifiesRule1 = !fds && (isInSetA || isConcluido || isImpedido || isEmAndamento);
 
         if (qualifiesRule1) {
             totalGeral++;
-            if (isSemConclusao) fasesSemConclusao++;
+            if (isSemConclusao) {
+                fasesSemConclusao++;
+                let osId = linha['OS'] || linha['os'] || linha['Os'] || linha['ID'] || linha['id'] || val(linha, 'chamado') || val(linha, 'ticket');
+                listaOSsSemConclusao.push({
+                    os: osId || 'Sem ID',
+                    prestador: prestador || '-',
+                    data: fmtData(dataISO) || '-'
+                });
+            }
 
-            // Regra 2: Total Piloto
             if (classe.includes('PILOTO') || classe.includes('PILOT')) {
                 totalPiloto++;
                 if (isConcluido) pilotoConcluido++;
@@ -408,70 +482,78 @@ function renderPainel(dados) {
                 if (tratativaRaw.includes('NO-SHOW') || tratativaRaw.includes('NO SHOW')) pilotoNoShow++;
             }
 
-            // Regra 3: Total Realizados
-            if (isInSetB || isConcluido || isImpedido || isEmAndamento) {
+            // Regra 3 (Realizados) revisada: entra se está no SetB, OU se está concluído/impedido, MAS bloqueia os do excluidosRealizados
+            if ((isInSetB || isConcluido || isImpedido) && !isExcluidoRealizado) {
                 totalRealizado++;
                 if (dataISO) realizedByDay[dataISO] = (realizedByDay[dataISO] || 0) + 1;
                 if (prestador) prestadorRealizado[prestador] = (prestadorRealizado[prestador] || 0) + 1;
             }
 
-            // Para Badge de No-Show na Regra 3
             if (isInSetC) noShowRule3Count++;
 
-            // Regra 4: Impedido
             if (isImpedido) totalImpedido++;
 
-            // Fases de Tratativas (Rule 12 - usa Set A)
             if (isInSetA) {
                 const matchedA = setA.find(s => tratativaRaw.includes(s));
                 if (matchedA) tratativasCountMap[matchedA] = (tratativasCountMap[matchedA] || 0) + 1;
             }
         }
 
-        // Regra 5: Antecipados
         if (tratativaRaw.includes('AGENDAMENTO - ANTECIPADO')) {
             totalAntecipado++;
+            if (prestador) prestadorAntecipado[prestador] = (prestadorAntecipado[prestador] || 0) + 1;
         }
 
-        // Regra 6: Final de Semana
         if (fds && (isConcluido || isImpedido || isEmAndamento || tratativaRaw.includes('NO-SHOW') || tratativaRaw.includes('NO SHOW'))) {
             totalFDS++;
             if (dataISO) fdsByDay[dataISO] = (fdsByDay[dataISO] || 0) + 1;
         }
 
-        // Regra 7: Sem Contato
         if (isInSetD) {
             totalSemContato++;
             if (prestador) prestadorSemContato[prestador] = (prestadorSemContato[prestador] || 0) + 1;
             if (dataISO) semContatoPorDia[dataISO] = (semContatoPorDia[dataISO] || 0) + 1;
         }
 
-        // Regra 8: No Show (apenas os do set C)
         if (isInSetC) {
             const matchedC = setC.find(s => tratativaRaw.includes(s));
             if (matchedC) noShowCountMap[matchedC] = (noShowCountMap[matchedC] || 0) + 1;
         }
     });
 
-    // ── DATA TÍTULO ──
     const datasValidas = [...datasSet].sort();
     let textoData = 'Múltiplos Dias';
     if (datasValidas.length === 1 && datasValidas[0]) textoData = fmtData(datasValidas[0]);
     else if (datasValidas.length > 1) textoData = `${fmtData(datasValidas[0])} – ${fmtData(datasValidas[datasValidas.length-1])}`;
 
-    // ── UI INICIAL ──
     document.getElementById('upload-screen').style.display = 'none';
     document.getElementById('dashboard-screen').style.display = 'block';
     document.getElementById('topbar-date').textContent = textoData;
-    document.getElementById('topbar-total').textContent = `${countLidos} validados`;
+    document.getElementById('topbar-total').textContent = `${dados.length} linhas totais`;
     document.getElementById('painel-titulo-data').textContent = `Cobli — ${textoData}`;
     const agora = new Date();
     document.getElementById('painel-gerado-em').textContent = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
 
-    // ── KPIs (Regras 1 a 5) ──
+    const tbodySemConclusao = document.getElementById('lista-oss-sem-conclusao');
+    if (tbodySemConclusao) {
+        if (listaOSsSemConclusao.length === 0) {
+            tbodySemConclusao.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:16px; color:var(--muted);">Nenhum chamado pendente encontrado.</td></tr>';
+        } else {
+            tbodySemConclusao.innerHTML = listaOSsSemConclusao.map(c => `
+                <tr>
+                    <td style="font-weight: bold; color: #fff;">${c.os}</td>
+                    <td>${c.prestador}</td>
+                    <td>${c.data}</td>
+                </tr>
+            `).join('');
+        }
+    }
+
     const getPct = (v, base) => base > 0 ? ((v/base)*100).toFixed(1) : 0;
     
-    const kpi1Extra = `<div style="margin-top:8px;"><span style="font-size:10px;background:rgba(240,64,64,0.15);color:var(--accent-red);padding:3px 8px;border-radius:12px;border:1px solid rgba(240,64,64,0.3);font-weight:700;">🚨 ${fasesSemConclusao} Fases sem conclusão</span></div>`;
+    const kpi1Extra = `<div style="margin-top:8px;">
+        <span onclick="abrirModalSemConclusao()" style="cursor:pointer; font-size:10px;background:rgba(240,64,64,0.15);color:var(--accent-red);padding:3px 8px;border-radius:12px;border:1px solid rgba(240,64,64,0.3);font-weight:700; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">🚨 ${fasesSemConclusao} Fases sem conclusão (Ver lista)</span>
+    </div>`;
     
     const kpi2Extra = `
         <div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;gap:4px;">
@@ -492,8 +574,8 @@ function renderPainel(dados) {
     const kpi3Extra = `<div style="margin-top:8px;"><span style="font-size:10px;background:rgba(240,64,64,0.15);color:var(--accent-red);padding:3px 8px;border-radius:12px;border:1px solid rgba(240,64,64,0.3);font-weight:700;">⚠️ ${getPct(noShowRule3Count, totalRealizado)}% No-Show</span></div>`;
 
     document.getElementById('kpi-row-main').innerHTML = [
-        { label:'1. Total Geral',  value:totalGeral,      sub:'&nbsp;',                                accent:'var(--accent-cyan)',   icon:'📋', extra:kpi1Extra },
-        { label:'2. Total Pilot',  value:totalPiloto,     sub:getPct(totalPiloto, totalGeral)+'% do Geral',     accent:'var(--accent-blue)',   icon:'🚀', extra:kpi2Extra },
+        { label:'1. Total Geral (Validados)',  value:totalGeral,      sub:'&nbsp;',                                accent:'var(--accent-cyan)',   icon:'📋', extra:kpi1Extra },
+        { label:'2. Total Piloto', value:totalPiloto,     sub:getPct(totalPiloto, totalGeral)+'% do Geral',     accent:'var(--accent-blue)',   icon:'🚀', extra:kpi2Extra },
         { label:'3. Realizados',   value:totalRealizado,  sub:getPct(totalRealizado, totalGeral)+'% do Geral',  accent:'var(--accent-green)',  icon:'⚡', extra:kpi3Extra },
         { label:'4. Impedidos',    value:totalImpedido,   sub:getPct(totalImpedido, totalGeral)+'% do Geral',   accent:'var(--accent-red)',    icon:'🚫', extra:'' },
         { label:'5. Antecipados',  value:totalAntecipado, sub:getPct(totalAntecipado, totalRealizado)+'% do Realiz.', accent:'var(--accent-purple)', icon:'⏳', extra:'' },
@@ -505,7 +587,6 @@ function renderPainel(dados) {
         <div class="kpi-icon">${k.icon}</div>
     </div>`).join('');
 
-    // ── SECUNDÁRIOS (Regras 6, 7, 8) ──
     const fdsEl = document.getElementById('fds-totais-novo');
     if (fdsEl) fdsEl.innerHTML = totalFDS === 0
         ? `<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum fim de semana</div>`
@@ -524,7 +605,6 @@ function renderPainel(dados) {
            </div>
            <span style="font-size:12px;background:rgba(245,197,25,0.12);color:#F5C519;border:1px solid rgba(245,197,25,0.25);border-radius:20px;padding:3px 12px;font-weight:700;">${getPct(totalSemContato, totalGeral)}% do total analisado</span>`;
 
-    // Ajuste layout No-Show
     const nsArr = Object.entries(noShowCountMap).sort((a,b)=>b[1]-a[1]);
     const maxNS = nsArr[0]?.[1] || 1;
     const totalNSList = nsArr.reduce((a,b)=>a+b[1], 0);
@@ -532,16 +612,17 @@ function renderPainel(dados) {
     if (nsEl) nsEl.innerHTML = nsArr.length === 0
         ? '<div class="empty">Nenhum No-Show mapeado.</div>'
         : nsArr.map(([nome,qtd]) => `
-            <div style="display:flex;align-items:center;gap:8px;font-size:11px;padding:6px 0;border-bottom:1px solid var(--border);">
-                <span style="flex:0 0 135px; color:var(--text); line-height:1.2; word-wrap:break-word; padding-right:5px;">${formatarNome(nome)}</span>
-                <div style="flex:1; height:4px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden;">
-                    <div style="width:${(qtd/maxNS*100).toFixed(1)}%;height:100%;background:var(--accent-red);border-radius:2px;"></div>
+            <div style="display:flex; flex-direction:column; gap:3px; font-size:11px; padding:5px 0; border-bottom:1px solid var(--border);">
+                <div style="color:var(--text); line-height:1.2;">${formatarNome(nome)}</div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <div style="flex:1; height:4px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden;">
+                        <div style="width:${(qtd/maxNS*100).toFixed(1)}%;height:100%;background:var(--accent-red);border-radius:2px;"></div>
+                    </div>
+                    <span style="flex-shrink:0; width:24px; text-align:right; color:var(--accent-red); font-weight:700;">${qtd}</span>
+                    <span style="flex-shrink:0; width:40px; text-align:right; color:var(--muted);">(${getPct(qtd, totalNSList)}%)</span>
                 </div>
-                <span style="flex-shrink:0; width:20px; text-align:right; color:var(--accent-red); font-weight:700;">${qtd}</span>
-                <span style="flex-shrink:0; width:38px; text-align:right; color:var(--muted);">(${getPct(qtd, totalNSList)}%)</span>
             </div>`).join('');
 
-    // ── GRÁFICO EVOLUÇÃO (Regra 9) ──
     Chart.register(ChartDataLabels);
     const labels = datasValidas.map(d => fmtData(d));
     const isFdsArr = datasValidas.map(d => isFimDeSemana(d));
@@ -587,32 +668,6 @@ function renderPainel(dados) {
             <span style="width:10px;height:10px;border-radius:50%;background:#F04040;display:inline-block;"></span> Fim de semana (Regra 6)
         </span>`;
 
-    // ── VOLUME POR DIA EM BARRAS (Regra 10) ──
-    const diasOrdenadosDesc = [...datasValidas].reverse();
-    const ulVolume = document.getElementById('lista-volume-dia');
-    const maxVol = Math.max(...diasOrdenadosDesc.map(d => (isFimDeSemana(d) ? fdsByDay[d] : realizedByDay[d]) || 0));
-    if (ulVolume) {
-        ulVolume.innerHTML = diasOrdenadosDesc.map(d => {
-            const isFds = isFimDeSemana(d);
-            const qtd = (isFds ? fdsByDay[d] : realizedByDay[d]) || 0;
-            if (qtd === 0) return '';
-            const sc = semContatoPorDia[d] || 0;
-            const color = isFds ? 'var(--accent-red)' : 'var(--accent-blue)';
-            const scBadge = (!isFds && sc > 0) ? `<span style="font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">${sc} s/c (${Math.round((sc/qtd)*100)}%)</span>` : '';
-
-            // Ajuste largura fixa na Data para alinhar as barras
-            return `<div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);">
-                <span style="flex:0 0 85px; color:var(--text); white-space:nowrap;">${fmtData(d)} <span style="font-size:10px;color:var(--muted);">${isFds ? '(FDS)' : ''}</span></span>
-                <div style="flex:1; height:5px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden;">
-                    <div style="width:${(qtd/maxVol*100).toFixed(1)}%;height:100%;background:${color};border-radius:3px;"></div>
-                </div>
-                <span style="flex-shrink:0; width:26px; text-align:right; color:${color}; font-weight:700;">${qtd}</span>
-                <div style="flex-shrink:0; width:70px; text-align:right;">${scBadge}</div>
-            </div>`;
-        }).join('');
-    }
-
-    // ── TOP 10 PRESTADORES (Regra 11) ──
     const topPrest = Object.entries(prestadorRealizado).sort((a,b)=>b[1]-a[1]).slice(0,10);
     const maxPrest = topPrest[0]?.[1] || 1;
     const ulPrest  = document.getElementById('lista-prestadores');
@@ -633,7 +688,45 @@ function renderPainel(dados) {
             </div>`;
         }).join('');
 
-    // ── FASES DE TRATATIVAS (Regra 12) ──
+    const topAnt = Object.entries(prestadorAntecipado).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    const maxAnt = topAnt[0]?.[1] || 1;
+    const ulAnt = document.getElementById('lista-antecipados');
+    if (ulAnt) ulAnt.innerHTML = topAnt.length === 0
+        ? '<div class="empty">Nenhum dado de antecipado.</div>'
+        : topAnt.map(([nome,qtd]) => {
+            return `<div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);">
+                <span style="flex:2;color:var(--text);min-width:0;">${nome}</span>
+                <div style="flex:2;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
+                    <div style="width:${(qtd/maxAnt*100).toFixed(1)}%;height:100%;background:var(--accent-green);border-radius:3px;"></div>
+                </div>
+                <span style="flex-shrink:0;min-width:26px;text-align:right;color:var(--accent-green);font-weight:700;">${qtd}</span>
+                <span style="flex-shrink:0;min-width:42px;text-align:right;color:var(--muted);">(${getPct(qtd, prestadorRealizado[nome] || qtd)}%)</span>
+            </div>`;
+        }).join('');
+
+    const diasOrdenadosDesc = [...datasValidas].reverse();
+    const ulVolume = document.getElementById('lista-volume-dia');
+    const maxVol = Math.max(...diasOrdenadosDesc.map(d => (isFimDeSemana(d) ? fdsByDay[d] : realizedByDay[d]) || 0));
+    if (ulVolume) {
+        ulVolume.innerHTML = diasOrdenadosDesc.map(d => {
+            const isFds = isFimDeSemana(d);
+            const qtd = (isFds ? fdsByDay[d] : realizedByDay[d]) || 0;
+            if (qtd === 0) return '';
+            const sc = semContatoPorDia[d] || 0;
+            const color = isFds ? 'var(--accent-red)' : 'var(--accent-blue)';
+            const scBadge = (!isFds && sc > 0) ? `<span style="font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">${sc} s/c (${Math.round((sc/qtd)*100)}%)</span>` : '';
+
+            return `<div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);">
+                <span style="flex:0 0 85px; color:var(--text); white-space:nowrap;">${fmtData(d)} <span style="font-size:10px;color:var(--muted);">${isFds ? '(FDS)' : ''}</span></span>
+                <div style="flex:1; height:5px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden;">
+                    <div style="width:${(qtd/maxVol*100).toFixed(1)}%;height:100%;background:${color};border-radius:3px;"></div>
+                </div>
+                <span style="flex-shrink:0; width:26px; text-align:right; color:${color}; font-weight:700;">${qtd}</span>
+                <div style="flex-shrink:0; width:70px; text-align:right;">${scBadge}</div>
+            </div>`;
+        }).join('');
+    }
+
     const tratsArr = Object.entries(tratativasCountMap).sort((a,b)=>b[1]-a[1]);
     const maxTrat = tratsArr[0]?.[1] || 1;
     const ulTrat = document.getElementById('lista-tratativas');
@@ -649,41 +742,111 @@ function renderPainel(dados) {
                 <span style="flex-shrink:0;min-width:42px;text-align:right;color:var(--muted);">(${getPct(qtd, totalRealizado)}%)</span>
             </div>`).join('');
 
-    // ── SLACK BASE MESSAGE GENERATION ──
-    let txt = `*📊 PAINEL DE PERFORMANCE — COBLI (${textoData})*\n\n`;
-    txt += `*Resumo Geral:*\n• Total Geral: ${totalGeral}\n• Total Pilot: ${totalPiloto} (${getPct(totalPiloto, totalGeral)}%)\n• Realizados: ${totalRealizado} (${getPct(totalRealizado, totalGeral)}%)\n• Impedidos: ${totalImpedido} (${getPct(totalImpedido, totalGeral)}%)\n• Antecipados: ${totalAntecipado} (${getPct(totalAntecipado, totalRealizado)}%)\n\n`;
-    txt += `*🚀 Detalhes Pilot:*\n`;
-    if (pilotoNoShow > 0) txt += `• *🚨 NO-SHOW: ${pilotoNoShow} (${getPct(pilotoNoShow, totalPiloto)}%)*\n`;
-    txt += `• Concluídos: ${pilotoConcluido} (${getPct(pilotoConcluido, totalPiloto)}%)\n`;
-    txt += `• Impedidos: ${pilotoImpedido} (${getPct(pilotoImpedido, totalPiloto)}%)\n`;
+    let txt = `*📊 PAINEL TORRE DE CONTROLE — COBLI (${textoData})*\n\n`;
+    txt += `*Resumo Geral:*\n`;
+    txt += `> • Total Geral: ${totalGeral}\n`;
+    if (totalPiloto > 0) txt += `> • Total Piloto: ${totalPiloto} (${getPct(totalPiloto, totalGeral)}%)\n`;
+    txt += `> • Realizados: ${totalRealizado} (${getPct(totalRealizado, totalGeral)}%)\n`;
+    if (totalImpedido > 0) txt += `> • Impedidos: ${totalImpedido} (${getPct(totalImpedido, totalGeral)}%)\n`;
+    if (totalAntecipado > 0) txt += `> • Antecipados: ${totalAntecipado} (${getPct(totalAntecipado, totalRealizado)}%)\n`;
+    txt += `\n`;
+
+    if (totalPiloto > 0) {
+        txt += `*🚀 Detalhes Piloto:*\n`;
+        if (pilotoNoShow > 0) txt += `> • *🚨 NO-SHOW: ${pilotoNoShow} (${getPct(pilotoNoShow, totalPiloto)}%)*\n`;
+        if (pilotoConcluido > 0) txt += `> • Concluídos: ${pilotoConcluido} (${getPct(pilotoConcluido, totalPiloto)}%)\n`;
+        if (pilotoImpedido > 0) txt += `> • Impedidos: ${pilotoImpedido} (${getPct(pilotoImpedido, totalPiloto)}%)\n`;
+    }
+
     if (totalSemContato > 0) txt += `\n*⚡ Sem Contato:* ${totalSemContato} (${getPct(totalSemContato, totalGeral)}% do total)\n`;
     if (totalFDS > 0) txt += `*🔴 Fim de Semana:* ${totalFDS} atends. (${getPct(totalFDS, totalGeral)}% do total)\n`;
     
-    // Trocando Fases de Tratativas pelo bloco de No-Show
     if (nsArr.length > 0) {
         txt += `\n*🚨 No-Show:*\n`;
-        nsArr.forEach(([nome, qtd]) => txt += `• ${formatarNome(nome)}: ${qtd} (${getPct(qtd, totalNSList)}%)\n`);
+        nsArr.forEach(([nome, qtd]) => txt += `> • ${formatarNome(nome)}: ${qtd} (${getPct(qtd, totalNSList)}%)\n`);
     }
     
     baseSlackMessage = txt;
 }
 
-// ── FUNÇÕES SLACK & IMAGEM ──
 function recarregar() { location.reload(); }
 
-function baixarImagem() {
-    html2canvas(document.getElementById('painel-cobli'), { backgroundColor:'#0F0F2A', scale:2, useCORS:true }).then(canvas => {
-        const link=document.createElement('a'); link.download=`Cobli_Painel_${Date.now()}.png`; link.href=canvas.toDataURL('image/png'); link.click();
+function abrirModalImagem() {
+    document.getElementById('imagemModal').style.display = 'flex';
+    document.getElementById('imagem-loading').style.display = 'block';
+    document.getElementById('imagem-preview').style.display = 'none';
+    document.getElementById('btn-copiar-img').innerHTML = '📋 Copiar Imagem';
+
+    window.scrollTo(0, 0);
+
+    html2canvas(document.getElementById('painel-cobli'), { 
+        backgroundColor:'#0F0F2A', 
+        scale:2, 
+        useCORS:true,
+        onclone: function(clonedDoc) {
+            const listas = clonedDoc.querySelectorAll('.scrollable-list');
+            listas.forEach(el => {
+                el.style.maxHeight = 'none';
+                el.style.overflow = 'visible';
+            });
+        }
+    }).then(canvas => {
+        canvasGeradoGlobal = canvas;
+        const imgEl = document.getElementById('imagem-preview');
+        imgEl.src = canvas.toDataURL('image/png');
+        imgEl.style.display = 'block';
+        document.getElementById('imagem-loading').style.display = 'none';
     });
+}
+
+function fecharModalImagem() {
+    document.getElementById('imagemModal').style.display = 'none';
+    canvasGeradoGlobal = null;
+}
+
+function fazerDownloadImagem() {
+    if (!canvasGeradoGlobal) return;
+    const link = document.createElement('a');
+    link.download = `Cobli_Painel_${Date.now()}.png`;
+    link.href = canvasGeradoGlobal.toDataURL('image/png');
+    link.click();
+}
+
+function copiarImagem() {
+    if (!canvasGeradoGlobal) return;
+    const btn = document.getElementById('btn-copiar-img');
+    
+    canvasGeradoGlobal.toBlob(blob => {
+        try {
+            navigator.clipboard.write([
+                new ClipboardItem({ 'image/png': blob })
+            ]).then(() => {
+                btn.innerHTML = '✅ Copiado!';
+                setTimeout(() => { btn.innerHTML = '📋 Copiar Imagem'; }, 2500);
+            }).catch(err => {
+                console.error(err);
+                alert('O seu navegador bloqueou a cópia direta. Por favor, use o botão de baixar.');
+            });
+        } catch (err) {
+            console.error(err);
+            alert('Seu navegador não suporta cópia de imagens. Use o botão de baixar.');
+        }
+    }, 'image/png');
 }
 
 function abrirModalSlack() {
     document.getElementById('slackModal').style.display = 'flex';
     atualizarPreviewSlack();
 }
-
 function fecharModalSlack() {
     document.getElementById('slackModal').style.display = 'none';
+}
+
+function abrirModalSemConclusao() {
+    document.getElementById('semConclusaoModal').style.display = 'flex';
+}
+function fecharModalSemConclusao() {
+    document.getElementById('semConclusaoModal').style.display = 'none';
 }
 
 function atualizarPreviewSlack() {
