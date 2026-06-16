@@ -380,6 +380,7 @@ function renderPainel(dados) {
     let checkInSet = (rawStr, list) => list.some(s => rawStr.includes(s));
 
     // Variáveis de contagem
+    let countLidos = 0;
     let totalGeral = 0, fasesSemConclusao = 0;
     let totalPiloto = 0, pilotoConcluido = 0, pilotoImpedido = 0, pilotoNoShow = 0;
     let totalRealizado = 0, noShowRule3Count = 0;
@@ -408,8 +409,10 @@ function renderPainel(dados) {
         const dataStr = val(linha, 'data').split(' ')[0];
 
         // Regra Global: Remover CANCELADO sem impacto nenhum
-        if (tratativaRaw.includes('AGENDAMENTO - CANCELADO')) return;
+        // Usando Regex para pegar qualquer variação de traço ou espaçamento, ou apenas a palavra "CANCELADO"
+        if (/AGENDAMENTO\s*[-–—]\s*CANCELADO/.test(tratativaRaw) || tratativaRaw.includes('CANCELADO')) return;
         
+        countLidos++;
         const dataISO = toISO(dataStr);
         if(dataISO) datasSet.add(dataISO);
 
@@ -504,7 +507,7 @@ function renderPainel(dados) {
     document.getElementById('upload-screen').style.display = 'none';
     document.getElementById('dashboard-screen').style.display = 'block';
     document.getElementById('topbar-date').textContent = textoData;
-    document.getElementById('topbar-total').textContent = `${dados.length} linhas totais`;
+    document.getElementById('topbar-total').textContent = `${dados.length} linhas totais`; // Atualizado para Total do CSV
     document.getElementById('painel-titulo-data').textContent = `Cobli — ${textoData}`;
     const agora = new Date();
     document.getElementById('painel-gerado-em').textContent = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
@@ -552,7 +555,7 @@ function renderPainel(dados) {
     const kpi3Extra = `<div style="margin-top:8px;"><span style="font-size:10px;background:rgba(240,64,64,0.15);color:var(--accent-red);padding:3px 8px;border-radius:12px;border:1px solid rgba(240,64,64,0.3);font-weight:700;">⚠️ ${getPct(noShowRule3Count, totalRealizado)}% No-Show</span></div>`;
 
     document.getElementById('kpi-row-main').innerHTML = [
-        { label:'1. Total Geral',  value:totalGeral,      sub:'&nbsp;',                                accent:'var(--accent-cyan)',   icon:'📋', extra:kpi1Extra },
+        { label:'1. Total Geral (Validados)',  value:totalGeral,      sub:'&nbsp;',                                accent:'var(--accent-cyan)',   icon:'📋', extra:kpi1Extra }, // Adicionado "Validados" no texto
         { label:'2. Total Piloto', value:totalPiloto,     sub:getPct(totalPiloto, totalGeral)+'% do Geral',     accent:'var(--accent-blue)',   icon:'🚀', extra:kpi2Extra },
         { label:'3. Realizados',   value:totalRealizado,  sub:getPct(totalRealizado, totalGeral)+'% do Geral',  accent:'var(--accent-green)',  icon:'⚡', extra:kpi3Extra },
         { label:'4. Impedidos',    value:totalImpedido,   sub:getPct(totalImpedido, totalGeral)+'% do Geral',   accent:'var(--accent-red)',    icon:'🚫', extra:'' },
