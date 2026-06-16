@@ -185,7 +185,7 @@
             </div>
             <div class="panel-block" style="padding:16px 20px;">
                 <div class="panel-block-title" style="color:var(--accent-red);margin-bottom:10px;"><span class="dot" style="color:var(--accent-red);background:var(--accent-red);"></span>No-Show</div>
-                <div id="lista-no-show-novo" class="scrollable-list" style="max-height:180px;overflow-y:auto;padding-right:5px;"></div>
+                <div id="lista-no-show-novo" class="scrollable-list" style="max-height:160px;overflow-y:auto;padding-right:5px;"></div>
             </div>
         </div>
 
@@ -205,7 +205,7 @@
                 <div id="lista-prestadores" class="scrollable-list" style="max-height:240px;overflow-y:auto;padding-right:8px;"></div>
             </div>
             <div class="panel-block">
-                <div class="panel-block-title" style="color:var(--accent-green);"><span class="dot"></span>Atendimentos Antecipados</div>
+                <div class="panel-block-title" style="color:var(--accent-green);"><span class="dot"></span>Top 10 Antecipados</div>
                 <div id="lista-antecipados" class="scrollable-list" style="max-height:240px;overflow-y:auto;padding-right:8px;"></div>
             </div>
         </div>
@@ -597,7 +597,6 @@ function renderPainel(dados) {
            </div>
            <span style="font-size:12px;background:rgba(245,197,25,0.12);color:#F5C519;border:1px solid rgba(245,197,25,0.25);border-radius:20px;padding:3px 12px;font-weight:700;">${getPct(totalSemContato, totalGeral)}% do total analisado</span>`;
 
-    // Ajuste layout No-Show: padding e gap menores para caber os 4 itens perfeitamente sem scrollbar
     const nsArr = Object.entries(noShowCountMap).sort((a,b)=>b[1]-a[1]);
     const maxNS = nsArr[0]?.[1] || 1;
     const totalNSList = nsArr.reduce((a,b)=>a+b[1], 0);
@@ -735,12 +734,23 @@ function renderPainel(dados) {
                 <span style="flex-shrink:0;min-width:42px;text-align:right;color:var(--muted);">(${getPct(qtd, totalRealizado)}%)</span>
             </div>`).join('');
 
+    // ── SLACK BASE MESSAGE GENERATION ──
     let txt = `*📊 PAINEL TORRE DE CONTROLE — COBLI (${textoData})*\n\n`;
-    txt += `*Resumo Geral:*\n> • Total Geral: ${totalGeral}\n> • Total Piloto: ${totalPiloto} (${getPct(totalPiloto, totalGeral)}%)\n> • Realizados: ${totalRealizado} (${getPct(totalRealizado, totalGeral)}%)\n> • Impedidos: ${totalImpedido} (${getPct(totalImpedido, totalGeral)}%)\n> • Antecipados: ${totalAntecipado} (${getPct(totalAntecipado, totalRealizado)}%)\n\n`;
-    txt += `*🚀 Detalhes Piloto:*\n`;
-    if (pilotoNoShow > 0) txt += `> • *🚨 NO-SHOW: ${pilotoNoShow} (${getPct(pilotoNoShow, totalPiloto)}%)*\n`;
-    txt += `> • Concluídos: ${pilotoConcluido} (${getPct(pilotoConcluido, totalPiloto)}%)\n`;
-    txt += `> • Impedidos: ${pilotoImpedido} (${getPct(pilotoImpedido, totalPiloto)}%)\n`;
+    txt += `*Resumo Geral:*\n`;
+    txt += `> • Total Geral: ${totalGeral}\n`;
+    if (totalPiloto > 0) txt += `> • Total Piloto: ${totalPiloto} (${getPct(totalPiloto, totalGeral)}%)\n`;
+    txt += `> • Realizados: ${totalRealizado} (${getPct(totalRealizado, totalGeral)}%)\n`;
+    if (totalImpedido > 0) txt += `> • Impedidos: ${totalImpedido} (${getPct(totalImpedido, totalGeral)}%)\n`;
+    if (totalAntecipado > 0) txt += `> • Antecipados: ${totalAntecipado} (${getPct(totalAntecipado, totalRealizado)}%)\n`;
+    txt += `\n`;
+
+    if (totalPiloto > 0) {
+        txt += `*🚀 Detalhes Piloto:*\n`;
+        if (pilotoNoShow > 0) txt += `> • *🚨 NO-SHOW: ${pilotoNoShow} (${getPct(pilotoNoShow, totalPiloto)}%)*\n`;
+        if (pilotoConcluido > 0) txt += `> • Concluídos: ${pilotoConcluido} (${getPct(pilotoConcluido, totalPiloto)}%)\n`;
+        if (pilotoImpedido > 0) txt += `> • Impedidos: ${pilotoImpedido} (${getPct(pilotoImpedido, totalPiloto)}%)\n`;
+    }
+
     if (totalSemContato > 0) txt += `\n*⚡ Sem Contato:* ${totalSemContato} (${getPct(totalSemContato, totalGeral)}% do total)\n`;
     if (totalFDS > 0) txt += `*🔴 Fim de Semana:* ${totalFDS} atends. (${getPct(totalFDS, totalGeral)}% do total)\n`;
     
