@@ -416,7 +416,6 @@ function renderPainel(dados) {
             }
 
             // Para Badge de No-Show na Regra 3
-            // Validar com os itens do Set C
             if (isInSetC) noShowRule3Count++;
 
             // Regra 4: Impedido
@@ -525,6 +524,7 @@ function renderPainel(dados) {
            </div>
            <span style="font-size:12px;background:rgba(245,197,25,0.12);color:#F5C519;border:1px solid rgba(245,197,25,0.25);border-radius:20px;padding:3px 12px;font-weight:700;">${getPct(totalSemContato, totalGeral)}% do total analisado</span>`;
 
+    // Ajuste layout No-Show
     const nsArr = Object.entries(noShowCountMap).sort((a,b)=>b[1]-a[1]);
     const maxNS = nsArr[0]?.[1] || 1;
     const totalNSList = nsArr.reduce((a,b)=>a+b[1], 0);
@@ -532,13 +532,13 @@ function renderPainel(dados) {
     if (nsEl) nsEl.innerHTML = nsArr.length === 0
         ? '<div class="empty">Nenhum No-Show mapeado.</div>'
         : nsArr.map(([nome,qtd]) => `
-            <div style="display:flex;align-items:center;gap:10px;font-size:11px;padding:6px 0;border-bottom:1px solid var(--border);">
-                <span style="flex:3;min-width:0;color:var(--text);line-height:1.2;">${formatarNome(nome)}</span>
-                <div style="flex:2;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:11px;padding:6px 0;border-bottom:1px solid var(--border);">
+                <span style="flex:0 0 135px; color:var(--text); line-height:1.2; word-wrap:break-word; padding-right:5px;">${formatarNome(nome)}</span>
+                <div style="flex:1; height:4px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden;">
                     <div style="width:${(qtd/maxNS*100).toFixed(1)}%;height:100%;background:var(--accent-red);border-radius:2px;"></div>
                 </div>
-                <span style="flex-shrink:0;min-width:26px;text-align:right;color:var(--accent-red);font-weight:700;">${qtd}</span>
-                <span style="flex-shrink:0;min-width:38px;text-align:right;color:var(--muted);">(${getPct(qtd, totalNSList)}%)</span>
+                <span style="flex-shrink:0; width:20px; text-align:right; color:var(--accent-red); font-weight:700;">${qtd}</span>
+                <span style="flex-shrink:0; width:38px; text-align:right; color:var(--muted);">(${getPct(qtd, totalNSList)}%)</span>
             </div>`).join('');
 
     // ── GRÁFICO EVOLUÇÃO (Regra 9) ──
@@ -598,15 +598,16 @@ function renderPainel(dados) {
             if (qtd === 0) return '';
             const sc = semContatoPorDia[d] || 0;
             const color = isFds ? 'var(--accent-red)' : 'var(--accent-blue)';
-            const scBadge = (!isFds && sc > 0) ? `<span style="flex-shrink:0;font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">${sc} s/c (${Math.round((sc/qtd)*100)}%)</span>` : '';
+            const scBadge = (!isFds && sc > 0) ? `<span style="font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">${sc} s/c (${Math.round((sc/qtd)*100)}%)</span>` : '';
 
+            // Ajuste largura fixa na Data para alinhar as barras
             return `<div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);">
-                <span style="flex:2;color:var(--text);min-width:0;">${fmtData(d)} <span style="font-size:10px;color:var(--muted);">${isFds ? '(FDS)' : ''}</span></span>
-                <div style="flex:2;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
+                <span style="flex:0 0 85px; color:var(--text); white-space:nowrap;">${fmtData(d)} <span style="font-size:10px;color:var(--muted);">${isFds ? '(FDS)' : ''}</span></span>
+                <div style="flex:1; height:5px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden;">
                     <div style="width:${(qtd/maxVol*100).toFixed(1)}%;height:100%;background:${color};border-radius:3px;"></div>
                 </div>
-                <span style="flex-shrink:0;min-width:26px;text-align:right;color:${color};font-weight:700;">${qtd}</span>
-                ${scBadge}
+                <span style="flex-shrink:0; width:26px; text-align:right; color:${color}; font-weight:700;">${qtd}</span>
+                <div style="flex-shrink:0; width:70px; text-align:right;">${scBadge}</div>
             </div>`;
         }).join('');
     }
@@ -657,8 +658,12 @@ function renderPainel(dados) {
     txt += `• Impedidos: ${pilotoImpedido} (${getPct(pilotoImpedido, totalPiloto)}%)\n`;
     if (totalSemContato > 0) txt += `\n*⚡ Sem Contato:* ${totalSemContato} (${getPct(totalSemContato, totalGeral)}% do total)\n`;
     if (totalFDS > 0) txt += `*🔴 Fim de Semana:* ${totalFDS} atends. (${getPct(totalFDS, totalGeral)}% do total)\n`;
-    txt += `\n*📋 Fases de Tratativas:*\n`;
-    tratsArr.forEach(([nome, qtd]) => txt += `• ${formatarNome(nome)}: ${qtd} (${getPct(qtd, totalRealizado)}%)\n`);
+    
+    // Trocando Fases de Tratativas pelo bloco de No-Show
+    if (nsArr.length > 0) {
+        txt += `\n*🚨 No-Show:*\n`;
+        nsArr.forEach(([nome, qtd]) => txt += `• ${formatarNome(nome)}: ${qtd} (${getPct(qtd, totalNSList)}%)\n`);
+    }
     
     baseSlackMessage = txt;
 }
