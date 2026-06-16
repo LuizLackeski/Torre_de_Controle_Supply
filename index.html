@@ -93,6 +93,10 @@
         .panel-block-title { font-size:10px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:var(--muted); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
         .panel-block-title .dot { width:6px; height:6px; border-radius:50%; background:currentColor; flex-shrink:0; }
 
+        .tratativa-item { display:flex; align-items:center; gap:10px; font-size:12px; padding:5px 0; border-bottom:1px solid var(--border); }
+        .tratativa-item:last-child { border-bottom:none; }
+        .tratativa-name { color:var(--text); }
+
         .chart-wrap { position:relative; height:240px; width:100%; }
 
         @media (max-width:950px) {
@@ -349,7 +353,7 @@ document.getElementById('csvFileInput').addEventListener('change', e => { if(e.t
 function parseCSV(file) {
     Papa.parse(file, {
         header: true, skipEmptyLines: true, transformHeader: h => h.trim(),
-        complete: r => { dadosGlobaisBase = r.data; aplicarFiltro('custom', document.getElementById('btn-custom-filter')); } // Começa com custom vazio = tudo
+        complete: r => { dadosGlobaisBase = r.data; aplicarFiltro('custom', document.getElementById('btn-custom-filter')); }
     });
 }
 
@@ -458,6 +462,7 @@ function renderPainel(dados) {
     let totalImpedido = 0, totalAntecipado = 0;
     let totalFDS = 0, totalSemContato = 0;
 
+    let geralByDay = {};
     let realizedByDay = {};
     let fdsByDay = {};
     let semContatoPorDia = {};
@@ -500,6 +505,8 @@ function renderPainel(dados) {
 
         if (qualifiesRule1) {
             totalGeral++;
+            if (dataISO) geralByDay[dataISO] = (geralByDay[dataISO] || 0) + 1; // Usado para os gráficos
+            
             if (isSemConclusao) {
                 fasesSemConclusao++;
                 let osId = linha['OS'] || linha['os'] || linha['Os'] || linha['ID'] || linha['id'] || val(linha, 'chamado') || val(linha, 'ticket');
@@ -563,9 +570,8 @@ function renderPainel(dados) {
     document.getElementById('upload-screen').style.display = 'none';
     document.getElementById('dashboard-screen').style.display = 'block';
     
-    // Atualizando Cabeçalhos
     document.getElementById('topbar-total').textContent = `${dados.length} LINHAS TOTAIS`;
-    document.getElementById('painel-titulo-data').textContent = textoData; // Título Maior
+    document.getElementById('painel-titulo-data').textContent = textoData;
     
     const agora = new Date();
     document.getElementById('painel-gerado-em').textContent = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
@@ -662,7 +668,8 @@ function renderPainel(dados) {
     Chart.register(ChartDataLabels);
     const labels = datasValidas.map(d => fmtData(d));
     const isFdsArr = datasValidas.map(d => isFimDeSemana(d));
-    const dataLine = datasValidas.map(d => isFimDeSemana(d) ? (fdsByDay[d] || 0) : (realizedByDay[d] || 0));
+    // Gráfico de linha usa o Total Geral para dias úteis
+    const dataLine = datasValidas.map(d => isFimDeSemana(d) ? (fdsByDay[d] || 0) : (geralByDay[d] || 0));
 
     const ctxLine = document.getElementById('graficoEvolucao')?.getContext('2d');
     if (ctxLine) {
@@ -698,7 +705,7 @@ function renderPainel(dados) {
     const legEl = document.getElementById('grafico-legenda');
     if (legEl) legEl.innerHTML = `
         <span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;color:#7A7FA8;">
-            <span style="width:10px;height:10px;border-radius:50%;background:#0FFDC9;display:inline-block;"></span> Dia útil (Regra 3)
+            <span style="width:10px;height:10px;border-radius:50%;background:#0FFDC9;display:inline-block;"></span> Dia útil (Total Geral)
         </span>
         <span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;color:#7A7FA8;">
             <span style="width:10px;height:10px;border-radius:50%;background:#F04040;display:inline-block;"></span> Fim de semana (Regra 6)
@@ -742,11 +749,12 @@ function renderPainel(dados) {
 
     const diasOrdenadosDesc = [...datasValidas].reverse();
     const ulVolume = document.getElementById('lista-volume-dia');
-    const maxVol = Math.max(...diasOrdenadosDesc.map(d => (isFimDeSemana(d) ? fdsByDay[d] : realizedByDay[d]) || 0));
+    // Gráfico de barras usa o Total Geral para dias úteis
+    const maxVol = Math.max(...diasOrdenadosDesc.map(d => (isFimDeSemana(d) ? fdsByDay[d] : geralByDay[d]) || 0));
     if (ulVolume) {
         ulVolume.innerHTML = diasOrdenadosDesc.map(d => {
             const isFds = isFimDeSemana(d);
-            const qtd = (isFds ? fdsByDay[d] : realizedByDay[d]) || 0;
+            const qtd = (isFds ? fdsByDay[d] : geralByDay[d]) || 0;
             if (qtd === 0) return '';
             const sc = semContatoPorDia[d] || 0;
             const color = isFds ? 'var(--accent-red)' : 'var(--accent-blue)';
