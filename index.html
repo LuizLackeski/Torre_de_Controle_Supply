@@ -101,7 +101,7 @@
         .scrollable-list::-webkit-scrollbar-thumb { background: var(--subtle); border-radius: 4px; }
         .scrollable-list::-webkit-scrollbar-thumb:hover { background: var(--muted); }
 
-        /* ── MODAL SLACK ── */
+        /* ── MODAIS ── */
         .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; justify-content:center; align-items:center; backdrop-filter:blur(3px); }
         .modal-content { background:var(--card); border:1px solid var(--border-strong); border-radius:12px; padding:24px 28px; width:100%; max-width:550px; box-shadow:0 10px 30px rgba(0,0,0,0.5); }
         .modal-title { font-size:18px; font-weight:700; color:var(--text); margin-bottom:20px; display:flex; align-items:center; gap:8px; }
@@ -111,6 +111,11 @@
         .modal-input-group input:focus { border-color:var(--accent-cyan); }
         .modal-input-group textarea { background:#111; border:1px solid var(--border); border-radius:8px; padding:12px 14px; color:#ccc; font-family:monospace; font-size:12px; resize:vertical; outline:none; height:180px; }
         .modal-actions { display:flex; justify-content:flex-end; gap:12px; margin-top:24px; }
+
+        /* Tabela Sem Conclusão */
+        .table-os { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
+        .table-os th { padding: 8px; border-bottom: 1px solid var(--border-strong); color: var(--muted); position: sticky; top: 0; background: var(--card); }
+        .table-os td { padding: 8px; border-bottom: 1px solid var(--border); color: var(--text); }
     </style>
 </head>
 <body>
@@ -161,10 +166,8 @@
             </div>
         </div>
 
-        <!-- KPIs Principais -->
         <div class="kpi-row kpi-row-5" id="kpi-row-main"></div>
 
-        <!-- Cards Secundários -->
         <div class="grid-3">
             <div class="panel-block" style="padding:16px 20px;">
                 <div class="panel-block-title" style="color:var(--accent-red);margin-bottom:10px;"><span class="dot"></span>Fim de Semana</div>
@@ -180,7 +183,6 @@
             </div>
         </div>
 
-        <!-- Evolução linha -->
         <div class="panel-block" style="margin-bottom:14px;">
             <div class="panel-block-title" style="color:var(--accent-blue);">
                 <span class="dot"></span>Evolução de Chamados por Dia
@@ -189,7 +191,6 @@
             <div class="chart-wrap"><canvas id="graficoEvolucao"></canvas></div>
         </div>
 
-        <!-- Volume por Dia e Top 10 Prestadores -->
         <div class="grid-2" style="margin-bottom:14px;">
             <div class="panel-block">
                 <div class="panel-block-title" style="color:var(--accent-blue);">
@@ -207,7 +208,6 @@
             </div>
         </div>
 
-        <!-- Fases de Tratativas -->
         <div class="panel-block" style="margin-bottom:14px;">
             <div class="panel-block-title" style="color:var(--accent-cyan);"><span class="dot"></span>Fases de Tratativas</div>
             <div id="lista-tratativas" class="scrollable-list" style="max-height:240px;overflow-y:auto;padding-right:8px;"></div>
@@ -215,7 +215,6 @@
     </div>
 </div>
 
-<!-- Modal do Slack -->
 <div id="slackModal" class="modal-overlay">
     <div class="modal-content">
         <div class="modal-title">💬 Enviar Report para Slack</div>
@@ -238,6 +237,31 @@
         <div class="modal-actions">
             <button class="btn btn-outline" onclick="fecharModalSlack()">Cancelar</button>
             <button class="btn btn-slack" onclick="enviarParaSlackConfirmado()">Confirmar Envio</button>
+        </div>
+    </div>
+</div>
+
+<div id="semConclusaoModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-title" style="color: var(--accent-red);">🚨 OSs Sem Fase de Conclusão</div>
+        <p style="font-size: 12px; color: var(--muted); margin-bottom: 16px;">Lista de chamados que entraram na contagem geral, mas ficaram sem conclusão/status final mapeado.</p>
+        
+        <div class="scrollable-list" style="max-height: 350px; overflow-y: auto;">
+            <table class="table-os">
+                <thead>
+                    <tr>
+                        <th>OS / Chamado</th>
+                        <th>Prestador</th>
+                        <th>Data</th>
+                    </tr>
+                </thead>
+                <tbody id="lista-oss-sem-conclusao">
+                    </tbody>
+            </table>
+        </div>
+        
+        <div class="modal-actions">
+            <button class="btn btn-outline" onclick="fecharModalSemConclusao()">Fechar</button>
         </div>
     </div>
 </div>
@@ -365,6 +389,9 @@ function renderPainel(dados) {
     let tratativasCountMap = {};
     let noShowCountMap = {};
     let datasSet = new Set();
+    
+    // Lista para o novo Modal
+    let listaOSsSemConclusao = [];
 
     dados.forEach(linha => {
         const alocacaoRaw = val(linha, 'aloca');
@@ -398,7 +425,16 @@ function renderPainel(dados) {
 
         if (qualifiesRule1) {
             totalGeral++;
-            if (isSemConclusao) fasesSemConclusao++;
+            if (isSemConclusao) {
+                fasesSemConclusao++;
+                // Tentando capturar OS/Chamado seguro
+                let osId = linha['OS'] || linha['os'] || linha['Os'] || linha['ID'] || linha['id'] || val(linha, 'chamado') || val(linha, 'ticket');
+                listaOSsSemConclusao.push({
+                    os: osId || 'Sem ID',
+                    prestador: prestador || '-',
+                    data: fmtData(dataISO) || '-'
+                });
+            }
 
             // Regra 2: Total Piloto
             if (classe.includes('PILOTO') || classe.includes('PILOT')) {
@@ -468,10 +504,29 @@ function renderPainel(dados) {
     const agora = new Date();
     document.getElementById('painel-gerado-em').textContent = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
 
+    // ── PREENCHER MODAL OS SEM CONCLUSÃO ──
+    const tbodySemConclusao = document.getElementById('lista-oss-sem-conclusao');
+    if (tbodySemConclusao) {
+        if (listaOSsSemConclusao.length === 0) {
+            tbodySemConclusao.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:16px; color:var(--muted);">Nenhum chamado pendente encontrado.</td></tr>';
+        } else {
+            tbodySemConclusao.innerHTML = listaOSsSemConclusao.map(c => `
+                <tr>
+                    <td style="font-weight: bold; color: #fff;">${c.os}</td>
+                    <td>${c.prestador}</td>
+                    <td>${c.data}</td>
+                </tr>
+            `).join('');
+        }
+    }
+
     // ── KPIs (Regras 1 a 5) ──
     const getPct = (v, base) => base > 0 ? ((v/base)*100).toFixed(1) : 0;
     
-    const kpi1Extra = `<div style="margin-top:8px;"><span style="font-size:10px;background:rgba(240,64,64,0.15);color:var(--accent-red);padding:3px 8px;border-radius:12px;border:1px solid rgba(240,64,64,0.3);font-weight:700;">🚨 ${fasesSemConclusao} Fases sem conclusão</span></div>`;
+    // Novo Badge Clickável
+    const kpi1Extra = `<div style="margin-top:8px;">
+        <span onclick="abrirModalSemConclusao()" style="cursor:pointer; font-size:10px;background:rgba(240,64,64,0.15);color:var(--accent-red);padding:3px 8px;border-radius:12px;border:1px solid rgba(240,64,64,0.3);font-weight:700; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">🚨 ${fasesSemConclusao} Fases sem conclusão (Ver lista)</span>
+    </div>`;
     
     const kpi2Extra = `
         <div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;gap:4px;">
@@ -670,7 +725,7 @@ function renderPainel(dados) {
     baseSlackMessage = txt;
 }
 
-// ── FUNÇÕES SLACK & IMAGEM ──
+// ── FUNÇÕES SLACK, IMAGEM E MODAL ──
 function recarregar() { location.reload(); }
 
 function baixarImagem() {
@@ -683,9 +738,15 @@ function abrirModalSlack() {
     document.getElementById('slackModal').style.display = 'flex';
     atualizarPreviewSlack();
 }
-
 function fecharModalSlack() {
     document.getElementById('slackModal').style.display = 'none';
+}
+
+function abrirModalSemConclusao() {
+    document.getElementById('semConclusaoModal').style.display = 'flex';
+}
+function fecharModalSemConclusao() {
+    document.getElementById('semConclusaoModal').style.display = 'none';
 }
 
 function atualizarPreviewSlack() {
