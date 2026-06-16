@@ -85,17 +85,18 @@
         .kpi-row { display:grid; gap:12px; margin-bottom:14px; }
         .kpi-row-5 { grid-template-columns:repeat(5,1fr); }
         
-        /* IMPORTANTE: Removido o overflow:hidden para as dicas (tooltips) aparecerem! */
         .kpi-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px 22px; position:relative; border-left:3px solid var(--kpi-accent,var(--accent-blue)); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
         
         .kpi-label { font-size:10px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:var(--muted); margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; }
         .kpi-value { font-size:32px; font-weight:700; color:var(--text); line-height:1; }
         .kpi-sub { font-size:11px; color:var(--kpi-accent,var(--muted)); margin-top:6px; font-weight:600; }
-        .kpi-icon { position:absolute; top:14px; right:16px; font-size:20px; opacity:0.08; }
+        /* Adicionado pointer-events: none para o ícone não roubar o mouse do tooltip */
+        .kpi-icon { position:absolute; top:14px; right:16px; font-size:20px; opacity:0.08; pointer-events: none; }
 
         /* TOOLTIPS */
-        .tooltip { position: relative; display: inline-block; cursor: help; color: var(--muted); font-size: 11px; font-weight: bold; background: rgba(255,255,255,0.06); width: 15px; height: 15px; border-radius: 50%; text-align: center; line-height: 15px; text-transform: none; letter-spacing: 0; }
-        .tooltip .tooltiptext { visibility: hidden; width: 220px; background-color: #1A1A35; color: #fff; text-align: left; border: 1px solid var(--border-strong); border-radius: 8px; padding: 10px 12px; position: absolute; z-index: 999; bottom: 130%; left: 50%; transform: translateX(-50%); opacity: 0; transition: opacity 0.15s; font-size: 11px; font-weight: normal; line-height: 1.4; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+        /* Adicionado z-index: 10 no container do tooltip */
+        .tooltip { position: relative; display: inline-block; cursor: help; color: var(--muted); font-size: 11px; font-weight: bold; background: rgba(255,255,255,0.06); width: 15px; height: 15px; border-radius: 50%; text-align: center; line-height: 15px; text-transform: none; letter-spacing: 0; z-index: 10; }
+        .tooltip .tooltiptext { visibility: hidden; width: 220px; background-color: #1A1A35; color: #fff; text-align: left; border: 1px solid var(--border-strong); border-radius: 8px; padding: 10px 12px; position: absolute; z-index: 9999; bottom: 130%; left: 50%; transform: translateX(-50%); opacity: 0; transition: opacity 0.15s; font-size: 11px; font-weight: normal; line-height: 1.4; box-shadow: 0 8px 24px rgba(0,0,0,0.5); pointer-events: none; }
         .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
 
         .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:14px; }
@@ -967,7 +968,6 @@ function copiarImagem() {
     }, 'image/png');
 }
 
-// ── SLACK E LOCALSTORAGE ──
 function abrirModalSlack() {
     const savedUrl = localStorage.getItem('cobliSlackUrl');
     const savedName = localStorage.getItem('cobliSlackName');
@@ -1001,7 +1001,7 @@ function enviarParaSlackConfirmado() {
     const url = document.getElementById('slackWebhookUrl').value.trim();
     if (!url) { alert('⚠️ Insira a URL do Webhook do Slack.'); return; }
     
-    salvarNoLocalStorage(); // Garante que salva no último segundo
+    salvarNoLocalStorage();
     const textoFinal = document.getElementById('texto-slack-preview').value;
     
     fetch(url, { 
