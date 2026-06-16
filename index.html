@@ -47,7 +47,7 @@
         /* ── DASHBOARD ── */
         #dashboard-screen { display:none; }
         
-        /* ── NOVA TOP BAR ── */
+        /* ── TOP BAR ── */
         .top-bar-outer { background:var(--card2); border-bottom:1px solid var(--border); position: sticky; top: 0; z-index: 50; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
         
         .top-bar { max-width:1350px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; padding:12px 28px; flex-wrap:nowrap; gap:16px; overflow-x:auto; scrollbar-width:none; }
@@ -62,7 +62,6 @@
         .filter-btn.active { background:var(--accent-cyan); color:var(--cobli-navy); }
         .filter-btn:hover:not(.active) { color:var(--text); background:rgba(255,255,255,0.05); }
         
-        /* Inputs de Data Personalizados */
         .v-divider { width: 1px; height: 22px; background: var(--border-strong); margin: 0 4px; }
         .custom-date-box { display: flex; align-items: center; gap: 8px; padding-left: 4px; white-space: nowrap; }
         .date-input { background: var(--bg); border: 1px solid var(--border-strong); border-radius: 6px; color: var(--text); padding: 5px 10px; font-size: 12px; font-family: inherit; color-scheme: dark; outline: none; transition: border-color 0.2s; cursor: pointer; }
@@ -85,21 +84,28 @@
         .kpi-row { display:grid; gap:12px; margin-bottom:14px; }
         .kpi-row-5 { grid-template-columns:repeat(5,1fr); }
         .kpi-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px 22px; position:relative; overflow:hidden; border-left:3px solid var(--kpi-accent,var(--accent-blue)); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .kpi-label { font-size:10px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
+        .kpi-label { font-size:10px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:var(--muted); margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; }
         .kpi-value { font-size:32px; font-weight:700; color:var(--text); line-height:1; }
         .kpi-sub { font-size:11px; color:var(--kpi-accent,var(--muted)); margin-top:6px; font-weight:600; }
         .kpi-icon { position:absolute; top:14px; right:16px; font-size:20px; opacity:0.08; }
+
+        /* TOOLTIPS */
+        .tooltip { position: relative; display: inline-block; cursor: help; color: var(--muted); font-size: 11px; font-weight: bold; background: rgba(255,255,255,0.06); width: 15px; height: 15px; border-radius: 50%; text-align: center; line-height: 15px; text-transform: none; letter-spacing: 0; }
+        .tooltip .tooltiptext { visibility: hidden; width: 220px; background-color: #1A1A35; color: #fff; text-align: left; border: 1px solid var(--border-strong); border-radius: 8px; padding: 10px 12px; position: absolute; z-index: 999; bottom: 130%; left: 50%; transform: translateX(-50%); opacity: 0; transition: opacity 0.15s; font-size: 11px; font-weight: normal; line-height: 1.4; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+        .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
 
         .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:14px; }
         .grid-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:14px; }
 
         .panel-block { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px 22px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .panel-block-title { font-size:10px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:var(--muted); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+        .panel-block-title { font-size:10px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:var(--muted); margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; }
+        .panel-block-title div { display:flex; align-items:center; gap:8px; }
         .panel-block-title .dot { width:6px; height:6px; border-radius:50%; background:currentColor; flex-shrink:0; }
 
-        .tratativa-item { display:flex; align-items:center; gap:10px; font-size:12px; padding:5px 0; border-bottom:1px solid var(--border); }
-        .tratativa-item:last-child { border-bottom:none; }
-        .tratativa-name { color:var(--text); }
+        /* Elementos de Prestadores Clicáveis */
+        .prestador-item { display:flex; align-items:center; gap:10px; font-size:12px; padding:6px 8px; border-bottom:1px solid var(--border); transition: background 0.15s; border-radius: 6px; }
+        .prestador-item:hover { background: rgba(255,255,255,0.04); }
+        .prestador-item.active-filter { background: rgba(192,132,252,0.08); border-left: 3px solid var(--accent-purple); padding-left: 5px; font-weight: 600; }
 
         .chart-wrap { position:relative; height:240px; width:100%; }
 
@@ -114,7 +120,7 @@
         .scrollable-list::-webkit-scrollbar-thumb { background: var(--subtle); border-radius: 4px; }
         .scrollable-list::-webkit-scrollbar-thumb:hover { background: var(--muted); }
 
-        /* ── MODAIS ── */
+        /* MODAIS */
         .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; justify-content:center; align-items:center; backdrop-filter:blur(3px); }
         .modal-content { background:var(--card); border:1px solid var(--border-strong); border-radius:12px; padding:24px 28px; width:100%; max-width:550px; box-shadow:0 10px 30px rgba(0,0,0,0.5); }
         .modal-title { font-size:18px; font-weight:700; color:var(--text); margin-bottom:20px; display:flex; align-items:center; gap:8px; }
@@ -125,12 +131,10 @@
         .modal-input-group textarea { background:#111; border:1px solid var(--border); border-radius:8px; padding:12px 14px; color:#ccc; font-family:monospace; font-size:12px; resize:vertical; outline:none; height:180px; }
         .modal-actions { display:flex; justify-content:flex-end; gap:12px; margin-top:24px; }
 
-        /* Tabela Sem Conclusão */
         .table-os { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
         .table-os th { padding: 8px; border-bottom: 1px solid var(--border-strong); color: var(--muted); position: sticky; top: 0; background: var(--card); }
         .table-os td { padding: 8px; border-bottom: 1px solid var(--border); color: var(--text); }
         
-        /* Modal de Imagem */
         #imagem-preview-container { height: 350px; display:flex; align-items:center; justify-content:center; background:#111; border:1px solid var(--border); border-radius:8px; margin-bottom: 16px; overflow:hidden; padding: 10px; }
         #imagem-preview { display:none; max-width:100%; max-height:100%; width:auto; object-fit: contain; }
     </style>
@@ -184,7 +188,12 @@
                     <span class="cobli-badge">Cobli</span>
                     <span style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent-cyan);">Torre de Controle</span>
                 </div>
-                <div style="font-size:26px;font-weight:700;color:var(--text);letter-spacing:-0.5px;" id="painel-titulo-data">Carregando...</div>
+                <div style="font-size:26px;font-weight:700;color:var(--text);letter-spacing:-0.5px; display:flex; align-items:center; flex-wrap:wrap; gap:12px;">
+                    <span id="painel-titulo-data">Carregando...</span>
+                    <span id="filtro-prestador-badge" style="display:none; background:rgba(192,132,252,0.15); color:var(--accent-purple); border:1px solid rgba(192,132,252,0.3); padding:4px 10px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer;" onclick="limparFiltroPrestador()" title="Clique para limpar o filtro de prestador">
+                        👤 Prestador: <span id="nome-prestador-badge"></span> ✕
+                    </span>
+                </div>
             </div>
             <div style="text-align:right;">
                 <div style="font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Atualizado em</div>
@@ -192,86 +201,96 @@
             </div>
         </div>
 
-        <!-- KPIs Principais -->
         <div class="kpi-row kpi-row-5" id="kpi-row-main"></div>
 
-        <!-- Cards Secundários -->
         <div class="grid-3">
             <div class="panel-block" style="padding:16px 20px;">
-                <div class="panel-block-title" style="color:var(--accent-red);margin-bottom:10px;"><span class="dot"></span>Fim de Semana</div>
+                <div class="panel-block-title" style="color:var(--accent-red);margin-bottom:10px;">
+                    <div><span class="dot"></span>Fim de Semana</div>
+                    <span class="tooltip">? <span class="tooltiptext">Chamados de sábado ou domingo com alocação concluída, impedida ou No-Show registrado (Regra 6).</span></span>
+                </div>
                 <div id="fds-totais-novo"></div>
             </div>
             <div class="panel-block" style="padding:16px 20px;">
-                <div class="panel-block-title" style="color:var(--accent-yellow);margin-bottom:10px;"><span class="dot"></span>Sem Contato</div>
+                <div class="panel-block-title" style="color:var(--accent-yellow);margin-bottom:10px;">
+                    <div><span class="dot"></span>Sem Contato</div>
+                    <span class="tooltip">? <span class="tooltiptext">Chamados em dias úteis que ficaram com status de andamento sem contato ou antecipado pendente (Regra 4).</span></span>
+                </div>
                 <div id="sc-totais-novo"></div>
             </div>
             <div class="panel-block" style="padding:16px 20px;">
-                <div class="panel-block-title" style="color:var(--accent-red);margin-bottom:10px;"><span class="dot" style="color:var(--accent-red);background:var(--accent-red);"></span>No-Show</div>
+                <div class="panel-block-title" style="color:var(--accent-red);margin-bottom:10px;">
+                    <div><span class="dot" style="color:var(--accent-red);background:var(--accent-red);"></span>No-Show Mapeados</div>
+                    <span class="tooltip">? <span class="tooltiptext">Distribuição volumétrica das falhas por ausência/não-comparecimento (Regra 3).</span></span>
+                </div>
                 <div id="lista-no-show-novo" class="scrollable-list" style="max-height:160px;overflow-y:auto;padding-right:5px;"></div>
             </div>
         </div>
 
-        <!-- Evolução linha -->
         <div class="panel-block" style="margin-bottom:14px;">
             <div class="panel-block-title" style="color:var(--accent-blue);">
-                <span class="dot"></span>Evolução de Chamados por Dia
+                <div><span class="dot"></span>Evolução de Chamados por Dia</div>
             </div>
             <div style="display:flex;justify-content:flex-end;gap:16px;margin-bottom:10px;" id="grafico-legenda"></div>
             <div class="chart-wrap"><canvas id="graficoEvolucao"></canvas></div>
         </div>
 
-        <!-- Prestadores e Antecipados -->
         <div class="grid-2" style="margin-bottom:14px;">
             <div class="panel-block">
-                <div class="panel-block-title" style="color:var(--accent-purple);"><span class="dot"></span>Top 10 Prestadores</div>
+                <div class="panel-block-title" style="color:var(--accent-purple);">
+                    <div><span class="dot"></span>Top 10 Prestadores</div>
+                    <span class="tooltip">? <span class="tooltiptext">Maiores prestadores em volume Realizado. Clique no nome de um prestador para filtrar o painel inteiro por ele!</span></span>
+                </div>
                 <div id="lista-prestadores" class="scrollable-list" style="max-height:240px;overflow-y:auto;padding-right:8px;"></div>
             </div>
             <div class="panel-block">
-                <div class="panel-block-title" style="color:var(--accent-green);"><span class="dot"></span>Top 10 Antecipados</div>
+                <div class="panel-block-title" style="color:var(--accent-green);">
+                    <div><span class="dot"></span>Top 10 Antecipados</div>
+                    <span class="tooltip">? <span class="tooltiptext">Prestadores com maior número de agendamentos antecipados com sucesso.</span></span>
+                </div>
                 <div id="lista-antecipados" class="scrollable-list" style="max-height:240px;overflow-y:auto;padding-right:8px;"></div>
             </div>
         </div>
 
-        <!-- Volume por Dia e Fases de Tratativas -->
         <div class="grid-2" style="margin-bottom:14px;">
             <div class="panel-block">
                 <div class="panel-block-title" style="color:var(--accent-blue);">
-                    <span class="dot"></span>Volume por Dia
-                    <span style="margin-left:8px;font-size:10px;color:var(--muted);">
-                        <span style="color:#F04040;font-weight:700;">■</span> fds &nbsp;·&nbsp;
-                        <span style="color:#F5C519;font-weight:700;">■</span> badge = sem contato
-                    </span>
+                    <div>
+                        <span class="dot"></span>Volume por Dia
+                        <span style="margin-left:8px;font-size:10px;color:var(--muted);text-transform:none;letter-spacing:0;">
+                            <span style="color:#F04040;font-weight:700;">■</span> fds &nbsp;·&nbsp;
+                            <span style="color:#F5C519;font-weight:700;">■</span> s/c = sem contato
+                        </span>
+                    </div>
                 </div>
                 <div id="lista-volume-dia" class="scrollable-list" style="max-height:240px;overflow-y:auto;padding-right:8px;"></div>
             </div>
             <div class="panel-block">
-                <div class="panel-block-title" style="color:var(--accent-cyan);"><span class="dot"></span>Fases de Tratativas</div>
+                <div class="panel-block-title" style="color:var(--accent-cyan);">
+                    <div><span class="dot"></span>Fases de Tratativas</div>
+                    <span class="tooltip">? <span class="tooltiptext">Abertura de motivos e fases internas nos chamados validados (Regra 1).</span></span>
+                </div>
                 <div id="lista-tratativas" class="scrollable-list" style="max-height:240px;overflow-y:auto;padding-right:8px;"></div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal do Slack -->
 <div id="slackModal" class="modal-overlay">
     <div class="modal-content">
         <div class="modal-title">💬 Enviar Report para Slack</div>
-        
         <div class="modal-input-group">
             <label>Link do Grupo (Webhook URL)</label>
             <input type="text" id="slackWebhookUrl" placeholder="https://hooks.slack.com/services/...">
         </div>
-        
         <div class="modal-input-group">
             <label>Responsável pelo Envio</label>
             <input type="text" id="slackSenderName" placeholder="Seu nome completo" onkeyup="atualizarPreviewSlack()">
         </div>
-        
         <div class="modal-input-group">
             <label>Pré-visualização da Mensagem</label>
             <textarea id="texto-slack-preview" readonly></textarea>
         </div>
-        
         <div class="modal-actions">
             <button class="btn btn-outline" onclick="fecharModalSlack()">Cancelar</button>
             <button class="btn btn-slack" onclick="enviarParaSlackConfirmado()">Confirmar Envio</button>
@@ -279,12 +298,10 @@
     </div>
 </div>
 
-<!-- Modal OSs Sem Conclusão -->
 <div id="semConclusaoModal" class="modal-overlay">
     <div class="modal-content" style="max-width: 600px;">
         <div class="modal-title" style="color: var(--accent-red);">🚨 OSs Sem Fase de Conclusão</div>
         <p style="font-size: 12px; color: var(--muted); margin-bottom: 16px;">Lista de chamados que entraram na contagem geral, mas ficaram sem conclusão/status final mapeado.</p>
-        
         <div class="scrollable-list" style="max-height: 350px; overflow-y: auto;">
             <table class="table-os">
                 <thead>
@@ -294,29 +311,23 @@
                         <th>Data</th>
                     </tr>
                 </thead>
-                <tbody id="lista-oss-sem-conclusao">
-                    <!-- Preenchido via JS -->
-                </tbody>
+                <tbody id="lista-oss-sem-conclusao"></tbody>
             </table>
         </div>
-        
         <div class="modal-actions">
             <button class="btn btn-outline" onclick="fecharModalSemConclusao()">Fechar</button>
         </div>
     </div>
 </div>
 
-<!-- Modal de Imagem -->
 <div id="imagemModal" class="modal-overlay">
     <div class="modal-content" style="max-width: 800px;">
         <div class="modal-title">📸 Imagem do Painel</div>
         <p style="font-size: 12px; color: var(--muted); margin-bottom: 16px;">Você pode copiar a imagem diretamente para área de transferência e colar no Slack, ou baixar se preferir.</p>
-        
         <div id="imagem-preview-container">
             <span id="imagem-loading" style="color:var(--muted); font-size:12px;">Gerando painel... Aguarde.</span>
             <img id="imagem-preview" />
         </div>
-        
         <div class="modal-actions">
             <button class="btn btn-outline" onclick="fecharModalImagem()">Cancelar</button>
             <button class="btn btn-outline" onclick="fazerDownloadImagem()">📥 Baixar Arquivo</button>
@@ -328,10 +339,40 @@
 <script>
 let chartLine = null;
 let dadosGlobaisBase = [];
+let dadosFiltradosPorData = []; // Cache do período selecionado
+let prestadorSelecionado = null; // Filtro ativo do Drill-down
 let baseSlackMessage = "";
 let canvasGeradoGlobal = null;
 
-// ── DICIONÁRIO DE NOMES DE TRATATIVAS ──
+const setA = [
+    'AGENDAMENTO - EM ANDAMENTO - SEM CONTATO',
+    'AGENDAMENTO - NO-SHOW CLIENTE - SMARTOPS REAGENDAMENTO',
+    'AGENDAMENTO - NO-SHOW TÉCNICO - REAGENDADO',
+    'AGENDAMENTO - NO-SHOW TÉCNICO - REVERTIDO',
+    'AGENDAMENTO - NO-SHOW TÉCNICO - SMARTOPS REAGENDAMENTO',
+    'AGENDAMENTO - TÉCNICO NO LOCAL AGENDADO'
+];
+const setB = [
+    'AGENDAMENTO - EM ANDAMENTO - SEM CONTATO',
+    'AGENDAMENTO - ANTECIPADO',
+    'AGENDAMENTO - NO-SHOW TÉCNICO - REVERTIDO',
+    'AGENDAMENTO - TÉCNICO NO LOCAL AGENDADO'
+];
+const setC = [
+    'AGENDAMENTO - NO-SHOW TÉCNICO - REAGENDADO',
+    'AGENDAMENTO - NO-SHOW TÉCNICO - REVERTIDO',
+    'AGENDAMENTO - NO-SHOW TÉCNICO - SMARTOPS REAGENDAMENTO',
+    'AGENDAMENTO - NO-SHOW CLIENTE - SMARTOPS REAGENDAMENTO'
+];
+const setD = [
+    'AGENDAMENTO - EM ANDAMENTO - SEM CONTATO',
+    'AGENDAMENTO - ANTECIPADO'
+];
+const excluidosRealizados = [
+    'AGENDAMENTO - NO-SHOW CLIENTE - SMARTOPS REAGENDAMENTO',
+    'AGENDAMENTO - NO-SHOW TÉCNICO - SMARTOPS REAGENDAMENTO'
+];
+
 const dicionarioNomes = {
     'AGENDAMENTO - EM ANDAMENTO - SEM CONTATO': 'Atendimento sem contato',
     'AGENDAMENTO - NO-SHOW CLIENTE - SMARTOPS REAGENDAMENTO': 'SmartOps | Reagendamento Cliente',
@@ -356,7 +397,11 @@ document.getElementById('csvFileInput').addEventListener('change', e => { if(e.t
 function parseCSV(file) {
     Papa.parse(file, {
         header: true, skipEmptyLines: true, transformHeader: h => h.trim(),
-        complete: r => { dadosGlobaisBase = r.data; aplicarFiltro('custom', document.getElementById('btn-custom-filter')); }
+        complete: r => { 
+            dadosGlobaisBase = r.data; 
+            prestadorSelecionado = null;
+            aplicarFiltro('custom', document.getElementById('btn-custom-filter')); 
+        }
     });
 }
 
@@ -387,7 +432,7 @@ function fmtData(d) {
     return d.match(/^\d{4}-\d{2}-\d{2}/) ? d.slice(5).split('-').reverse().join('/') : d;
 }
 
-// ── FILTRO GERAL ──
+// ── FILTROS DE TEMPO ──
 function limparFiltroPersonalizado() {
     document.getElementById('dataInicio').value = '';
     document.getElementById('dataFim').value = '';
@@ -418,44 +463,37 @@ function aplicarFiltro(periodo, btnEl) {
         permitidas = todasDatas.slice(-parseInt(periodo, 10));
     }
 
-    renderPainel(dadosGlobaisBase.filter(l => permitidas.includes(toISO(val(l,'data').split(' ')[0]))));
+    dadosFiltradosPorData = dadosGlobaisBase.filter(l => permitidas.includes(toISO(val(l,'data').split(' ')[0])));
+    executarFiltrosEPlotar();
+}
+
+// ── DRILL-DOWN LOGIC ──
+function selecionarPrestador(nome) {
+    prestadorSelecionado = (prestadorSelecionado === nome) ? null : nome;
+    executarFiltrosEPlotar();
+}
+
+function limparFiltroPrestador() {
+    prestadorSelecionado = null;
+    executarFiltrosEPlotar();
+}
+
+function executarFiltrosEPlotar() {
+    let dadosFinais = [...dadosFiltradosPorData];
+    
+    if (prestadorSelecionado) {
+        dadosFinais = dadosFiltradosPorData.filter(l => val(l, 'prestador') === prestadorSelecionado);
+        document.getElementById('filtro-prestador-badge').style.display = 'inline-block';
+        document.getElementById('nome-prestador-badge').textContent = prestadorSelecionado;
+    } else {
+        document.getElementById('filtro-prestador-badge').style.display = 'none';
+    }
+    
+    renderPainel(dadosFinais);
 }
 
 // ── RENDER ──
 function renderPainel(dados) {
-    const setA = [
-        'AGENDAMENTO - EM ANDAMENTO - SEM CONTATO',
-        'AGENDAMENTO - NO-SHOW CLIENTE - SMARTOPS REAGENDAMENTO',
-        'AGENDAMENTO - NO-SHOW TÉCNICO - REAGENDADO',
-        'AGENDAMENTO - NO-SHOW TÉCNICO - REVERTIDO',
-        'AGENDAMENTO - NO-SHOW TÉCNICO - SMARTOPS REAGENDAMENTO',
-        'AGENDAMENTO - TÉCNICO NO LOCAL AGENDADO'
-    ];
-    
-    const setB = [
-        'AGENDAMENTO - EM ANDAMENTO - SEM CONTATO',
-        'AGENDAMENTO - ANTECIPADO',
-        'AGENDAMENTO - NO-SHOW TÉCNICO - REVERTIDO',
-        'AGENDAMENTO - TÉCNICO NO LOCAL AGENDADO'
-    ];
-    
-    const setC = [
-        'AGENDAMENTO - NO-SHOW TÉCNICO - REAGENDADO',
-        'AGENDAMENTO - NO-SHOW TÉCNICO - REVERTIDO',
-        'AGENDAMENTO - NO-SHOW TÉCNICO - SMARTOPS REAGENDAMENTO',
-        'AGENDAMENTO - NO-SHOW CLIENTE - SMARTOPS REAGENDAMENTO'
-    ];
-
-    const setD = [
-        'AGENDAMENTO - EM ANDAMENTO - SEM CONTATO',
-        'AGENDAMENTO - ANTECIPADO'
-    ];
-
-    const excluidosRealizados = [
-        'AGENDAMENTO - NO-SHOW CLIENTE - SMARTOPS REAGENDAMENTO',
-        'AGENDAMENTO - NO-SHOW TÉCNICO - SMARTOPS REAGENDAMENTO'
-    ];
-
     let checkInSet = (rawStr, list) => list.some(s => rawStr.includes(s));
 
     let countLidos = 0;
@@ -471,8 +509,6 @@ function renderPainel(dados) {
     let realizedByDay = {};
     let fdsByDay = {};
     let semContatoPorDia = {};
-    let prestadorRealizado = {};
-    let prestadorSemContato = {};
     let prestadorAntecipado = {};
     let tratativasCountMap = {};
     let noShowCountMap = {};
@@ -480,6 +516,7 @@ function renderPainel(dados) {
     
     let listaOSsSemConclusao = [];
 
+    // Processamento do Escopo de Dados Ativo
     dados.forEach(linha => {
         const alocacaoRaw = val(linha, 'aloca');
         const alocacao = alocacaoRaw.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
@@ -532,11 +569,9 @@ function renderPainel(dados) {
             if ((isInSetB || isConcluido || isImpedido) && !isExcluidoRealizado) {
                 totalRealizado++;
                 if (dataISO) realizedByDay[dataISO] = (realizedByDay[dataISO] || 0) + 1;
-                if (prestador) prestadorRealizado[prestador] = (prestadorRealizado[prestador] || 0) + 1;
             }
 
             if (isInSetC) noShowRule3Count++;
-
             if (isImpedido) totalImpedido++;
 
             if (isInSetA) {
@@ -553,20 +588,39 @@ function renderPainel(dados) {
         if (fds && (isConcluido || isImpedido || isEmAndamento || tratativaRaw.includes('NO-SHOW') || tratativaRaw.includes('NO SHOW'))) {
             totalFDS++;
             if (dataISO) fdsByDay[dataISO] = (fdsByDay[dataISO] || 0) + 1;
-            
             if (isConcluido) fdsConcluido++;
             if (isImpedido) fdsImpedido++;
         }
 
         if (isInSetD && !fds) {
             totalSemContato++;
-            if (prestador) prestadorSemContato[prestador] = (prestadorSemContato[prestador] || 0) + 1;
             if (dataISO) semContatoPorDia[dataISO] = (semContatoPorDia[dataISO] || 0) + 1;
         }
 
         if (isInSetC) {
             const matchedC = setC.find(s => tratativaRaw.includes(s));
             if (matchedC) noShowCountMap[matchedC] = (noShowCountMap[matchedC] || 0) + 1;
+        }
+    });
+
+    // Processamento do Ranking Completo (Independente do filtro drill-down para manter navegação ativa)
+    let prestadorRealizadoFull = {};
+    let prestadorSemContatoFull = {};
+    dadosFiltradosPorData.forEach(linha => {
+        const alocacaoRaw = val(linha, 'aloca');
+        const alocacao = alocacaoRaw.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
+        const tratativaRaw = val(linha, 'tratativa').toUpperCase().trim();
+        const prestador = val(linha, 'prestador');
+        const dataISO = toISO(val(linha, 'data').split(' ')[0]);
+        if (/AGENDAMENTO\s*[-–—]\s*CANCELADO/.test(tratativaRaw) || tratativaRaw.includes('CANCELADO') || isFimDeSemana(dataISO)) return;
+
+        if (checkInSet(tratativaRaw, setA) || alocacao.includes('CONCLU') || alocacao.includes('IMPED') || alocacao.includes('ANDAMENTO')) {
+            if ((checkInSet(tratativaRaw, setB) || alocacao.includes('CONCLU') || alocacao.includes('IMPED')) && !checkInSet(tratativaRaw, excluidosRealizados)) {
+                if (prestador) prestadorRealizadoFull[prestador] = (prestadorRealizadoFull[prestador] || 0) + 1;
+            }
+        }
+        if (checkInSet(tratativaRaw, setD)) {
+            if (prestador) prestadorSemContatoFull[prestador] = (prestadorSemContatoFull[prestador] || 0) + 1;
         }
     });
 
@@ -578,7 +632,7 @@ function renderPainel(dados) {
     document.getElementById('upload-screen').style.display = 'none';
     document.getElementById('dashboard-screen').style.display = 'block';
     
-    document.getElementById('topbar-total').textContent = `${dados.length} LINHAS TOTAIS`;
+    document.getElementById('topbar-total').textContent = `${dadosFiltradosPorData.length} LINHAS NO PERÍODO`;
     document.getElementById('painel-titulo-data').textContent = textoData;
     
     const agora = new Date();
@@ -624,13 +678,16 @@ function renderPainel(dados) {
     const kpi3Extra = `<div style="margin-top:8px;"><span style="font-size:10px;background:rgba(240,64,64,0.15);color:var(--accent-red);padding:3px 8px;border-radius:12px;border:1px solid rgba(240,64,64,0.3);font-weight:700;">⚠️ ${getPct(noShowRule3Count, totalRealizado)}% No-Show</span></div>`;
 
     document.getElementById('kpi-row-main').innerHTML = [
-        { label:'1. Total Geral (Validados)',  value:totalGeral,      sub:'&nbsp;',                                accent:'var(--accent-cyan)',   icon:'📋', extra:kpi1Extra },
-        { label:'2. Total Piloto', value:totalPiloto,     sub:getPct(totalPiloto, totalGeral)+'% do Geral',     accent:'var(--accent-blue)',   icon:'🚀', extra:kpi2Extra },
-        { label:'3. Realizados',   value:totalRealizado,  sub:getPct(totalRealizado, totalGeral)+'% do Geral',  accent:'var(--accent-green)',  icon:'⚡', extra:kpi3Extra },
-        { label:'4. Impedidos',    value:totalImpedido,   sub:getPct(totalImpedido, totalGeral)+'% do Geral',   accent:'var(--accent-red)',    icon:'🚫', extra:'' },
-        { label:'5. Antecipados',  value:totalAntecipado, sub:getPct(totalAntecipado, totalRealizado)+'% do Realiz.', accent:'var(--accent-purple)', icon:'⏳', extra:'' },
+        { label:'1. Total Geral', info:'Total de chamados validados operados em dias úteis com fases ou alocações válidas mapeadas (Regra 1).', value:totalGeral, sub:'&nbsp;', accent:'var(--accent-cyan)', icon:'📋', extra:kpi1Extra },
+        { label:'2. Total Piloto', info:'Volume absoluto de chamados identificados com a Tag/Classe Piloto no período e suas subdivisões.', value:totalPiloto, sub:getPct(totalPiloto, totalGeral)+'% do Geral', accent:'var(--accent-blue)', icon:'🚀', extra:kpi2Extra },
+        { label:'3. Realizados', info:'Chamados de dias úteis com finalização concluída ou impedida, expurgando reagendamentos SmartOps (Regra 2).', value:totalRealizado, sub:getPct(totalRealizado, totalGeral)+'% do Geral', accent:'var(--accent-green)', icon:'⚡', extra:kpi3Extra },
+        { label:'4. Impedidos', info:'Volume de chamados em dias úteis que foram encerrados com alocação final de Impedimento.', value:totalImpedido, sub:getPct(totalImpedido, totalGeral)+'% do Geral', accent:'var(--accent-red)', icon:'🚫', extra:'' },
+        { label:'5. Antecipados', info:'Chamados onde houve êxito na antecipação da agenda para uma data anterior.', value:totalAntecipado, sub:getPct(totalAntecipado, totalRealizado)+'% do Realiz.', accent:'var(--accent-purple)', icon:'⏳', extra:'' },
     ].map(k=>`<div class="kpi-card" style="--kpi-accent:${k.accent}">
-        <div class="kpi-label">${k.label}</div>
+        <div class="kpi-label">
+            <span>${k.label}</span>
+            <span class="tooltip">? <span class="tooltiptext">${k.info}</span></span>
+        </div>
         <div class="kpi-value">${k.value}</div>
         <div class="kpi-sub">${k.sub}</div>
         ${k.extra}
@@ -725,23 +782,23 @@ function renderPainel(dados) {
             <span style="width:10px;height:10px;border-radius:50%;background:#F04040;display:inline-block;"></span> Fim de semana (Regra 6)
         </span>`;
 
-    const topPrest = Object.entries(prestadorRealizado).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    // Render do Ranking de Prestadores com suporte a clique (Drill-Down)
+    const topPrest = Object.entries(prestadorRealizadoFull).sort((a,b)=>b[1]-a[1]).slice(0,10);
     const maxPrest = topPrest[0]?.[1] || 1;
     const ulPrest  = document.getElementById('lista-prestadores');
     if (ulPrest) ulPrest.innerHTML = topPrest.length === 0
         ? '<div class="empty">Sem dados de prestador.</div>'
         : topPrest.map(([nome,qtd]) => {
-            const sc = prestadorSemContato[nome] || 0;
-            const scBadge = sc > 0
-                ? `<span style="font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">${sc} s/c (${Math.round((sc/qtd)*100)}%)</span>`
-                : '';
-            return `<div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);">
-                <span style="flex:1; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${nome}">${nome}</span>
+            const sc = prestadorSemContatoFull[nome] || 0;
+            const scBadge = sc > 0 ? `<span style="font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">${sc} s/c</span>` : '';
+            const isCurrentFilter = (prestadorSelecionado === nome);
+            return `<div class="prestador-item ${isCurrentFilter ? 'active-filter' : ''}" style="cursor:pointer;" onclick="selecionarPrestador('${nome.replace(/'/g, "\\'")}')" title="Clique para focar as métricas neste prestador">
+                <span style="flex:1; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; ${isCurrentFilter ? 'color:var(--accent-purple); font-weight:bold;' : ''}">${nome}</span>
                 <div style="flex:1;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
                     <div style="width:${(qtd/maxPrest*100).toFixed(1)}%;height:100%;background:var(--accent-purple);border-radius:3px;"></div>
                 </div>
                 <span style="flex-shrink:0; width:26px; text-align:right; color:var(--accent-purple); font-weight:700;">${qtd}</span>
-                <div style="flex-shrink:0; width:75px; text-align:right;">${scBadge}</div>
+                <div style="flex-shrink:0; width:55px; text-align:right;">${scBadge}</div>
             </div>`;
         }).join('');
 
@@ -751,13 +808,13 @@ function renderPainel(dados) {
     if (ulAnt) ulAnt.innerHTML = topAnt.length === 0
         ? '<div class="empty">Nenhum dado de antecipado.</div>'
         : topAnt.map(([nome,qtd]) => {
-            return `<div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);">
+            return `<div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 8px;border-bottom:1px solid var(--border);">
                 <span style="flex:1; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${nome}">${nome}</span>
                 <div style="flex:1; height:5px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden;">
                     <div style="width:${(qtd/maxAnt*100).toFixed(1)}%;height:100%;background:var(--accent-green);border-radius:3px;"></div>
                 </div>
                 <span style="flex-shrink:0; width:26px; text-align:right; color:var(--accent-green); font-weight:700;">${qtd}</span>
-                <span style="flex-shrink:0; width:45px; text-align:right; color:var(--muted);">(${getPct(qtd, prestadorRealizado[nome] || qtd)}%)</span>
+                <span style="flex-shrink:0; width:45px; text-align:right; color:var(--muted);">(${getPct(qtd, prestadorRealizadoFull[nome] || qtd)}%)</span>
             </div>`;
         }).join('');
 
@@ -771,15 +828,15 @@ function renderPainel(dados) {
             if (qtd === 0) return '';
             const sc = semContatoPorDia[d] || 0;
             const color = isFds ? 'var(--accent-red)' : 'var(--accent-blue)';
-            const scBadge = (!isFds && sc > 0) ? `<span style="font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">${sc} s/c (${Math.round((sc/qtd)*100)}%)</span>` : '';
+            const scBadge = (!isFds && sc > 0) ? `<span style="font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">${sc} s/c</span>` : '';
 
-            return `<div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);">
+            return `<div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 8px;border-bottom:1px solid var(--border);">
                 <span style="flex:0 0 85px; color:var(--text); white-space:nowrap;">${fmtData(d)} <span style="font-size:10px;color:var(--muted);">${isFds ? '(FDS)' : ''}</span></span>
                 <div style="flex:1; height:5px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden;">
                     <div style="width:${(qtd/maxVol*100).toFixed(1)}%;height:100%;background:${color};border-radius:3px;"></div>
                 </div>
                 <span style="flex-shrink:0; width:26px; text-align:right; color:${color}; font-weight:700;">${qtd}</span>
-                <div style="flex-shrink:0; width:70px; text-align:right;">${scBadge}</div>
+                <div style="flex-shrink:0; width:50px; text-align:right;">${scBadge}</div>
             </div>`;
         }).join('');
     }
@@ -790,7 +847,7 @@ function renderPainel(dados) {
     if (ulTrat) ulTrat.innerHTML = tratsArr.length === 0
         ? '<div class="empty">Sem dados de tratativa.</div>'
         : tratsArr.map(([nome, qtd])=>`
-            <div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);">
+            <div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 8px;border-bottom:1px solid var(--border);">
                 <span style="flex:3;min-width:0;color:var(--text);line-height:1.4;">${formatarNome(nome)}</span>
                 <div style="flex:2;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
                     <div style="width:${(qtd/maxTrat*100).toFixed(1)}%;height:100%;background:var(--accent-cyan);border-radius:3px;"></div>
@@ -799,8 +856,12 @@ function renderPainel(dados) {
                 <span style="flex-shrink:0;min-width:42px;text-align:right;color:var(--muted);">(${getPct(qtd, totalRealizado)}%)</span>
             </div>`).join('');
 
-    let txt = `*📊 PAINEL TORRE DE CONTROLE — COBLI (${textoData})*\n\n`;
-    txt += `*Resumo Geral:*\n`;
+    // Montagem Texto Automatizado do Slack
+    let txt = `*📊 PAINEL TORRE DE CONTROLE — COBLI (${textoData})*\n`;
+    if (prestadorSelecionado) {
+        txt += `_⚠️ FILTRADO EXCLUSIVAMENTE POR PRESTADOR: ${prestadorSelecionado}_\n`;
+    }
+    txt += `\n*Resumo Geral:*\n`;
     txt += `> • Total Geral: ${totalGeral}\n`;
     if (totalPiloto > 0) txt += `> • Total Piloto: ${totalPiloto} (${getPct(totalPiloto, totalGeral)}%)\n`;
     txt += `> • Realizados: ${totalRealizado} (${getPct(totalRealizado, totalGeral)}%)\n`;
