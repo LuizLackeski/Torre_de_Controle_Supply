@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de Performance — Cobli</title>
+    <title>Painel Torre de Controle — Cobli</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -36,7 +36,7 @@
         /* ── UPLOAD ── */
         #upload-screen { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; padding:40px 20px; gap:24px; }
         .upload-logo { font-size:13px; font-weight:700; letter-spacing:4px; color:var(--accent-cyan); text-transform:uppercase; }
-        .upload-title { font-size:28px; font-weight:700; color:var(--text); }
+        .upload-title { font-size:28px; font-weight:700; color:var(--text); text-align:center; }
         .upload-sub { font-size:14px; color:var(--muted); text-align:center; max-width:420px; }
         .upload-box { background:var(--card); border:2px dashed var(--border); border-radius:16px; padding:48px 64px; text-align:center; cursor:pointer; transition:border-color 0.2s,background 0.2s; max-width:460px; width:100%; }
         .upload-box:hover { border-color:var(--accent-cyan); background:rgba(15,253,201,0.05); }
@@ -117,8 +117,8 @@
 
 <div id="upload-screen">
     <div class="upload-logo">Cobli</div>
-    <div class="upload-title">Painel de Performance</div>
-    <div class="upload-sub">Importe o arquivo CSV exportado do sistema para gerar o painel automaticamente.</div>
+    <div class="upload-title">Painel Torre de Controle</div>
+    <div class="upload-sub">Importe o arquivo CSV exportado do sistema para gerar o painel da Torre de Controle automaticamente.</div>
     <div class="upload-box" onclick="document.getElementById('csvFileInput').click()">
         <div class="icon">📂</div>
         <div style="font-size:15px;font-weight:600;color:var(--text);">Clique para importar o CSV</div>
@@ -152,7 +152,7 @@
     <div id="painel-cobli">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;padding-bottom:16px;border-bottom:1px solid var(--border);">
             <div>
-                <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent-cyan);margin-bottom:4px;">Performance Report</div>
+                <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent-cyan);margin-bottom:4px;">Painel Torre de Controle</div>
                 <div style="font-size:18px;font-weight:700;color:var(--text);" id="painel-titulo-data">Cobli — Carregando...</div>
             </div>
             <div style="text-align:right;">
@@ -176,7 +176,7 @@
             </div>
             <div class="panel-block" style="padding:16px 20px;">
                 <div class="panel-block-title" style="color:var(--accent-red);margin-bottom:10px;"><span class="dot" style="color:var(--accent-red);background:var(--accent-red);"></span>No-Show</div>
-                <div id="lista-no-show-novo" class="scrollable-list" style="max-height:120px;overflow-y:auto;padding-right:5px;"></div>
+                <div id="lista-no-show-novo" class="scrollable-list" style="max-height:160px;overflow-y:auto;padding-right:5px;"></div>
             </div>
         </div>
 
@@ -493,7 +493,7 @@ function renderPainel(dados) {
 
     document.getElementById('kpi-row-main').innerHTML = [
         { label:'1. Total Geral',  value:totalGeral,      sub:'&nbsp;',                                accent:'var(--accent-cyan)',   icon:'📋', extra:kpi1Extra },
-        { label:'2. Total Pilot',  value:totalPiloto,     sub:getPct(totalPiloto, totalGeral)+'% do Geral',     accent:'var(--accent-blue)',   icon:'🚀', extra:kpi2Extra },
+        { label:'2. Total Piloto', value:totalPiloto,     sub:getPct(totalPiloto, totalGeral)+'% do Geral',     accent:'var(--accent-blue)',   icon:'🚀', extra:kpi2Extra },
         { label:'3. Realizados',   value:totalRealizado,  sub:getPct(totalRealizado, totalGeral)+'% do Geral',  accent:'var(--accent-green)',  icon:'⚡', extra:kpi3Extra },
         { label:'4. Impedidos',    value:totalImpedido,   sub:getPct(totalImpedido, totalGeral)+'% do Geral',   accent:'var(--accent-red)',    icon:'🚫', extra:'' },
         { label:'5. Antecipados',  value:totalAntecipado, sub:getPct(totalAntecipado, totalRealizado)+'% do Realiz.', accent:'var(--accent-purple)', icon:'⏳', extra:'' },
@@ -524,7 +524,7 @@ function renderPainel(dados) {
            </div>
            <span style="font-size:12px;background:rgba(245,197,25,0.12);color:#F5C519;border:1px solid rgba(245,197,25,0.25);border-radius:20px;padding:3px 12px;font-weight:700;">${getPct(totalSemContato, totalGeral)}% do total analisado</span>`;
 
-    // Ajuste layout No-Show
+    // Ajuste layout No-Show: Informação empilhada (Texto em cima, barra embaixo)
     const nsArr = Object.entries(noShowCountMap).sort((a,b)=>b[1]-a[1]);
     const maxNS = nsArr[0]?.[1] || 1;
     const totalNSList = nsArr.reduce((a,b)=>a+b[1], 0);
@@ -532,13 +532,15 @@ function renderPainel(dados) {
     if (nsEl) nsEl.innerHTML = nsArr.length === 0
         ? '<div class="empty">Nenhum No-Show mapeado.</div>'
         : nsArr.map(([nome,qtd]) => `
-            <div style="display:flex;align-items:center;gap:8px;font-size:11px;padding:6px 0;border-bottom:1px solid var(--border);">
-                <span style="flex:0 0 135px; color:var(--text); line-height:1.2; word-wrap:break-word; padding-right:5px;">${formatarNome(nome)}</span>
-                <div style="flex:1; height:4px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden;">
-                    <div style="width:${(qtd/maxNS*100).toFixed(1)}%;height:100%;background:var(--accent-red);border-radius:2px;"></div>
+            <div style="display:flex; flex-direction:column; gap:6px; font-size:11px; padding:8px 0; border-bottom:1px solid var(--border);">
+                <div style="color:var(--text); line-height:1.3;">${formatarNome(nome)}</div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <div style="flex:1; height:5px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden;">
+                        <div style="width:${(qtd/maxNS*100).toFixed(1)}%;height:100%;background:var(--accent-red);border-radius:3px;"></div>
+                    </div>
+                    <span style="flex-shrink:0; width:24px; text-align:right; color:var(--accent-red); font-weight:700;">${qtd}</span>
+                    <span style="flex-shrink:0; width:40px; text-align:right; color:var(--muted);">(${getPct(qtd, totalNSList)}%)</span>
                 </div>
-                <span style="flex-shrink:0; width:20px; text-align:right; color:var(--accent-red); font-weight:700;">${qtd}</span>
-                <span style="flex-shrink:0; width:38px; text-align:right; color:var(--muted);">(${getPct(qtd, totalNSList)}%)</span>
             </div>`).join('');
 
     // ── GRÁFICO EVOLUÇÃO (Regra 9) ──
@@ -650,19 +652,19 @@ function renderPainel(dados) {
             </div>`).join('');
 
     // ── SLACK BASE MESSAGE GENERATION ──
-    let txt = `*📊 PAINEL DE PERFORMANCE — COBLI (${textoData})*\n\n`;
-    txt += `*Resumo Geral:*\n• Total Geral: ${totalGeral}\n• Total Pilot: ${totalPiloto} (${getPct(totalPiloto, totalGeral)}%)\n• Realizados: ${totalRealizado} (${getPct(totalRealizado, totalGeral)}%)\n• Impedidos: ${totalImpedido} (${getPct(totalImpedido, totalGeral)}%)\n• Antecipados: ${totalAntecipado} (${getPct(totalAntecipado, totalRealizado)}%)\n\n`;
-    txt += `*🚀 Detalhes Pilot:*\n`;
-    if (pilotoNoShow > 0) txt += `• *🚨 NO-SHOW: ${pilotoNoShow} (${getPct(pilotoNoShow, totalPiloto)}%)*\n`;
-    txt += `• Concluídos: ${pilotoConcluido} (${getPct(pilotoConcluido, totalPiloto)}%)\n`;
-    txt += `• Impedidos: ${pilotoImpedido} (${getPct(pilotoImpedido, totalPiloto)}%)\n`;
+    let txt = `*📊 PAINEL TORRE DE CONTROLE — COBLI (${textoData})*\n\n`;
+    txt += `*Resumo Geral:*\n> • Total Geral: ${totalGeral}\n> • Total Piloto: ${totalPiloto} (${getPct(totalPiloto, totalGeral)}%)\n> • Realizados: ${totalRealizado} (${getPct(totalRealizado, totalGeral)}%)\n> • Impedidos: ${totalImpedido} (${getPct(totalImpedido, totalGeral)}%)\n> • Antecipados: ${totalAntecipado} (${getPct(totalAntecipado, totalRealizado)}%)\n\n`;
+    txt += `*🚀 Detalhes Piloto:*\n`;
+    if (pilotoNoShow > 0) txt += `> • *🚨 NO-SHOW: ${pilotoNoShow} (${getPct(pilotoNoShow, totalPiloto)}%)*\n`;
+    txt += `> • Concluídos: ${pilotoConcluido} (${getPct(pilotoConcluido, totalPiloto)}%)\n`;
+    txt += `> • Impedidos: ${pilotoImpedido} (${getPct(pilotoImpedido, totalPiloto)}%)\n`;
     if (totalSemContato > 0) txt += `\n*⚡ Sem Contato:* ${totalSemContato} (${getPct(totalSemContato, totalGeral)}% do total)\n`;
     if (totalFDS > 0) txt += `*🔴 Fim de Semana:* ${totalFDS} atends. (${getPct(totalFDS, totalGeral)}% do total)\n`;
     
     // Trocando Fases de Tratativas pelo bloco de No-Show
     if (nsArr.length > 0) {
         txt += `\n*🚨 No-Show:*\n`;
-        nsArr.forEach(([nome, qtd]) => txt += `• ${formatarNome(nome)}: ${qtd} (${getPct(qtd, totalNSList)}%)\n`);
+        nsArr.forEach(([nome, qtd]) => txt += `> • ${formatarNome(nome)}: ${qtd} (${getPct(qtd, totalNSList)}%)\n`);
     }
     
     baseSlackMessage = txt;
