@@ -393,8 +393,8 @@ function renderPainel(dados) {
         const isInSetD = checkInSet(tratativaRaw, setD);
 
         // Regra 1: Total Geral
-        const isSemConclusao = (isConcluido || isImpedido) && !isInSetA;
-        const qualifiesRule1 = !fds && (isInSetA || isConcluido || isImpedido);
+        const isSemConclusao = (isConcluido || isImpedido || isEmAndamento) && !isInSetA;
+        const qualifiesRule1 = !fds && (isInSetA || isConcluido || isImpedido || isEmAndamento);
 
         if (qualifiesRule1) {
             totalGeral++;
@@ -409,7 +409,7 @@ function renderPainel(dados) {
             }
 
             // Regra 3: Total Realizados
-            if (isInSetB || isConcluido || isImpedido) {
+            if (isInSetB || isConcluido || isImpedido || isEmAndamento) {
                 totalRealizado++;
                 if (dataISO) realizedByDay[dataISO] = (realizedByDay[dataISO] || 0) + 1;
                 if (prestador) prestadorRealizado[prestador] = (prestadorRealizado[prestador] || 0) + 1;
