@@ -46,32 +46,41 @@
 
         /* ── DASHBOARD ── */
         #dashboard-screen { display:none; }
-        .top-bar-outer { background:var(--card2); border-bottom:1px solid var(--border); }
-        .top-bar { max-width:1100px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; padding:14px 28px; flex-wrap:wrap; gap:16px; }
-        .top-bar-left { display:flex; align-items:center; gap:12px; flex-wrap:wrap; flex:1; }
-        .cobli-badge { font-size:11px; font-weight:700; letter-spacing:3px; color:var(--accent-cyan); text-transform:uppercase; background:rgba(15,253,201,0.08); padding:4px 10px; border-radius:6px; border:1px solid rgba(15,253,201,0.15); }
-        #topbar-date { font-size:13px; font-weight:600; color:var(--muted); }
-        .badge { padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; text-transform:uppercase; }
-        .badge-cyan { background:rgba(15,253,201,0.1); color:var(--accent-cyan); border:1px solid rgba(15,253,201,0.2); }
+        
+        /* ── NOVA TOP BAR ── */
+        .top-bar-outer { background:var(--card2); border-bottom:1px solid var(--border); position: sticky; top: 0; z-index: 50; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .top-bar { max-width:1300px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; padding:12px 28px; flex-wrap:wrap; gap:16px; }
+        .top-bar-left { display:flex; align-items:center; flex-shrink:0; }
+        .badge-cyan { background:rgba(15,253,201,0.1); color:var(--accent-cyan); border:1px solid rgba(15,253,201,0.25); border-radius: 8px; padding: 6px 14px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 
-        .filter-group { display:flex; gap:4px; background:var(--card); padding:4px; border-radius:8px; border:1px solid var(--border-strong); }
+        .filter-group { display:flex; align-items:center; gap:6px; background:var(--card); padding:6px 8px; border-radius:10px; border:1px solid var(--border-strong); flex-wrap: wrap; }
         .filter-btn { background:transparent; color:var(--muted); border:none; padding:6px 14px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.2s; }
         .filter-btn.active { background:var(--accent-cyan); color:var(--cobli-navy); }
         .filter-btn:hover:not(.active) { color:var(--text); background:rgba(255,255,255,0.05); }
+        
+        /* Inputs de Data Personalizados */
+        .v-divider { width: 1px; height: 22px; background: var(--border-strong); margin: 0 4px; }
+        .custom-date-box { display: flex; align-items: center; gap: 8px; padding-left: 4px; }
+        .date-input { background: var(--bg); border: 1px solid var(--border-strong); border-radius: 6px; color: var(--text); padding: 5px 10px; font-size: 12px; font-family: inherit; color-scheme: dark; outline: none; transition: border-color 0.2s; cursor: pointer; }
+        .date-input:focus { border-color: var(--accent-cyan); }
 
-        .top-bar-actions { display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; flex:1; }
-        .btn { display:inline-flex; align-items:center; justify-content:center; gap:7px; padding:9px 16px; border-radius:8px; border:none; font-size:12px; font-weight:600; cursor:pointer; transition:opacity 0.15s; }
+        .top-bar-actions { display:flex; gap:10px; flex-shrink:0; }
+        .btn { display:inline-flex; align-items:center; justify-content:center; gap:7px; padding:8px 16px; border-radius:8px; border:none; font-size:12px; font-weight:600; cursor:pointer; transition:opacity 0.15s; }
         .btn:hover { opacity:0.85; }
         .btn-outline { background:rgba(255,255,255,0.04); border:1px solid var(--border-strong); color:var(--text); }
         .btn-slack { background:#4A154B; color:#fff; }
         .btn-reload { background:transparent; border:1px solid var(--border); color:var(--muted); }
 
         /* ── PAINEL ── */
-        #painel-cobli { background:var(--bg); padding:28px 32px 36px; max-width:1100px; margin:0 auto; }
+        #painel-cobli { background:var(--bg); padding:32px 32px 40px; max-width:1250px; margin:0 auto; }
 
+        /* NOVO CABEÇALHO INTERNO */
+        .painel-header { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:28px; padding-bottom:20px; border-bottom:1px solid var(--border-strong); }
+        .cobli-badge { display:inline-block; font-size:10px; font-weight:700; letter-spacing:2px; color:var(--bg); background:var(--accent-cyan); text-transform:uppercase; padding:3px 8px; border-radius:4px; margin-right: 10px; vertical-align: middle; }
+        
         .kpi-row { display:grid; gap:12px; margin-bottom:14px; }
         .kpi-row-5 { grid-template-columns:repeat(5,1fr); }
-        .kpi-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px 22px; position:relative; overflow:hidden; border-left:3px solid var(--kpi-accent,var(--accent-blue)); }
+        .kpi-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px 22px; position:relative; overflow:hidden; border-left:3px solid var(--kpi-accent,var(--accent-blue)); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
         .kpi-label { font-size:10px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
         .kpi-value { font-size:32px; font-weight:700; color:var(--text); line-height:1; }
         .kpi-sub { font-size:11px; color:var(--kpi-accent,var(--muted)); margin-top:6px; font-weight:600; }
@@ -80,19 +89,16 @@
         .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:14px; }
         .grid-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:14px; }
 
-        .panel-block { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px 22px; }
+        .panel-block { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px 22px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
         .panel-block-title { font-size:10px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:var(--muted); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
         .panel-block-title .dot { width:6px; height:6px; border-radius:50%; background:currentColor; flex-shrink:0; }
-
-        .tratativa-item { display:flex; align-items:center; gap:10px; font-size:12px; padding:5px 0; border-bottom:1px solid var(--border); }
-        .tratativa-item:last-child { border-bottom:none; }
-        .tratativa-name { color:var(--text); }
 
         .chart-wrap { position:relative; height:240px; width:100%; }
 
         @media (max-width:950px) {
             .kpi-row-5 { grid-template-columns:repeat(2,1fr); }
             .grid-2,.grid-3 { grid-template-columns:1fr; }
+            .top-bar { justify-content: center; }
         }
         .empty { color:var(--muted); font-size:12px; font-style:italic; padding:8px 0; }
         
@@ -118,7 +124,7 @@
         .table-os td { padding: 8px; border-bottom: 1px solid var(--border); color: var(--text); }
         
         /* Modal de Imagem */
-        #imagem-preview-container { min-height: 200px; display:flex; align-items:center; justify-content:center; background:#111; border:1px solid var(--border); border-radius:8px; margin-bottom: 16px; overflow:auto; max-height: 400px; }
+        #imagem-preview-container { min-height: 200px; display:flex; align-items:center; justify-content:center; background:#111; border:1px solid var(--border); border-radius:8px; margin-bottom: 16px; overflow:auto; max-height: 400px; padding: 10px; }
         #imagem-preview { display:none; max-width:100%; height:auto; object-fit: contain; }
     </style>
 </head>
@@ -139,16 +145,22 @@
 <div id="dashboard-screen">
     <div class="top-bar-outer"><div class="top-bar">
         <div class="top-bar-left">
-            <span class="cobli-badge">Cobli</span>
-            <span id="topbar-date">—</span>
-            <span id="topbar-total" class="badge badge-cyan"></span>
+            <span id="topbar-total" class="badge-cyan"></span>
         </div>
-        <div style="display:flex;justify-content:center;flex:1;">
+        <div class="top-bar-center" style="display:flex;justify-content:center;flex:1;">
             <div class="filter-group">
                 <button class="filter-btn" onclick="aplicarFiltro('7',this)">7 dias</button>
                 <button class="filter-btn" onclick="aplicarFiltro('15',this)">15 dias</button>
                 <button class="filter-btn" onclick="aplicarFiltro('30',this)">30 dias</button>
-                <button class="filter-btn active" onclick="aplicarFiltro('all',this)">Todo o período</button>
+                <div class="v-divider"></div>
+                <div class="custom-date-box">
+                    <span style="font-size:10px; color:var(--muted); font-weight:700; text-transform:uppercase;">Personalizado:</span>
+                    <input type="date" id="dataInicio" class="date-input" title="Data Início">
+                    <span style="color:var(--muted); font-size:11px;">até</span>
+                    <input type="date" id="dataFim" class="date-input" title="Data Fim">
+                    <button class="filter-btn active" id="btn-custom-filter" style="padding:6px 12px; background:rgba(15,253,201,0.1); color:var(--accent-cyan); border:1px solid rgba(15,253,201,0.2);" onclick="aplicarFiltro('custom', this)">Filtrar</button>
+                    <button class="filter-btn" style="padding:6px 10px;" onclick="limparFiltroPersonalizado()" title="Limpar Filtro e carregar todo o período">Limpar</button>
+                </div>
             </div>
         </div>
         <div class="top-bar-actions">
@@ -159,14 +171,17 @@
     </div></div>
 
     <div id="painel-cobli">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;padding-bottom:16px;border-bottom:1px solid var(--border);">
+        <div class="painel-header">
             <div>
-                <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent-cyan);margin-bottom:4px;">Painel Torre de Controle</div>
-                <div style="font-size:18px;font-weight:700;color:var(--text);" id="painel-titulo-data">Cobli — Carregando...</div>
+                <div style="display:flex;align-items:center;margin-bottom:8px;">
+                    <span class="cobli-badge">Cobli</span>
+                    <span style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent-cyan);">Torre de Controle</span>
+                </div>
+                <div style="font-size:26px;font-weight:700;color:var(--text);letter-spacing:-0.5px;" id="painel-titulo-data">Carregando...</div>
             </div>
             <div style="text-align:right;">
-                <div style="font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;">Gerado em</div>
-                <div style="font-size:12px;color:var(--text);font-weight:500;" id="painel-gerado-em">—</div>
+                <div style="font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Atualizado em</div>
+                <div style="font-size:13px;color:var(--text);font-weight:600;background:var(--card);padding:6px 12px;border-radius:8px;border:1px solid var(--border);" id="painel-gerado-em">—</div>
             </div>
         </div>
 
@@ -334,7 +349,7 @@ document.getElementById('csvFileInput').addEventListener('change', e => { if(e.t
 function parseCSV(file) {
     Papa.parse(file, {
         header: true, skipEmptyLines: true, transformHeader: h => h.trim(),
-        complete: r => { dadosGlobaisBase = r.data; aplicarFiltro('all', null); }
+        complete: r => { dadosGlobaisBase = r.data; aplicarFiltro('custom', document.getElementById('btn-custom-filter')); } // Começa com custom vazio = tudo
     });
 }
 
@@ -365,16 +380,37 @@ function fmtData(d) {
     return d.match(/^\d{4}-\d{2}-\d{2}/) ? d.slice(5).split('-').reverse().join('/') : d;
 }
 
-// ── FILTRO ──
+// ── FILTRO GERAL ──
+function limparFiltroPersonalizado() {
+    document.getElementById('dataInicio').value = '';
+    document.getElementById('dataFim').value = '';
+    aplicarFiltro('custom', document.getElementById('btn-custom-filter'));
+}
+
 function aplicarFiltro(periodo, btnEl) {
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     if (btnEl) btnEl.classList.add('active');
-    else document.querySelectorAll('.filter-btn')[3].classList.add('active');
+    else document.getElementById('btn-custom-filter')?.classList.add('active');
 
     if (!dadosGlobaisBase || dadosGlobaisBase.length === 0) return;
 
     const todasDatas = [...new Set(dadosGlobaisBase.map(l => toISO(val(l,'data').split(' ')[0])).filter(Boolean))].sort();
-    const permitidas = periodo === 'all' ? todasDatas : todasDatas.slice(-parseInt(periodo, 10));
+    let permitidas = [];
+
+    if (periodo === 'custom') {
+        const start = document.getElementById('dataInicio').value;
+        const end = document.getElementById('dataFim').value;
+        
+        permitidas = todasDatas.filter(d => {
+            let pass = true;
+            if (start) pass = pass && (d >= start);
+            if (end) pass = pass && (d <= end);
+            return pass;
+        });
+    } else {
+        permitidas = todasDatas.slice(-parseInt(periodo, 10));
+    }
+
     renderPainel(dadosGlobaisBase.filter(l => permitidas.includes(toISO(val(l,'data').split(' ')[0]))));
 }
 
@@ -408,7 +444,6 @@ function renderPainel(dados) {
         'AGENDAMENTO - ANTECIPADO'
     ];
 
-    // Códigos explicitamente ignorados na hora de contabilizar os "Realizados"
     const excluidosRealizados = [
         'AGENDAMENTO - NO-SHOW CLIENTE - SMARTOPS REAGENDAMENTO',
         'AGENDAMENTO - NO-SHOW TÉCNICO - SMARTOPS REAGENDAMENTO'
@@ -482,7 +517,6 @@ function renderPainel(dados) {
                 if (tratativaRaw.includes('NO-SHOW') || tratativaRaw.includes('NO SHOW')) pilotoNoShow++;
             }
 
-            // Regra 3 (Realizados) revisada: entra se está no SetB, OU se está concluído/impedido, MAS bloqueia os do excluidosRealizados
             if ((isInSetB || isConcluido || isImpedido) && !isExcluidoRealizado) {
                 totalRealizado++;
                 if (dataISO) realizedByDay[dataISO] = (realizedByDay[dataISO] || 0) + 1;
@@ -528,9 +562,11 @@ function renderPainel(dados) {
 
     document.getElementById('upload-screen').style.display = 'none';
     document.getElementById('dashboard-screen').style.display = 'block';
-    document.getElementById('topbar-date').textContent = textoData;
-    document.getElementById('topbar-total').textContent = `${dados.length} linhas totais`;
-    document.getElementById('painel-titulo-data').textContent = `Cobli — ${textoData}`;
+    
+    // Atualizando Cabeçalhos
+    document.getElementById('topbar-total').textContent = `${dados.length} LINHAS TOTAIS`;
+    document.getElementById('painel-titulo-data').textContent = textoData; // Título Maior
+    
     const agora = new Date();
     document.getElementById('painel-gerado-em').textContent = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
 
