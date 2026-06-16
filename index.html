@@ -680,13 +680,14 @@ function renderPainel(dados) {
     if (ulAnt) ulAnt.innerHTML = topAnt.length === 0
         ? '<div class="empty">Nenhum dado de antecipado.</div>'
         : topAnt.map(([nome,qtd]) => {
+            // O cálculo da porcentagem agora é sobre o total de realizados do próprio prestador
             return `<div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);">
                 <span style="flex:2;color:var(--text);min-width:0;">${nome}</span>
                 <div style="flex:2;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
                     <div style="width:${(qtd/maxAnt*100).toFixed(1)}%;height:100%;background:var(--accent-green);border-radius:3px;"></div>
                 </div>
                 <span style="flex-shrink:0;min-width:26px;text-align:right;color:var(--accent-green);font-weight:700;">${qtd}</span>
-                <span style="flex-shrink:0;min-width:42px;text-align:right;color:var(--muted);">(${getPct(qtd, totalRealizado)}%)</span>
+                <span style="flex-shrink:0;min-width:42px;text-align:right;color:var(--muted);">(${getPct(qtd, prestadorRealizado[nome] || qtd)}%)</span>
             </div>`;
         }).join('');
 
