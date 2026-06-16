@@ -53,19 +53,21 @@
         .top-bar-left { display:flex; align-items:center; flex-shrink:0; }
         .badge-cyan { background:rgba(15,253,201,0.1); color:var(--accent-cyan); border:1px solid rgba(15,253,201,0.25); border-radius: 8px; padding: 6px 14px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 
-        .filter-group { display:flex; align-items:center; gap:6px; background:var(--card); padding:6px 8px; border-radius:10px; border:1px solid var(--border-strong); flex-wrap: wrap; }
-        .filter-btn { background:transparent; color:var(--muted); border:none; padding:6px 14px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.2s; }
+        /* Ajuste do Filtro para não quebrar linha */
+        .filter-group { display:flex; align-items:center; gap:6px; background:var(--card); padding:6px 8px; border-radius:10px; border:1px solid var(--border-strong); flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+        .filter-group::-webkit-scrollbar { display: none; } /* Oculta a barra de scroll feia */
+        .filter-btn { background:transparent; color:var(--muted); border:none; padding:6px 14px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.2s; white-space: nowrap; }
         .filter-btn.active { background:var(--accent-cyan); color:var(--cobli-navy); }
         .filter-btn:hover:not(.active) { color:var(--text); background:rgba(255,255,255,0.05); }
         
         /* Inputs de Data Personalizados */
         .v-divider { width: 1px; height: 22px; background: var(--border-strong); margin: 0 4px; }
-        .custom-date-box { display: flex; align-items: center; gap: 8px; padding-left: 4px; }
+        .custom-date-box { display: flex; align-items: center; gap: 8px; padding-left: 4px; white-space: nowrap; }
         .date-input { background: var(--bg); border: 1px solid var(--border-strong); border-radius: 6px; color: var(--text); padding: 5px 10px; font-size: 12px; font-family: inherit; color-scheme: dark; outline: none; transition: border-color 0.2s; cursor: pointer; }
         .date-input:focus { border-color: var(--accent-cyan); }
 
         .top-bar-actions { display:flex; gap:10px; flex-shrink:0; }
-        .btn { display:inline-flex; align-items:center; justify-content:center; gap:7px; padding:8px 16px; border-radius:8px; border:none; font-size:12px; font-weight:600; cursor:pointer; transition:opacity 0.15s; }
+        .btn { display:inline-flex; align-items:center; justify-content:center; gap:7px; padding:8px 16px; border-radius:8px; border:none; font-size:12px; font-weight:600; cursor:pointer; transition:opacity 0.15s; white-space: nowrap; }
         .btn:hover { opacity:0.85; }
         .btn-outline { background:rgba(255,255,255,0.04); border:1px solid var(--border-strong); color:var(--text); }
         .btn-slack { background:#4A154B; color:#fff; }
@@ -74,7 +76,7 @@
         /* ── PAINEL ── */
         #painel-cobli { background:var(--bg); padding:32px 32px 40px; max-width:1250px; margin:0 auto; }
 
-        /* NOVO CABEÇALHO INTERNO */
+        /* CABEÇALHO INTERNO */
         .painel-header { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:28px; padding-bottom:20px; border-bottom:1px solid var(--border-strong); }
         .cobli-badge { display:inline-block; font-size:10px; font-weight:700; letter-spacing:2px; color:var(--bg); background:var(--accent-cyan); text-transform:uppercase; padding:3px 8px; border-radius:4px; margin-right: 10px; vertical-align: middle; }
         
@@ -127,9 +129,9 @@
         .table-os th { padding: 8px; border-bottom: 1px solid var(--border-strong); color: var(--muted); position: sticky; top: 0; background: var(--card); }
         .table-os td { padding: 8px; border-bottom: 1px solid var(--border); color: var(--text); }
         
-        /* Modal de Imagem */
-        #imagem-preview-container { min-height: 200px; display:flex; align-items:center; justify-content:center; background:#111; border:1px solid var(--border); border-radius:8px; margin-bottom: 16px; overflow:auto; max-height: 400px; padding: 10px; }
-        #imagem-preview { display:none; max-width:100%; height:auto; object-fit: contain; }
+        /* Modal de Imagem (Ajustado para não ter scrollbar) */
+        #imagem-preview-container { height: 350px; display:flex; align-items:center; justify-content:center; background:#111; border:1px solid var(--border); border-radius:8px; margin-bottom: 16px; overflow:hidden; padding: 10px; }
+        #imagem-preview { display:none; max-width:100%; max-height:100%; width:auto; object-fit: contain; }
     </style>
 </head>
 <body>
@@ -668,7 +670,6 @@ function renderPainel(dados) {
     Chart.register(ChartDataLabels);
     const labels = datasValidas.map(d => fmtData(d));
     const isFdsArr = datasValidas.map(d => isFimDeSemana(d));
-    // Gráfico de linha usa o Total Geral para dias úteis
     const dataLine = datasValidas.map(d => isFimDeSemana(d) ? (fdsByDay[d] || 0) : (geralByDay[d] || 0));
 
     const ctxLine = document.getElementById('graficoEvolucao')?.getContext('2d');
@@ -749,7 +750,6 @@ function renderPainel(dados) {
 
     const diasOrdenadosDesc = [...datasValidas].reverse();
     const ulVolume = document.getElementById('lista-volume-dia');
-    // Gráfico de barras usa o Total Geral para dias úteis
     const maxVol = Math.max(...diasOrdenadosDesc.map(d => (isFimDeSemana(d) ? fdsByDay[d] : geralByDay[d]) || 0));
     if (ulVolume) {
         ulVolume.innerHTML = diasOrdenadosDesc.map(d => {
