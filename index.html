@@ -49,11 +49,14 @@
         
         /* ── NOVA TOP BAR ── */
         .top-bar-outer { background:var(--card2); border-bottom:1px solid var(--border); position: sticky; top: 0; z-index: 50; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
-        .top-bar { max-width:1300px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; padding:12px 28px; flex-wrap:wrap; gap:16px; }
+        
+        /* Ajuste: flex-wrap: nowrap para forçar tudo na mesma linha */
+        .top-bar { max-width:1350px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; padding:12px 28px; flex-wrap:nowrap; gap:16px; overflow-x:auto; scrollbar-width:none; }
+        .top-bar::-webkit-scrollbar { display: none; }
+        
         .top-bar-left { display:flex; align-items:center; flex-shrink:0; }
-        .badge-cyan { background:rgba(15,253,201,0.1); color:var(--accent-cyan); border:1px solid rgba(15,253,201,0.25); border-radius: 8px; padding: 6px 14px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .badge-cyan { background:rgba(15,253,201,0.1); color:var(--accent-cyan); border:1px solid rgba(15,253,201,0.25); border-radius: 8px; padding: 6px 14px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
 
-        /* Ajuste do Filtro para não quebrar linha */
         .filter-group { display:flex; align-items:center; gap:6px; background:var(--card); padding:6px 8px; border-radius:10px; border:1px solid var(--border-strong); flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
         .filter-group::-webkit-scrollbar { display: none; }
         .filter-btn { background:transparent; color:var(--muted); border:none; padding:6px 14px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.2s; white-space: nowrap; }
@@ -104,7 +107,6 @@
         @media (max-width:950px) {
             .kpi-row-5 { grid-template-columns:repeat(2,1fr); }
             .grid-2,.grid-3 { grid-template-columns:1fr; }
-            .top-bar { justify-content: center; }
         }
         .empty { color:var(--muted); font-size:12px; font-style:italic; padding:8px 0; }
         
@@ -130,8 +132,8 @@
         .table-os td { padding: 8px; border-bottom: 1px solid var(--border); color: var(--text); }
         
         /* Modal de Imagem */
-        #imagem-preview-container { height: 350px; display:flex; align-items:center; justify-content:center; background:#111; border:1px solid var(--border); border-radius:8px; margin-bottom: 16px; overflow:hidden; padding: 10px; }
-        #imagem-preview { display:none; max-width:100%; max-height:100%; width:auto; object-fit: contain; }
+        #imagem-preview-container { min-height: 200px; display:flex; align-items:center; justify-content:center; background:#111; border:1px solid var(--border); border-radius:8px; margin-bottom: 16px; overflow:auto; max-height: 400px; padding: 10px; }
+        #imagem-preview { display:none; max-width:100%; height:auto; object-fit: contain; }
     </style>
 </head>
 <body>
@@ -549,7 +551,6 @@ function renderPainel(dados) {
             if (prestador) prestadorAntecipado[prestador] = (prestadorAntecipado[prestador] || 0) + 1;
         }
 
-        // Fim de Semana - Contabilizando apenas status
         if (fds && (isConcluido || isImpedido || isEmAndamento || tratativaRaw.includes('NO-SHOW') || tratativaRaw.includes('NO SHOW'))) {
             totalFDS++;
             if (dataISO) fdsByDay[dataISO] = (fdsByDay[dataISO] || 0) + 1;
@@ -558,7 +559,6 @@ function renderPainel(dados) {
             if (isImpedido) fdsImpedido++;
         }
 
-        // Sem Contato (Apenas dias úteis agora)
         if (isInSetD && !fds) {
             totalSemContato++;
             if (prestador) prestadorSemContato[prestador] = (prestadorSemContato[prestador] || 0) + 1;
@@ -638,7 +638,6 @@ function renderPainel(dados) {
         <div class="kpi-icon">${k.icon}</div>
     </div>`).join('');
 
-    // Preparando os badges dinâmicos de Fim de Semana
     let badgesFDS = '';
     if (fdsConcluido > 0) badgesFDS += `<span style="font-size:10px;background:rgba(31,239,81,0.1);color:var(--accent-green);border:1px solid rgba(31,239,81,0.25);border-radius:20px;padding:2px 8px;font-weight:600;">${fdsConcluido} Concluídos FDS</span>`;
     if (fdsImpedido > 0) badgesFDS += `<span style="font-size:10px;background:rgba(245,197,25,0.1);color:var(--accent-yellow);border:1px solid rgba(245,197,25,0.25);border-radius:20px;padding:2px 8px;font-weight:600;">${fdsImpedido} Impedidos FDS</span>`;
@@ -735,7 +734,7 @@ function renderPainel(dados) {
         : topPrest.map(([nome,qtd]) => {
             const sc = prestadorSemContato[nome] || 0;
             const scBadge = sc > 0
-                ? `<span style="font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">${sc} s/c (${Math.round((sc/qtd)*100)}%)</span>`
+                ? `<span style="flex-shrink:0;font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">${sc} s/c (${Math.round((sc/qtd)*100)}%)</span>`
                 : '';
             return `<div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);">
                 <span style="flex:1; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${nome}">${nome}</span>
@@ -781,7 +780,7 @@ function renderPainel(dados) {
                     <div style="width:${(qtd/maxVol*100).toFixed(1)}%;height:100%;background:${color};border-radius:3px;"></div>
                 </div>
                 <span style="flex-shrink:0; width:26px; text-align:right; color:${color}; font-weight:700;">${qtd}</span>
-                <div style="flex-shrink:0; width:75px; text-align:right;">${scBadge}</div>
+                <div style="flex-shrink:0; width:70px; text-align:right;">${scBadge}</div>
             </div>`;
         }).join('');
     }
@@ -793,12 +792,12 @@ function renderPainel(dados) {
         ? '<div class="empty">Sem dados de tratativa.</div>'
         : tratsArr.map(([nome, qtd])=>`
             <div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);">
-                <span style="flex:1; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${formatarNome(nome)}">${formatarNome(nome)}</span>
-                <div style="flex:1; height:5px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden;">
+                <span style="flex:3;min-width:0;color:var(--text);line-height:1.4;">${formatarNome(nome)}</span>
+                <div style="flex:2;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
                     <div style="width:${(qtd/maxTrat*100).toFixed(1)}%;height:100%;background:var(--accent-cyan);border-radius:3px;"></div>
                 </div>
-                <span style="flex-shrink:0; width:26px; text-align:right; color:var(--accent-cyan); font-weight:700;">${qtd}</span>
-                <div style="flex-shrink:0; width:45px; text-align:right; color:var(--muted);">(${getPct(qtd, totalRealizado)}%)</div>
+                <span style="flex-shrink:0;min-width:26px;text-align:right;color:var(--accent-cyan);font-weight:700;">${qtd}</span>
+                <span style="flex-shrink:0;min-width:42px;text-align:right;color:var(--muted);">(${getPct(qtd, totalRealizado)}%)</span>
             </div>`).join('');
 
     let txt = `*📊 PAINEL TORRE DE CONTROLE — COBLI (${textoData})*\n\n`;
