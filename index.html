@@ -193,6 +193,17 @@
 
         <div class="grid-2" style="margin-bottom:14px;">
             <div class="panel-block">
+                <div class="panel-block-title" style="color:var(--accent-purple);"><span class="dot"></span>Top 10 Prestadores</div>
+                <div id="lista-prestadores" class="scrollable-list" style="max-height:240px;overflow-y:auto;padding-right:8px;"></div>
+            </div>
+            <div class="panel-block">
+                <div class="panel-block-title" style="color:var(--accent-green);"><span class="dot"></span>Top 10 Antecipados</div>
+                <div id="lista-antecipados" class="scrollable-list" style="max-height:240px;overflow-y:auto;padding-right:8px;"></div>
+            </div>
+        </div>
+
+        <div class="grid-2" style="margin-bottom:14px;">
+            <div class="panel-block">
                 <div class="panel-block-title" style="color:var(--accent-blue);">
                     <span class="dot"></span>Volume por Dia
                     <span style="margin-left:8px;font-size:10px;color:var(--muted);">
@@ -203,14 +214,9 @@
                 <div id="lista-volume-dia" class="scrollable-list" style="max-height:240px;overflow-y:auto;padding-right:8px;"></div>
             </div>
             <div class="panel-block">
-                <div class="panel-block-title" style="color:var(--accent-purple);"><span class="dot"></span>Top 10 Prestadores</div>
-                <div id="lista-prestadores" class="scrollable-list" style="max-height:240px;overflow-y:auto;padding-right:8px;"></div>
+                <div class="panel-block-title" style="color:var(--accent-cyan);"><span class="dot"></span>Fases de Tratativas</div>
+                <div id="lista-tratativas" class="scrollable-list" style="max-height:240px;overflow-y:auto;padding-right:8px;"></div>
             </div>
-        </div>
-
-        <div class="panel-block" style="margin-bottom:14px;">
-            <div class="panel-block-title" style="color:var(--accent-cyan);"><span class="dot"></span>Fases de Tratativas</div>
-            <div id="lista-tratativas" class="scrollable-list" style="max-height:240px;overflow-y:auto;padding-right:8px;"></div>
         </div>
     </div>
 </div>
@@ -374,7 +380,6 @@ function renderPainel(dados) {
     let checkInSet = (rawStr, list) => list.some(s => rawStr.includes(s));
 
     // Variáveis de contagem
-    let countLidos = 0;
     let totalGeral = 0, fasesSemConclusao = 0;
     let totalPiloto = 0, pilotoConcluido = 0, pilotoImpedido = 0, pilotoNoShow = 0;
     let totalRealizado = 0, noShowRule3Count = 0;
@@ -386,6 +391,7 @@ function renderPainel(dados) {
     let semContatoPorDia = {};
     let prestadorRealizado = {};
     let prestadorSemContato = {};
+    let prestadorAntecipado = {};
     let tratativasCountMap = {};
     let noShowCountMap = {};
     let datasSet = new Set();
@@ -404,7 +410,6 @@ function renderPainel(dados) {
         // Regra Global: Remover CANCELADO sem impacto nenhum
         if (tratativaRaw.includes('AGENDAMENTO - CANCELADO')) return;
         
-        countLidos++;
         const dataISO = toISO(dataStr);
         if(dataISO) datasSet.add(dataISO);
 
@@ -427,7 +432,6 @@ function renderPainel(dados) {
             totalGeral++;
             if (isSemConclusao) {
                 fasesSemConclusao++;
-                // Tentando capturar OS/Chamado seguro
                 let osId = linha['OS'] || linha['os'] || linha['Os'] || linha['ID'] || linha['id'] || val(linha, 'chamado') || val(linha, 'ticket');
                 listaOSsSemConclusao.push({
                     os: osId || 'Sem ID',
@@ -467,6 +471,7 @@ function renderPainel(dados) {
         // Regra 5: Antecipados
         if (tratativaRaw.includes('AGENDAMENTO - ANTECIPADO')) {
             totalAntecipado++;
+            if (prestador) prestadorAntecipado[prestador] = (prestadorAntecipado[prestador] || 0) + 1;
         }
 
         // Regra 6: Final de Semana
@@ -644,6 +649,44 @@ function renderPainel(dados) {
             <span style="width:10px;height:10px;border-radius:50%;background:#F04040;display:inline-block;"></span> Fim de semana (Regra 6)
         </span>`;
 
+    // ── TOP 10 PRESTADORES ──
+    const topPrest = Object.entries(prestadorRealizado).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    const maxPrest = topPrest[0]?.[1] || 1;
+    const ulPrest  = document.getElementById('lista-prestadores');
+    if (ulPrest) ulPrest.innerHTML = topPrest.length === 0
+        ? '<div class="empty">Sem dados de prestador.</div>'
+        : topPrest.map(([nome,qtd]) => {
+            const sc = prestadorSemContato[nome] || 0;
+            const scBadge = sc > 0
+                ? `<span style="flex-shrink:0;font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">${sc} s/c (${Math.round((sc/qtd)*100)}%)</span>`
+                : '';
+            return `<div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);">
+                <span style="flex:2;color:var(--text);min-width:0;">${nome}</span>
+                <div style="flex:2;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
+                    <div style="width:${(qtd/maxPrest*100).toFixed(1)}%;height:100%;background:var(--accent-purple);border-radius:3px;"></div>
+                </div>
+                <span style="flex-shrink:0;min-width:26px;text-align:right;color:var(--accent-purple);font-weight:700;">${qtd}</span>
+                ${scBadge}
+            </div>`;
+        }).join('');
+
+    // ── TOP 10 ANTECIPADOS ──
+    const topAnt = Object.entries(prestadorAntecipado).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    const maxAnt = topAnt[0]?.[1] || 1;
+    const ulAnt = document.getElementById('lista-antecipados');
+    if (ulAnt) ulAnt.innerHTML = topAnt.length === 0
+        ? '<div class="empty">Nenhum dado de antecipado.</div>'
+        : topAnt.map(([nome,qtd]) => {
+            return `<div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);">
+                <span style="flex:2;color:var(--text);min-width:0;">${nome}</span>
+                <div style="flex:2;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
+                    <div style="width:${(qtd/maxAnt*100).toFixed(1)}%;height:100%;background:var(--accent-green);border-radius:3px;"></div>
+                </div>
+                <span style="flex-shrink:0;min-width:26px;text-align:right;color:var(--accent-green);font-weight:700;">${qtd}</span>
+                <span style="flex-shrink:0;min-width:42px;text-align:right;color:var(--muted);">(${getPct(qtd, totalRealizado)}%)</span>
+            </div>`;
+        }).join('');
+
     // ── VOLUME POR DIA EM BARRAS (Regra 10) ──
     const diasOrdenadosDesc = [...datasValidas].reverse();
     const ulVolume = document.getElementById('lista-volume-dia');
@@ -668,27 +711,6 @@ function renderPainel(dados) {
             </div>`;
         }).join('');
     }
-
-    // ── TOP 10 PRESTADORES (Regra 11) ──
-    const topPrest = Object.entries(prestadorRealizado).sort((a,b)=>b[1]-a[1]).slice(0,10);
-    const maxPrest = topPrest[0]?.[1] || 1;
-    const ulPrest  = document.getElementById('lista-prestadores');
-    if (ulPrest) ulPrest.innerHTML = topPrest.length === 0
-        ? '<div class="empty">Sem dados de prestador.</div>'
-        : topPrest.map(([nome,qtd]) => {
-            const sc = prestadorSemContato[nome] || 0;
-            const scBadge = sc > 0
-                ? `<span style="flex-shrink:0;font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">${sc} s/c (${Math.round((sc/qtd)*100)}%)</span>`
-                : '';
-            return `<div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);">
-                <span style="flex:2;color:var(--text);min-width:0;">${nome}</span>
-                <div style="flex:2;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
-                    <div style="width:${(qtd/maxPrest*100).toFixed(1)}%;height:100%;background:var(--accent-purple);border-radius:3px;"></div>
-                </div>
-                <span style="flex-shrink:0;min-width:26px;text-align:right;color:var(--accent-purple);font-weight:700;">${qtd}</span>
-                ${scBadge}
-            </div>`;
-        }).join('');
 
     // ── FASES DE TRATATIVAS (Regra 12) ──
     const tratsArr = Object.entries(tratativasCountMap).sort((a,b)=>b[1]-a[1]);
