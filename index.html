@@ -116,6 +116,10 @@
         .table-os { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
         .table-os th { padding: 8px; border-bottom: 1px solid var(--border-strong); color: var(--muted); position: sticky; top: 0; background: var(--card); }
         .table-os td { padding: 8px; border-bottom: 1px solid var(--border); color: var(--text); }
+        
+        /* Modal de Imagem */
+        #imagem-preview-container { min-height: 200px; display:flex; align-items:center; justify-content:center; background:#111; border:1px solid var(--border); border-radius:8px; margin-bottom: 16px; overflow:hidden; }
+        #imagem-preview { display:none; max-width:100%; max-height:400px; height:auto; object-fit: contain; }
     </style>
 </head>
 <body>
@@ -149,7 +153,7 @@
         </div>
         <div class="top-bar-actions">
             <button class="btn btn-reload" onclick="recarregar()">↩ Novo CSV</button>
-            <button class="btn btn-outline" onclick="baixarImagem()">📸 Imagem</button>
+            <button class="btn btn-outline" onclick="abrirModalImagem()">📸 Imagem</button>
             <button class="btn btn-slack" onclick="abrirModalSlack()">💬 Enviar</button>
         </div>
     </div></div>
@@ -272,10 +276,29 @@
     </div>
 </div>
 
+<div id="imagemModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 800px;">
+        <div class="modal-title">📸 Imagem do Painel</div>
+        <p style="font-size: 12px; color: var(--muted); margin-bottom: 16px;">Você pode copiar a imagem diretamente para área de transferência e colar no Slack, ou baixar se preferir.</p>
+        
+        <div id="imagem-preview-container">
+            <span id="imagem-loading" style="color:var(--muted); font-size:12px;">Gerando painel... Aguarde.</span>
+            <img id="imagem-preview" />
+        </div>
+        
+        <div class="modal-actions">
+            <button class="btn btn-outline" onclick="fecharModalImagem()">Cancelar</button>
+            <button class="btn btn-outline" onclick="fazerDownloadImagem()">📥 Baixar Arquivo</button>
+            <button class="btn btn-slack" id="btn-copiar-img" onclick="copiarImagem()">📋 Copiar Imagem</button>
+        </div>
+    </div>
+</div>
+
 <script>
 let chartLine = null;
 let dadosGlobaisBase = [];
 let baseSlackMessage = "";
+let canvasGeradoGlobal = null; // Armazena o canvas para uso no modal de imagem
 
 // ── DICIONÁRIO DE NOMES DE TRATATIVAS ──
 const dicionarioNomes = {
@@ -754,10 +777,58 @@ function renderPainel(dados) {
 // ── FUNÇÕES SLACK, IMAGEM E MODAL ──
 function recarregar() { location.reload(); }
 
-function baixarImagem() {
+// Nova funcionalidade para o Modal de Imagem
+function abrirModalImagem() {
+    document.getElementById('imagemModal').style.display = 'flex';
+    document.getElementById('imagem-loading').style.display = 'block';
+    document.getElementById('imagem-preview').style.display = 'none';
+    document.getElementById('btn-copiar-img').innerHTML = '📋 Copiar Imagem';
+
+    // Rola para o topo para garantir que o html2canvas pegue tudo certinho
+    window.scrollTo(0, 0);
+
     html2canvas(document.getElementById('painel-cobli'), { backgroundColor:'#0F0F2A', scale:2, useCORS:true }).then(canvas => {
-        const link=document.createElement('a'); link.download=`Cobli_Painel_${Date.now()}.png`; link.href=canvas.toDataURL('image/png'); link.click();
+        canvasGeradoGlobal = canvas;
+        const imgEl = document.getElementById('imagem-preview');
+        imgEl.src = canvas.toDataURL('image/png');
+        imgEl.style.display = 'block';
+        document.getElementById('imagem-loading').style.display = 'none';
     });
+}
+
+function fecharModalImagem() {
+    document.getElementById('imagemModal').style.display = 'none';
+    canvasGeradoGlobal = null;
+}
+
+function fazerDownloadImagem() {
+    if (!canvasGeradoGlobal) return;
+    const link = document.createElement('a');
+    link.download = `Cobli_Painel_${Date.now()}.png`;
+    link.href = canvasGeradoGlobal.toDataURL('image/png');
+    link.click();
+}
+
+function copiarImagem() {
+    if (!canvasGeradoGlobal) return;
+    const btn = document.getElementById('btn-copiar-img');
+    
+    canvasGeradoGlobal.toBlob(blob => {
+        try {
+            navigator.clipboard.write([
+                new ClipboardItem({ 'image/png': blob })
+            ]).then(() => {
+                btn.innerHTML = '✅ Copiado!';
+                setTimeout(() => { btn.innerHTML = '📋 Copiar Imagem'; }, 2500);
+            }).catch(err => {
+                console.error(err);
+                alert('O seu navegador bloqueou a cópia direta. Por favor, use o botão de baixar.');
+            });
+        } catch (err) {
+            console.error(err);
+            alert('Seu navegador não suporta cópia de imagens. Use o botão de baixar.');
+        }
+    }, 'image/png');
 }
 
 function abrirModalSlack() {
