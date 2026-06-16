@@ -81,7 +81,7 @@
         .kpi-sub { font-size:11px; color:var(--kpi-accent,var(--muted)); margin-top:6px; font-weight:600; }
         .kpi-icon { position:absolute; top:14px; right:16px; font-size:20px; opacity:0.08; }
 
-        .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:14px; }
+        .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:14px; }
         .grid-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:14px; }
 
         .panel-block { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px 22px; }
@@ -91,11 +91,6 @@
         .tratativa-item { display:flex; align-items:center; gap:10px; font-size:12px; padding:5px 0; border-bottom:1px solid var(--border); }
         .tratativa-item:last-child { border-bottom:none; }
         .tratativa-name { color:var(--text); }
-
-        .pilot-list { display:flex; flex-direction:column; gap:4px; }
-        .pilot-row { display:flex; justify-content:space-between; align-items:center; font-size:12px; padding:5px 8px; border-radius:6px; border-left:2px solid transparent; color:var(--text); }
-        .pilot-row:not(.warn):hover { background:rgba(255,255,255,0.03); }
-        .pilot-row.warn { background:rgba(240,64,64,0.08); border-left-color:var(--accent-red); color:var(--accent-red); font-weight:700; }
 
         .noshow-tags { display:flex; flex-wrap:wrap; gap:8px; }
         .noshow-tag { font-size:11px; padding:5px 12px; background:rgba(240,26,26,0.08); border:1px solid rgba(240,26,26,0.2); border-left:3px solid var(--accent-red); border-radius:4px; color:var(--text); font-weight:500; }
@@ -108,9 +103,15 @@
 
         @media (max-width:950px) {
             .kpi-row-5 { grid-template-columns:repeat(2,1fr); }
-            .grid-2,.grid-4 { grid-template-columns:1fr; }
+            .grid-2,.grid-3 { grid-template-columns:1fr; }
         }
         .empty { color:var(--muted); font-size:12px; font-style:italic; padding:8px 0; }
+        
+        /* Custom scrollbar para listas internas */
+        .scrollable-list::-webkit-scrollbar { width: 6px; }
+        .scrollable-list::-webkit-scrollbar-track { background: var(--bg); border-radius: 4px; }
+        .scrollable-list::-webkit-scrollbar-thumb { background: var(--subtle); border-radius: 4px; }
+        .scrollable-list::-webkit-scrollbar-thumb:hover { background: var(--muted); }
     </style>
 </head>
 <body>
@@ -166,11 +167,9 @@
             </div>
         </div>
 
-        <!-- KPIs -->
         <div class="kpi-row kpi-row-5" id="kpi-row-main"></div>
 
-        <!-- 4 cards resumo -->
-        <div class="grid-4">
+        <div class="grid-3">
             <div class="panel-block" style="padding:16px 20px;">
                 <div class="panel-block-title" style="color:var(--accent-red);margin-bottom:10px;"><span class="dot"></span>Fim de Semana</div>
                 <div id="fds-totais-novo"></div>
@@ -180,16 +179,11 @@
                 <div id="sc-totais-novo"></div>
             </div>
             <div class="panel-block" style="padding:16px 20px;">
-                <div class="panel-block-title" style="color:var(--accent-green);margin-bottom:10px;"><span class="dot"></span>Detalhes Pilot</div>
-                <div class="pilot-list" id="lista-pilot-novo"></div>
-            </div>
-            <div class="panel-block" style="padding:16px 20px;">
-                <div class="panel-block-title" style="margin-bottom:10px;"><span class="dot" style="color:var(--accent-red);background:var(--accent-red);"></span>No-Show Reincidente (90d)</div>
-                <div id="lista-no-show-novo"></div>
+                <div class="panel-block-title" style="color:var(--accent-red);margin-bottom:10px;"><span class="dot" style="color:var(--accent-red);background:var(--accent-red);"></span>No-Show</div>
+                <div id="lista-no-show-novo" class="scrollable-list" style="max-height:120px;overflow-y:auto;padding-right:5px;"></div>
             </div>
         </div>
 
-        <!-- Evolução linha -->
         <div class="panel-block" style="margin-bottom:14px;">
             <div class="panel-block-title" style="color:var(--accent-blue);">
                 <span class="dot"></span>Evolução de Chamados por Dia
@@ -198,34 +192,26 @@
             <div class="chart-wrap"><canvas id="graficoEvolucao"></canvas></div>
         </div>
 
-        <!-- Volume barras -->
-        <div class="panel-block" style="margin-bottom:14px;">
-            <div class="panel-block-title" style="color:var(--accent-blue);">
-                <span class="dot"></span>Volume por Dia
-                <span style="margin-left:8px;font-size:10px;color:var(--muted);">
-                    <span style="color:#F04040;font-weight:700;">■</span> fim de semana &nbsp;·&nbsp;
-                    <span style="color:#F5C519;font-weight:700;">■</span> badge = sem contato
-                </span>
-            </div>
-            <div class="chart-wrap"><canvas id="graficoVolumeBar"></canvas></div>
-        </div>
-
-        <!-- Tratativas + Prestadores -->
         <div class="grid-2" style="margin-bottom:14px;">
             <div class="panel-block">
-                <div class="panel-block-title" style="color:var(--accent-blue);"><span class="dot"></span>Últimas Tratativas</div>
-                <div id="lista-tratativas"></div>
+                <div class="panel-block-title" style="color:var(--accent-blue);">
+                    <span class="dot"></span>Volume por Dia
+                    <span style="margin-left:8px;font-size:10px;color:var(--muted);">
+                        <span style="color:#F04040;font-weight:700;">■</span> fds &nbsp;·&nbsp;
+                        <span style="color:#F5C519;font-weight:700;">■</span> badge = sem contato
+                    </span>
+                </div>
+                <div id="lista-volume-dia" class="scrollable-list" style="max-height:240px;overflow-y:auto;padding-right:8px;"></div>
             </div>
             <div class="panel-block">
                 <div class="panel-block-title" style="color:var(--accent-purple);"><span class="dot"></span>Top 10 Prestadores</div>
-                <div id="lista-prestadores"></div>
+                <div id="lista-prestadores" class="scrollable-list" style="max-height:240px;overflow-y:auto;padding-right:8px;"></div>
             </div>
         </div>
 
-        <!-- Rodapé No-Show nomes -->
-        <div class="panel-block" id="bloco-noshow-nomes" style="margin-bottom:0;display:none;">
-            <div class="panel-block-title" style="color:var(--accent-red);"><span class="dot"></span>Prestadores com No-Show Reincidente (90d)</div>
-            <div class="noshow-tags" id="lista-tags-noshow"></div>
+        <div class="panel-block" style="margin-bottom:14px;">
+            <div class="panel-block-title" style="color:var(--accent-cyan);"><span class="dot"></span>Fases de Tratativas</div>
+            <div id="lista-tratativas" class="scrollable-list" style="max-height:240px;overflow-y:auto;padding-right:8px;"></div>
         </div>
     </div>
 
@@ -236,7 +222,7 @@
 </div>
 
 <script>
-let chartLine = null, chartBar = null;
+let chartLine = null;
 let dadosGlobaisBase = [];
 
 // ── UPLOAD ──
@@ -261,7 +247,6 @@ function val(linha, pedaco) {
 
 function toISO(s) {
     if (!s) return '';
-    // dd/mm/yyyy ou dd-mm-yyyy
     if (/^\d{2}[\/\-]\d{2}[\/\-]\d{4}/.test(s)) {
         const p = s.split(/[\/\-]/);
         return `${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;
@@ -296,153 +281,186 @@ function aplicarFiltro(periodo, btnEl) {
 
 // ── RENDER ──
 function renderPainel(dados) {
-    let total=0, pilotCount=0, pilotNoShow=0, concluidos=0, impedidos=0, antecipados=0;
-    let totalTratativas=0, semContatoCount=0;
-    let tratativasMap={}, pilotStatusMap={}, prestadoresSet=new Set();
-    let prestadoresMap={}, prestadoresSemContato={}, datasSet=new Set(), volumeDia={}, semContatoPorDia={};
+    // Definindo as regras de negócio / listas
+    const setA = [
+        'AGENDAMENTO - EM ANDAMENTO - SEM CONTATO',
+        'AGENDAMENTO - NO-SHOW CLIENTE - SMARTOPS REAGENDAMENTO',
+        'AGENDAMENTO - NO-SHOW TÉCNICO - REAGENDADO',
+        'AGENDAMENTO - NO-SHOW TÉCNICO - REVERTIDO',
+        'AGENDAMENTO - NO-SHOW TÉCNICO - SMARTOPS REAGENDAMENTO',
+        'AGENDAMENTO - TÉCNICO NO LOCAL AGENDADO'
+    ];
+    
+    const setB = [
+        'AGENDAMENTO - EM ANDAMENTO - SEM CONTATO',
+        'AGENDAMENTO - ANTECIPADO',
+        'AGENDAMENTO - NO-SHOW TÉCNICO - REVERTIDO',
+        'AGENDAMENTO - TÉCNICO NO LOCAL AGENDADO'
+    ];
+    
+    const setC = [
+        'AGENDAMENTO - NO-SHOW TÉCNICO - REAGENDADO',
+        'AGENDAMENTO - NO-SHOW TÉCNICO - REVERTIDO',
+        'AGENDAMENTO - NO-SHOW TÉCNICO - SMARTOPS REAGENDAMENTO',
+        'AGENDAMENTO - TÉCNICO NO LOCAL AGENDADO',
+        'AGENDAMENTO - NO-SHOW CLIENTE - SMARTOPS REAGENDAMENTO'
+    ];
+
+    const setD = [
+        'AGENDAMENTO - EM ANDAMENTO - SEM CONTATO',
+        'AGENDAMENTO - ANTECIPADO'
+    ];
+
+    let checkInSet = (rawStr, list) => list.some(s => rawStr.includes(s));
+
+    // Variáveis de contagem
+    let countLidos = 0;
+    let totalGeral = 0, fasesSemConclusao = 0;
+    let totalPiloto = 0, pilotoConcluido = 0, pilotoImpedido = 0, pilotoNoShow = 0;
+    let totalRealizado = 0, noShowRule3Count = 0;
+    let totalImpedido = 0, totalAntecipado = 0;
+    let totalFDS = 0, totalSemContato = 0;
+
+    let realizedByDay = {};
+    let fdsByDay = {};
+    let semContatoPorDia = {};
+    let prestadorRealizado = {};
+    let prestadorSemContato = {};
+    let tratativasCountMap = {};
+    let noShowCountMap = {};
+    let datasSet = new Set();
 
     dados.forEach(linha => {
-        const alocacao     = val(linha, 'aloca');
-        const tratativaRaw = val(linha, 'tratativa');
-        const classe       = val(linha, 'classe').toLowerCase();
-        const prestador    = val(linha, 'prestador');
-        const noShow90d    = val(linha, '90d').toLowerCase();
-        const dataStr      = val(linha, 'data').split(' ')[0];
+        const alocacaoRaw = val(linha, 'aloca');
+        const alocacao = alocacaoRaw.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
+        const tratativaRaw = val(linha, 'tratativa').toUpperCase().trim();
+        const classe = val(linha, 'classe').toUpperCase();
+        const prestador = val(linha, 'prestador');
+        const dataStr = val(linha, 'data').split(' ')[0];
 
-        const alocLower = alocacao.toLowerCase();
-        const tratVazia = !tratativaRaw || ['-','nan','null',''].includes(tratativaRaw.toLowerCase());
-        const hasNoShow = /no[\s\-]?show/i.test(tratativaRaw);
-
-        // ── REGRA 1: Cancelado sem tratativa → ignorar totalmente
-        if (alocLower.includes('cancelad') && tratVazia) return;
-
+        // Regra Global: Remover CANCELADO sem impacto nenhum
+        if (tratativaRaw.includes('AGENDAMENTO - CANCELADO')) return;
+        
+        countLidos++;
         const dataISO = toISO(dataStr);
+        if(dataISO) datasSet.add(dataISO);
+
         const fds = isFimDeSemana(dataISO);
+        const isConcluido = alocacao.includes('CONCLU');
+        const isImpedido = alocacao.includes('IMPED');
+        const isEmAndamento = alocacao.includes('ANDAMENTO');
 
-        if (dataISO) {
-            datasSet.add(dataISO);
-            volumeDia[dataISO] = (volumeDia[dataISO] || 0) + 1;
-        }
+        // Check sets
+        const isInSetA = checkInSet(tratativaRaw, setA);
+        const isInSetB = checkInSet(tratativaRaw, setB);
+        const isInSetC = checkInSet(tratativaRaw, setC);
+        const isInSetD = checkInSet(tratativaRaw, setD);
 
-        total++;
+        // Regra 1: Total Geral
+        const isSemConclusao = (isConcluido || isImpedido) && !isInSetA;
+        const qualifiesRule1 = !fds && (isInSetA || isConcluido || isImpedido);
 
-        // Status de alocação — normaliza acentos para comparação
-        const alocNorm = alocacao.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-        if (alocNorm.includes('conclu')) concluidos++;
-        if (/imped/i.test(alocNorm))    impedidos++;
+        if (qualifiesRule1) {
+            totalGeral++;
+            if (isSemConclusao) fasesSemConclusao++;
 
-        // Antecipado: status exclusivo na Alocação (não acumula em concluídos/impedidos se for exclusivo)
-        if (alocNorm.includes('antecipa')) antecipados++;
+            // Regra 2: Total Piloto
+            if (classe.includes('PILOTO') || classe.includes('PILOT')) {
+                totalPiloto++;
+                if (isConcluido) pilotoConcluido++;
+                if (isImpedido) pilotoImpedido++;
+                if (tratativaRaw.includes('NO-SHOW') || tratativaRaw.includes('NO SHOW')) pilotoNoShow++;
+            }
 
-        // ── TRATATIVA LIMPA (remove prefixo de data/hora: "11/06, 11:48 — ")
-        let tratLimpa = tratativaRaw.replace(/^\d{2}\/\d{2}[^—\-]*(—|-)\s*/, '').trim();
+            // Regra 3: Total Realizados
+            if (isInSetB || isConcluido || isImpedido) {
+                totalRealizado++;
+                if (dataISO) realizedByDay[dataISO] = (realizedByDay[dataISO] || 0) + 1;
+                if (prestador) prestadorRealizado[prestador] = (prestadorRealizado[prestador] || 0) + 1;
+            }
 
-        // FDS: não contabiliza tratativas na lista (não fazemos contato no FDS)
-        // mas mantém o registro no total e nos KPIs
-        if (fds) tratLimpa = '';
+            // Para Badge de No-Show na Regra 3
+            if (isInSetC) noShowRule3Count++;
 
-        if (tratLimpa && !tratVazia
-            && tratLimpa.toLowerCase() !== 'nan'
-            && tratLimpa.toLowerCase() !== 'null') {
-            tratativasMap[tratLimpa] = (tratativasMap[tratLimpa] || 0) + 1;
-            totalTratativas++;
-        }
+            // Regra 4: Impedido
+            if (isImpedido) totalImpedido++;
 
-        // Prestadores
-        if (prestador) prestadoresMap[prestador] = (prestadoresMap[prestador] || 0) + 1;
-
-        // ── REGRA SEM CONTATO: /sem[\s-]?contato/i (cobre "SEM CONTATO" e "SEM-CONTATO")
-        // Não conta em FDS
-        const isSemContato = !fds && /sem[\s\-]?contato/i.test(tratativaRaw);
-        if (isSemContato) {
-            semContatoCount++;
-            if (prestador) prestadoresSemContato[prestador] = (prestadoresSemContato[prestador] || 0) + 1;
-            if (dataISO)   semContatoPorDia[dataISO]        = (semContatoPorDia[dataISO] || 0) + 1;
-        }
-
-        // ── PILOT
-        // pilotStatusMap contém APENAS pilotos SEM no-show
-        // → pilotNoShow + soma(pilotStatusMap) = pilotCount
-        if (classe.includes('pilot')) {
-            pilotCount++;
-            if (hasNoShow) {
-                pilotNoShow++;
-            } else {
-                const s = alocacao || 'Sem Status';
-                pilotStatusMap[s] = (pilotStatusMap[s] || 0) + 1;
+            // Fases de Tratativas (Rule 12 - usa Set A)
+            if (isInSetA) {
+                const matchedA = setA.find(s => tratativaRaw.includes(s));
+                if (matchedA) tratativasCountMap[matchedA] = (tratativasCountMap[matchedA] || 0) + 1;
             }
         }
 
-        // No-Show reincidente (90d cruzado) — não conta FDS
-        if (!fds && noShow90d === 'sim' && hasNoShow && prestador) prestadoresSet.add(prestador);
+        // Regra 5: Antecipados
+        if (tratativaRaw.includes('AGENDAMENTO - ANTECIPADO')) {
+            totalAntecipado++;
+        }
+
+        // Regra 6: Final de Semana
+        if (fds && (isConcluido || isImpedido || isEmAndamento || tratativaRaw.includes('NO-SHOW') || tratativaRaw.includes('NO SHOW'))) {
+            totalFDS++;
+            if (dataISO) fdsByDay[dataISO] = (fdsByDay[dataISO] || 0) + 1;
+        }
+
+        // Regra 7: Sem Contato
+        if (isInSetD) {
+            totalSemContato++;
+            if (prestador) prestadorSemContato[prestador] = (prestadorSemContato[prestador] || 0) + 1;
+            if (dataISO) semContatoPorDia[dataISO] = (semContatoPorDia[dataISO] || 0) + 1;
+        }
+
+        // Regra 8: No Show (apenas os do set C)
+        if (isInSetC) {
+            const matchedC = setC.find(s => tratativaRaw.includes(s));
+            if (matchedC) noShowCountMap[matchedC] = (noShowCountMap[matchedC] || 0) + 1;
+        }
     });
 
-    // ── TAXAS ──
-    const realizados   = concluidos + impedidos;
-    const txRealizados = total > 0 ? ((realizados  / total) * 100).toFixed(1) : 0;
-    const txConclusao  = total > 0 ? ((concluidos  / total) * 100).toFixed(1) : 0;
-    const txImpedidos  = total > 0 ? ((impedidos   / total) * 100).toFixed(1) : 0;
-    const txNoShow     = pilotCount > 0 ? ((pilotNoShow / pilotCount) * 100).toFixed(1) : 0;
-    const txPilot      = total > 0 ? ((pilotCount  / total) * 100).toFixed(1) : 0;
-    const txAntecipado = total > 0 ? ((antecipados / total) * 100).toFixed(1) : 0;
-    const txSC         = total > 0 ? ((semContatoCount / total) * 100).toFixed(1) : 0;
-
     // ── DATA TÍTULO ──
-    const datas = [...datasSet].sort();
+    const datasValidas = [...datasSet].sort();
     let textoData = 'Múltiplos Dias';
-    if (datas.length === 1 && datas[0]) textoData = fmtData(datas[0]);
-    else if (datas.length > 1) textoData = `${fmtData(datas[0])} – ${fmtData(datas[datas.length-1])}`;
+    if (datasValidas.length === 1 && datasValidas[0]) textoData = fmtData(datasValidas[0]);
+    else if (datasValidas.length > 1) textoData = `${fmtData(datasValidas[0])} – ${fmtData(datasValidas[datasValidas.length-1])}`;
 
     // ── UI INICIAL ──
     document.getElementById('upload-screen').style.display = 'none';
     document.getElementById('dashboard-screen').style.display = 'block';
     document.getElementById('topbar-date').textContent = textoData;
-    document.getElementById('topbar-total').textContent = `${total} chamados`;
+    document.getElementById('topbar-total').textContent = `${countLidos} validados`;
     document.getElementById('painel-titulo-data').textContent = `Cobli — ${textoData}`;
     const agora = new Date();
-    document.getElementById('painel-gerado-em').textContent =
-        agora.toLocaleDateString('pt-BR') + ' ' +
-        agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+    document.getElementById('painel-gerado-em').textContent = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
 
-    // ── KPIs ──
-    // Breakdown do card Pilot: concluídos + impedidos (separados) + outros + no-show = pilotCount
-    const pilotConc  = Object.entries(pilotStatusMap).filter(([s])=>/conclu/i.test(s.normalize('NFD').replace(/[\u0300-\u036f]/g,''))).reduce((a,[,q])=>a+q,0);
-    const pilotImp   = Object.entries(pilotStatusMap).filter(([s])=>/imped/i.test(s.normalize('NFD').replace(/[\u0300-\u036f]/g,''))).reduce((a,[,q])=>a+q,0);
-    const pilotOther = Object.entries(pilotStatusMap).filter(([s])=>{
-        const n = s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-        return !n.includes('conclu') && !n.includes('imped');
-    }).reduce((a,[,q])=>a+q,0);
-    const txPilotConc  = pilotCount > 0 ? ((pilotConc  / pilotCount)*100).toFixed(0) : 0;
-    const txPilotImp   = pilotCount > 0 ? ((pilotImp   / pilotCount)*100).toFixed(0) : 0;
-    const txPilotOther = pilotCount > 0 ? ((pilotOther / pilotCount)*100).toFixed(0) : 0;
-    const txPilotNS    = pilotCount > 0 ? ((pilotNoShow/ pilotCount)*100).toFixed(0) : 0;
-
-    const pilotExtra = `
+    // ── KPIs (Regras 1 a 5) ──
+    const getPct = (v, base) => base > 0 ? ((v/base)*100).toFixed(1) : 0;
+    
+    const kpi1Extra = `<div style="margin-top:8px;"><span style="font-size:10px;background:rgba(240,64,64,0.15);color:var(--accent-red);padding:3px 8px;border-radius:12px;border:1px solid rgba(240,64,64,0.3);font-weight:700;">🚨 ${fasesSemConclusao} Fases sem conclusão</span></div>`;
+    
+    const kpi2Extra = `
         <div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;gap:4px;">
             <div style="display:flex;justify-content:space-between;font-size:11px;">
                 <span style="color:#7A7FA8;">Concluídos</span>
-                <span style="color:#1FEF51;font-weight:700;">${pilotConc} <span style="font-weight:400;color:#7A7FA8;">(${txPilotConc}%)</span></span>
+                <span style="color:#1FEF51;font-weight:700;">${pilotoConcluido} <span style="font-weight:400;color:#7A7FA8;">(${getPct(pilotoConcluido, totalPiloto)}%)</span></span>
             </div>
-            ${pilotImp > 0 ? `<div style="display:flex;justify-content:space-between;font-size:11px;">
+            <div style="display:flex;justify-content:space-between;font-size:11px;">
                 <span style="color:#7A7FA8;">Impedidos</span>
-                <span style="color:#F5C519;font-weight:700;">${pilotImp} <span style="font-weight:400;color:#7A7FA8;">(${txPilotImp}%)</span></span>
-            </div>` : ''}
-            ${pilotOther > 0 ? `<div style="display:flex;justify-content:space-between;font-size:11px;">
-                <span style="color:#7A7FA8;">Outros</span>
-                <span style="color:#7F8DDB;font-weight:700;">${pilotOther} <span style="font-weight:400;color:#7A7FA8;">(${txPilotOther}%)</span></span>
-            </div>` : ''}
+                <span style="color:#F5C519;font-weight:700;">${pilotoImpedido} <span style="font-weight:400;color:#7A7FA8;">(${getPct(pilotoImpedido, totalPiloto)}%)</span></span>
+            </div>
             <div style="display:flex;justify-content:space-between;font-size:11px;">
                 <span style="color:#7A7FA8;">No-Show</span>
-                <span style="color:#F04040;font-weight:700;">${pilotNoShow} <span style="font-weight:400;color:#7A7FA8;">(${txPilotNS}%)</span></span>
+                <span style="color:#F04040;font-weight:700;">${pilotoNoShow} <span style="font-weight:400;color:#7A7FA8;">(${getPct(pilotoNoShow, totalPiloto)}%)</span></span>
             </div>
         </div>`;
 
+    const kpi3Extra = `<div style="margin-top:8px;"><span style="font-size:10px;background:rgba(240,64,64,0.15);color:var(--accent-red);padding:3px 8px;border-radius:12px;border:1px solid rgba(240,64,64,0.3);font-weight:700;">⚠️ ${getPct(noShowRule3Count, totalRealizado)}% No-Show</span></div>`;
+
     document.getElementById('kpi-row-main').innerHTML = [
-        { label:'Total Analisado', value:total,       sub:'&nbsp;',                    accent:'var(--accent-cyan)',   icon:'📋', extra:'' },
-        { label:'Total Pilot',     value:pilotCount,  sub:txPilot+'% do total',        accent:'var(--accent-blue)',   icon:'🚀', extra:pilotExtra },
-        { label:'Realizados',      value:realizados,  sub:txRealizados+'% do total',   accent:'var(--accent-green)',  icon:'⚡', extra:'' },
-        { label:'Impedidos',       value:impedidos,   sub:txImpedidos+'% do total',    accent:'var(--accent-red)',    icon:'🚫', extra:'' },
-        { label:'Antecipados',     value:antecipados, sub:txAntecipado+'% do total',   accent:'var(--accent-purple)', icon:'⏳', extra:'' },
+        { label:'1. Total Geral',  value:totalGeral,      sub:'&nbsp;',                                accent:'var(--accent-cyan)',   icon:'📋', extra:kpi1Extra },
+        { label:'2. Total Pilot',  value:totalPiloto,     sub:getPct(totalPiloto, totalGeral)+'% do Geral',     accent:'var(--accent-blue)',   icon:'🚀', extra:kpi2Extra },
+        { label:'3. Realizados',   value:totalRealizado,  sub:getPct(totalRealizado, totalGeral)+'% do Geral',  accent:'var(--accent-green)',  icon:'⚡', extra:kpi3Extra },
+        { label:'4. Impedidos',    value:totalImpedido,   sub:getPct(totalImpedido, totalGeral)+'% do Geral',   accent:'var(--accent-red)',    icon:'🚫', extra:'' },
+        { label:'5. Antecipados',  value:totalAntecipado, sub:getPct(totalAntecipado, totalRealizado)+'% do Realiz.', accent:'var(--accent-purple)', icon:'⏳', extra:'' },
     ].map(k=>`<div class="kpi-card" style="--kpi-accent:${k.accent}">
         <div class="kpi-label">${k.label}</div>
         <div class="kpi-value">${k.value}</div>
@@ -451,115 +469,47 @@ function renderPainel(dados) {
         <div class="kpi-icon">${k.icon}</div>
     </div>`).join('');
 
-    // ── 4 CARDS RESUMO ──
-    const diasOrds = Object.keys(volumeDia).sort();
-    const fdsDias  = diasOrds.filter(d => isFimDeSemana(d));
-    const fdsTotal = fdsDias.reduce((s,d) => s+(volumeDia[d]||0), 0);
-    const fdsPct   = total > 0 ? ((fdsTotal/total)*100).toFixed(1) : 0;
-
+    // ── SECUNDÁRIOS (Regras 6, 7, 8) ──
     const fdsEl = document.getElementById('fds-totais-novo');
-    if (fdsEl) fdsEl.innerHTML = fdsDias.length === 0
+    if (fdsEl) fdsEl.innerHTML = totalFDS === 0
         ? `<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum fim de semana</div>`
         : `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;">
-               <span style="font-size:28px;font-weight:700;color:#F04040;line-height:1;">${fdsTotal}</span>
+               <span style="font-size:28px;font-weight:700;color:#F04040;line-height:1;">${totalFDS}</span>
                <span style="font-size:11px;color:var(--muted);">atends.</span>
            </div>
-           <span style="font-size:12px;background:rgba(240,64,64,0.15);color:#F04040;border:1px solid rgba(240,64,64,0.3);border-radius:20px;padding:3px 12px;font-weight:700;">${fdsPct}% do total</span>
-           <div style="margin-top:8px;font-size:10px;color:var(--muted);">${fdsDias.length} dia${fdsDias.length>1?'s':''} de fim de semana</div>`;
+           <span style="font-size:12px;background:rgba(240,64,64,0.15);color:#F04040;border:1px solid rgba(240,64,64,0.3);border-radius:20px;padding:3px 12px;font-weight:700;">${getPct(totalFDS, totalGeral)}% do total analisado</span>`;
 
     const scEl = document.getElementById('sc-totais-novo');
-    if (scEl) scEl.innerHTML = semContatoCount === 0
+    if (scEl) scEl.innerHTML = totalSemContato === 0
         ? `<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum sem contato</div>`
         : `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;">
-               <span style="font-size:28px;font-weight:700;color:#F5C519;line-height:1;">${semContatoCount}</span>
+               <span style="font-size:28px;font-weight:700;color:#F5C519;line-height:1;">${totalSemContato}</span>
                <span style="font-size:11px;color:var(--muted);">atends.</span>
            </div>
-           <span style="font-size:12px;background:rgba(245,197,25,0.12);color:#F5C519;border:1px solid rgba(245,197,25,0.25);border-radius:20px;padding:3px 12px;font-weight:700;">${txSC}% do total</span>`;
+           <span style="font-size:12px;background:rgba(245,197,25,0.12);color:#F5C519;border:1px solid rgba(245,197,25,0.25);border-radius:20px;padding:3px 12px;font-weight:700;">${getPct(totalSemContato, totalGeral)}% do total analisado</span>`;
 
-    const ulPilot = document.getElementById('lista-pilot-novo');
-    if (ulPilot) {
-        ulPilot.innerHTML = pilotNoShow > 0
-            ? `<div class="pilot-row warn" style="margin-bottom:8px;">
-                   <span>🚨 Pilotos com No-Show</span>
-                   <span style="display:flex;align-items:center;gap:6px;">
-                       <span style="font-weight:700;font-size:14px;">${pilotNoShow}</span>
-                       <span style="font-size:10px;background:rgba(240,64,64,0.15);border:1px solid rgba(240,64,64,0.3);border-radius:20px;padding:1px 7px;">${txPilotNS}%</span>
-                   </span>
-               </div>` : '';
-        if (Object.keys(pilotStatusMap).length === 0 && pilotNoShow === 0)
-            ulPilot.innerHTML += '<div class="empty">Nenhum pilot encontrado.</div>';
-        else
-            Object.entries(pilotStatusMap).sort((a,b)=>b[1]-a[1]).forEach(([s,q]) =>
-                ulPilot.innerHTML += `<div class="pilot-row"><span>${s}</span><span style="color:var(--accent-green);font-weight:700;">${q}</span></div>`);
-    }
-
-    const nsArr = [...prestadoresSet];
-    const nsEl  = document.getElementById('lista-no-show-novo');
+    const nsArr = Object.entries(noShowCountMap).sort((a,b)=>b[1]-a[1]);
+    const maxNS = nsArr[0]?.[1] || 1;
+    const totalNSList = nsArr.reduce((a,b)=>a+b[1], 0);
+    const nsEl = document.getElementById('lista-no-show-novo');
     if (nsEl) nsEl.innerHTML = nsArr.length === 0
-        ? `<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum reincidente</div>`
-        : `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;">
-               <span style="font-size:28px;font-weight:700;color:#F04040;line-height:1;">${nsArr.length}</span>
-               <span style="font-size:11px;color:var(--muted);">prestadores</span>
-           </div>
-           <div style="margin-top:8px;font-size:10px;color:var(--muted);">Ver lista no rodapé</div>`;
-
-    // ── TRATATIVAS ──
-    const removePrefixo = n => n.replace(/^agendamento\s*[-–—]\s*/i, '').trim();
-    const tratsArr = Object.entries(tratativasMap)
-        .map(([nome,qtd]) => ({ nome:removePrefixo(nome), qtd, pct:((qtd/totalTratativas)*100).toFixed(1) }))
-        .reduce((acc,t) => { const ex=acc.find(x=>x.nome===t.nome); if(ex){ex.qtd+=t.qtd;ex.pct=((ex.qtd/totalTratativas)*100).toFixed(1);}else acc.push(t); return acc; }, [])
-        .sort((a,b)=>b.qtd-a.qtd);
-    const maxTrat = tratsArr[0]?.qtd || 1;
-    const ulTrat = document.getElementById('lista-tratativas');
-    if (ulTrat) ulTrat.innerHTML = tratsArr.length === 0
-        ? '<div class="empty">Sem dados de tratativa.</div>'
-        : tratsArr.map(t=>`
-            <div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:4px 0;border-bottom:1px solid var(--border);">
-                <span style="flex:3;min-width:0;color:var(--text);line-height:1.4;">${t.nome}</span>
-                <div style="flex:2;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
-                    <div style="width:${(t.qtd/maxTrat*100).toFixed(1)}%;height:100%;background:var(--accent-blue);border-radius:3px;"></div>
+        ? '<div class="empty">Nenhum No-Show mapeado.</div>'
+        : nsArr.map(([nome,qtd]) => `
+            <div style="display:flex;align-items:center;gap:10px;font-size:11px;padding:6px 0;border-bottom:1px solid var(--border);">
+                <span style="flex:3;min-width:0;color:var(--text);line-height:1.2;">${nome.replace(/^AGENDAMENTO\s*[-–—]\s*/i, '')}</span>
+                <div style="flex:2;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;">
+                    <div style="width:${(qtd/maxNS*100).toFixed(1)}%;height:100%;background:var(--accent-red);border-radius:2px;"></div>
                 </div>
-                <span style="flex-shrink:0;min-width:26px;text-align:right;color:var(--accent-cyan);font-weight:700;">${t.qtd}</span>
-                <span style="flex-shrink:0;min-width:42px;text-align:right;color:var(--muted);">(${t.pct}%)</span>
+                <span style="flex-shrink:0;min-width:26px;text-align:right;color:var(--accent-red);font-weight:700;">${qtd}</span>
+                <span style="flex-shrink:0;min-width:38px;text-align:right;color:var(--muted);">(${getPct(qtd, totalNSList)}%)</span>
             </div>`).join('');
 
-    // ── PRESTADORES ──
-    const topPrest = Object.entries(prestadoresMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
-    const maxPrest = topPrest[0]?.[1] || 1;
-    const ulPrest  = document.getElementById('lista-prestadores');
-    if (ulPrest) ulPrest.innerHTML = topPrest.length === 0
-        ? '<div class="empty">Sem dados de prestador.</div>'
-        : topPrest.map(([nome,qtd]) => {
-            const sc = prestadoresSemContato[nome] || 0;
-            const scBadge = !isFimDeSemana('') && sc > 0
-                ? `<span style="flex-shrink:0;font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">${sc} s/c (${Math.round((sc/qtd)*100)}%)</span>`
-                : '';
-            return `<div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:4px 0;border-bottom:1px solid var(--border);">
-                <span style="flex:2;color:var(--text);min-width:0;">${nome}</span>
-                <div style="flex:2;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
-                    <div style="width:${(qtd/maxPrest*100).toFixed(1)}%;height:100%;background:var(--accent-purple);border-radius:3px;"></div>
-                </div>
-                <span style="flex-shrink:0;min-width:26px;text-align:right;color:var(--accent-purple);font-weight:700;">${qtd}</span>
-                ${scBadge}
-            </div>`;
-        }).join('');
-
-    // ── RODAPÉ NO-SHOW ──
-    const blocoNS = document.getElementById('bloco-noshow-nomes');
-    const listaTags = document.getElementById('lista-tags-noshow');
-    if (blocoNS && listaTags) {
-        if (nsArr.length === 0) { blocoNS.style.display='none'; }
-        else { blocoNS.style.display='block'; listaTags.innerHTML=nsArr.map(p=>`<span class="noshow-tag">${p}</span>`).join(''); }
-    }
-
-    // ── GRÁFICOS ──
+    // ── GRÁFICO EVOLUÇÃO (Regra 9) ──
     Chart.register(ChartDataLabels);
-    const labels     = diasOrds.map(d => fmtData(d));
-    const dataLine   = diasOrds.map(d => volumeDia[d]);
-    const isFdsArr   = diasOrds.map(d => isFimDeSemana(d));
-    const scLineData = diasOrds.map(d => semContatoPorDia[d] || 0);
+    const labels = datasValidas.map(d => fmtData(d));
+    const isFdsArr = datasValidas.map(d => isFimDeSemana(d));
+    const dataLine = datasValidas.map(d => isFimDeSemana(d) ? (fdsByDay[d] || 0) : (realizedByDay[d] || 0));
 
-    // Linha — Evolução
     const ctxLine = document.getElementById('graficoEvolucao')?.getContext('2d');
     if (ctxLine) {
         if (chartLine) chartLine.destroy();
@@ -594,76 +544,84 @@ function renderPainel(dados) {
     const legEl = document.getElementById('grafico-legenda');
     if (legEl) legEl.innerHTML = `
         <span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;color:#7A7FA8;">
-            <span style="width:10px;height:10px;border-radius:50%;background:#0FFDC9;display:inline-block;"></span> Dia útil
+            <span style="width:10px;height:10px;border-radius:50%;background:#0FFDC9;display:inline-block;"></span> Dia útil (Regra 3)
         </span>
         <span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;color:#7A7FA8;">
-            <span style="width:10px;height:10px;border-radius:50%;background:#F04040;display:inline-block;"></span> Fim de semana
+            <span style="width:10px;height:10px;border-radius:50%;background:#F04040;display:inline-block;"></span> Fim de semana (Regra 6)
         </span>`;
 
-    // Barras — Volume por dia
-    const ctxBar = document.getElementById('graficoVolumeBar')?.getContext('2d');
-    if (ctxBar) {
-        if (chartBar) chartBar.destroy();
-        chartBar = new Chart(ctxBar, {
-            data: {
-                labels,
-                datasets: [
-                    {
-                        type: 'bar',
-                        data: dataLine,
-                        backgroundColor: isFdsArr.map(f => f ? 'rgba(240,64,64,0.7)' : 'rgba(127,141,219,0.7)'),
-                        borderRadius: 4,
-                        barThickness: 10,
-                        datalabels: {
-                            color: '#F0F0F8', anchor:'end', align:'bottom', offset:4,
-                            font:{size:10,weight:'bold'}, formatter: v => v
-                        }
-                    },
-                    {
-                        // Dataset fantasma só para os badges de sem contato
-                        type: 'line',
-                        data: dataLine,
-                        borderColor: 'transparent', pointRadius: 0,
-                        datalabels: {
-                            backgroundColor: 'rgba(245,197,25,0.12)',
-                            borderColor: 'rgba(245,197,25,0.3)', borderWidth:1, borderRadius:20,
-                            color: '#F5C519', font:{size:9,weight:'bold'},
-                            padding:{top:2,bottom:2,left:6,right:6},
-                            align:'top', anchor:'end', offset:6,
-                            formatter: (v, ctx) => {
-                                // Nunca mostrar badge em FDS
-                                if (isFdsArr[ctx.dataIndex]) return null;
-                                const sc = scLineData[ctx.dataIndex];
-                                if (!sc) return null;
-                                return `${sc} s/c (${v > 0 ? Math.round((sc/v)*100) : 0}%)`;
-                            }
-                        }
-                    }
-                ]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false, animation: false,
-                layout: { padding: { top: 35 } },
-                plugins: { legend:{display:false}, tooltip:{enabled:false} },
-                scales: {
-                    x: { ticks:{color:'#7A7FA8',font:{size:10}}, grid:{display:false}, border:{color:'rgba(255,255,255,0.06)'} },
-                    y: { ticks:{color:'#7A7FA8',font:{size:10}}, grid:{color:'rgba(255,255,255,0.04)'}, border:{color:'rgba(255,255,255,0.06)'}, beginAtZero:true }
-                }
-            }
-        });
+    // ── VOLUME POR DIA EM BARRAS (Regra 10) ──
+    const diasOrdenadosDesc = [...datasValidas].reverse();
+    const ulVolume = document.getElementById('lista-volume-dia');
+    const maxVol = Math.max(...diasOrdenadosDesc.map(d => (isFimDeSemana(d) ? fdsByDay[d] : realizedByDay[d]) || 0));
+    if (ulVolume) {
+        ulVolume.innerHTML = diasOrdenadosDesc.map(d => {
+            const isFds = isFimDeSemana(d);
+            const qtd = (isFds ? fdsByDay[d] : realizedByDay[d]) || 0;
+            if (qtd === 0) return '';
+            const sc = semContatoPorDia[d] || 0;
+            const color = isFds ? 'var(--accent-red)' : 'var(--accent-blue)';
+            const scBadge = (!isFds && sc > 0) ? `<span style="flex-shrink:0;font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">${sc} s/c (${Math.round((sc/qtd)*100)}%)</span>` : '';
+
+            return `<div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);">
+                <span style="flex:2;color:var(--text);min-width:0;">${fmtData(d)} <span style="font-size:10px;color:var(--muted);">${isFds ? '(FDS)' : ''}</span></span>
+                <div style="flex:2;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
+                    <div style="width:${(qtd/maxVol*100).toFixed(1)}%;height:100%;background:${color};border-radius:3px;"></div>
+                </div>
+                <span style="flex-shrink:0;min-width:26px;text-align:right;color:${color};font-weight:700;">${qtd}</span>
+                ${scBadge}
+            </div>`;
+        }).join('');
     }
+
+    // ── TOP 10 PRESTADORES (Regra 11) ──
+    const topPrest = Object.entries(prestadorRealizado).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    const maxPrest = topPrest[0]?.[1] || 1;
+    const ulPrest  = document.getElementById('lista-prestadores');
+    if (ulPrest) ulPrest.innerHTML = topPrest.length === 0
+        ? '<div class="empty">Sem dados de prestador.</div>'
+        : topPrest.map(([nome,qtd]) => {
+            const sc = prestadorSemContato[nome] || 0;
+            const scBadge = sc > 0
+                ? `<span style="flex-shrink:0;font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">${sc} s/c (${Math.round((sc/qtd)*100)}%)</span>`
+                : '';
+            return `<div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);">
+                <span style="flex:2;color:var(--text);min-width:0;">${nome}</span>
+                <div style="flex:2;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
+                    <div style="width:${(qtd/maxPrest*100).toFixed(1)}%;height:100%;background:var(--accent-purple);border-radius:3px;"></div>
+                </div>
+                <span style="flex-shrink:0;min-width:26px;text-align:right;color:var(--accent-purple);font-weight:700;">${qtd}</span>
+                ${scBadge}
+            </div>`;
+        }).join('');
+
+    // ── FASES DE TRATATIVAS (Regra 12) ──
+    const tratsArr = Object.entries(tratativasCountMap).sort((a,b)=>b[1]-a[1]);
+    const maxTrat = tratsArr[0]?.[1] || 1;
+    const ulTrat = document.getElementById('lista-tratativas');
+    if (ulTrat) ulTrat.innerHTML = tratsArr.length === 0
+        ? '<div class="empty">Sem dados de tratativa.</div>'
+        : tratsArr.map(([nome, qtd])=>`
+            <div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);">
+                <span style="flex:3;min-width:0;color:var(--text);line-height:1.4;">${nome.replace(/^AGENDAMENTO\s*[-–—]\s*/i, '')}</span>
+                <div style="flex:2;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
+                    <div style="width:${(qtd/maxTrat*100).toFixed(1)}%;height:100%;background:var(--accent-cyan);border-radius:3px;"></div>
+                </div>
+                <span style="flex-shrink:0;min-width:26px;text-align:right;color:var(--accent-cyan);font-weight:700;">${qtd}</span>
+                <span style="flex-shrink:0;min-width:42px;text-align:right;color:var(--muted);">(${getPct(qtd, totalRealizado)}%)</span>
+            </div>`).join('');
 
     // ── SLACK ──
     let txt = `*📊 PAINEL DE PERFORMANCE — COBLI (${textoData})*\n\n`;
-    txt += `*Resumo Geral:*\n• Total Analisado: ${total}\n• Total Pilot: ${pilotCount} (${txPilot}%)\n• Realizados: ${realizados} (${txRealizados}%)\n• Impedidos: ${impedidos} (${txImpedidos}%)\n• Antecipados: ${antecipados} (${txAntecipado}%)\n\n`;
+    txt += `*Resumo Geral:*\n• Total Geral: ${totalGeral}\n• Total Pilot: ${totalPiloto} (${getPct(totalPiloto, totalGeral)}%)\n• Realizados: ${totalRealizado} (${getPct(totalRealizado, totalGeral)}%)\n• Impedidos: ${totalImpedido} (${getPct(totalImpedido, totalGeral)}%)\n• Antecipados: ${totalAntecipado} (${getPct(totalAntecipado, totalRealizado)}%)\n\n`;
     txt += `*🚀 Detalhes Pilot:*\n`;
-    if (pilotNoShow > 0) txt += `• *🚨 NO-SHOW: ${pilotNoShow} (${txPilotNS}%)*\n`;
-    Object.entries(pilotStatusMap).sort((a,b)=>b[1]-a[1]).forEach(([s,q]) => txt += `• ${s}: ${q}\n`);
-    if (semContatoCount > 0) txt += `\n*⚡ Sem Contato:* ${semContatoCount} (${txSC}% do total)\n`;
-    if (fdsTotal > 0) txt += `*🔴 Fim de Semana:* ${fdsTotal} atends. (${fdsPct}% do total)\n`;
-    txt += `\n*📋 Últimas Tratativas:*\n`;
-    tratsArr.forEach(t => txt += `• ${t.nome}: ${t.qtd} (${t.pct}%)\n`);
-    if (nsArr.length > 0) { txt += `\n*⚠️ No-Show Reincidente (90d):*\n`; nsArr.forEach(p => txt += `• ${p}\n`); }
+    if (pilotoNoShow > 0) txt += `• *🚨 NO-SHOW: ${pilotoNoShow} (${getPct(pilotoNoShow, totalPiloto)}%)*\n`;
+    txt += `• Concluídos: ${pilotoConcluido} (${getPct(pilotoConcluido, totalPiloto)}%)\n`;
+    txt += `• Impedidos: ${pilotoImpedido} (${getPct(pilotoImpedido, totalPiloto)}%)\n`;
+    if (totalSemContato > 0) txt += `\n*⚡ Sem Contato:* ${totalSemContato} (${getPct(totalSemContato, totalGeral)}% do total)\n`;
+    if (totalFDS > 0) txt += `*🔴 Fim de Semana:* ${totalFDS} atends. (${getPct(totalFDS, totalGeral)}% do total)\n`;
+    txt += `\n*📋 Fases de Tratativas:*\n`;
+    tratsArr.forEach(([nome, qtd]) => txt += `• ${nome.replace(/^AGENDAMENTO\s*[-–—]\s*/i, '')}: ${qtd} (${getPct(qtd, totalRealizado)}%)\n`);
 
     const slackArea = document.getElementById('texto-slack-preview');
     if (slackArea) slackArea.value = txt;
