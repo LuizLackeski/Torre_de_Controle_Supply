@@ -55,7 +55,7 @@
 
         /* Ajuste do Filtro para não quebrar linha */
         .filter-group { display:flex; align-items:center; gap:6px; background:var(--card); padding:6px 8px; border-radius:10px; border:1px solid var(--border-strong); flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
-        .filter-group::-webkit-scrollbar { display: none; } /* Oculta a barra de scroll feia */
+        .filter-group::-webkit-scrollbar { display: none; }
         .filter-btn { background:transparent; color:var(--muted); border:none; padding:6px 14px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.2s; white-space: nowrap; }
         .filter-btn.active { background:var(--accent-cyan); color:var(--cobli-navy); }
         .filter-btn:hover:not(.active) { color:var(--text); background:rgba(255,255,255,0.05); }
@@ -129,7 +129,7 @@
         .table-os th { padding: 8px; border-bottom: 1px solid var(--border-strong); color: var(--muted); position: sticky; top: 0; background: var(--card); }
         .table-os td { padding: 8px; border-bottom: 1px solid var(--border); color: var(--text); }
         
-        /* Modal de Imagem (Ajustado para não ter scrollbar) */
+        /* Modal de Imagem */
         #imagem-preview-container { height: 350px; display:flex; align-items:center; justify-content:center; background:#111; border:1px solid var(--border); border-radius:8px; margin-bottom: 16px; overflow:hidden; padding: 10px; }
         #imagem-preview { display:none; max-width:100%; max-height:100%; width:auto; object-fit: contain; }
     </style>
@@ -464,6 +464,8 @@ function renderPainel(dados) {
     let totalImpedido = 0, totalAntecipado = 0;
     let totalFDS = 0, totalSemContato = 0;
 
+    let fdsConcluido = 0, fdsImpedido = 0;
+
     let geralByDay = {};
     let realizedByDay = {};
     let fdsByDay = {};
@@ -507,7 +509,7 @@ function renderPainel(dados) {
 
         if (qualifiesRule1) {
             totalGeral++;
-            if (dataISO) geralByDay[dataISO] = (geralByDay[dataISO] || 0) + 1; // Usado para os gráficos
+            if (dataISO) geralByDay[dataISO] = (geralByDay[dataISO] || 0) + 1;
             
             if (isSemConclusao) {
                 fasesSemConclusao++;
@@ -547,12 +549,17 @@ function renderPainel(dados) {
             if (prestador) prestadorAntecipado[prestador] = (prestadorAntecipado[prestador] || 0) + 1;
         }
 
+        // Fim de Semana - Contabilizando apenas status
         if (fds && (isConcluido || isImpedido || isEmAndamento || tratativaRaw.includes('NO-SHOW') || tratativaRaw.includes('NO SHOW'))) {
             totalFDS++;
             if (dataISO) fdsByDay[dataISO] = (fdsByDay[dataISO] || 0) + 1;
+            
+            if (isConcluido) fdsConcluido++;
+            if (isImpedido) fdsImpedido++;
         }
 
-        if (isInSetD) {
+        // Sem Contato (Apenas dias úteis agora)
+        if (isInSetD && !fds) {
             totalSemContato++;
             if (prestador) prestadorSemContato[prestador] = (prestadorSemContato[prestador] || 0) + 1;
             if (dataISO) semContatoPorDia[dataISO] = (semContatoPorDia[dataISO] || 0) + 1;
@@ -631,6 +638,11 @@ function renderPainel(dados) {
         <div class="kpi-icon">${k.icon}</div>
     </div>`).join('');
 
+    // Preparando os badges dinâmicos de Fim de Semana
+    let badgesFDS = '';
+    if (fdsConcluido > 0) badgesFDS += `<span style="font-size:10px;background:rgba(31,239,81,0.1);color:var(--accent-green);border:1px solid rgba(31,239,81,0.25);border-radius:20px;padding:2px 8px;font-weight:600;">${fdsConcluido} Concluídos FDS</span>`;
+    if (fdsImpedido > 0) badgesFDS += `<span style="font-size:10px;background:rgba(245,197,25,0.1);color:var(--accent-yellow);border:1px solid rgba(245,197,25,0.25);border-radius:20px;padding:2px 8px;font-weight:600;">${fdsImpedido} Impedidos FDS</span>`;
+
     const fdsEl = document.getElementById('fds-totais-novo');
     if (fdsEl) fdsEl.innerHTML = totalFDS === 0
         ? `<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum fim de semana</div>`
@@ -638,7 +650,10 @@ function renderPainel(dados) {
                <span style="font-size:28px;font-weight:700;color:#F04040;line-height:1;">${totalFDS}</span>
                <span style="font-size:11px;color:var(--muted);">atends.</span>
            </div>
-           <span style="font-size:12px;background:rgba(240,64,64,0.15);color:#F04040;border:1px solid rgba(240,64,64,0.3);border-radius:20px;padding:3px 12px;font-weight:700;">${getPct(totalFDS, totalGeral)}% do total analisado</span>`;
+           <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
+               <span style="font-size:11px;background:rgba(240,64,64,0.15);color:#F04040;border:1px solid rgba(240,64,64,0.3);border-radius:20px;padding:2px 8px;font-weight:700;">${getPct(totalFDS, totalGeral)}% do total analisado</span>
+               ${badgesFDS}
+           </div>`;
 
     const scEl = document.getElementById('sc-totais-novo');
     if (scEl) scEl.innerHTML = totalSemContato === 0
@@ -720,15 +735,15 @@ function renderPainel(dados) {
         : topPrest.map(([nome,qtd]) => {
             const sc = prestadorSemContato[nome] || 0;
             const scBadge = sc > 0
-                ? `<span style="flex-shrink:0;font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">${sc} s/c (${Math.round((sc/qtd)*100)}%)</span>`
+                ? `<span style="font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">${sc} s/c (${Math.round((sc/qtd)*100)}%)</span>`
                 : '';
             return `<div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);">
-                <span style="flex:2;color:var(--text);min-width:0;">${nome}</span>
-                <div style="flex:2;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
+                <span style="flex:1; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${nome}">${nome}</span>
+                <div style="flex:1;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
                     <div style="width:${(qtd/maxPrest*100).toFixed(1)}%;height:100%;background:var(--accent-purple);border-radius:3px;"></div>
                 </div>
-                <span style="flex-shrink:0;min-width:26px;text-align:right;color:var(--accent-purple);font-weight:700;">${qtd}</span>
-                ${scBadge}
+                <span style="flex-shrink:0; width:26px; text-align:right; color:var(--accent-purple); font-weight:700;">${qtd}</span>
+                <div style="flex-shrink:0; width:75px; text-align:right;">${scBadge}</div>
             </div>`;
         }).join('');
 
@@ -739,12 +754,12 @@ function renderPainel(dados) {
         ? '<div class="empty">Nenhum dado de antecipado.</div>'
         : topAnt.map(([nome,qtd]) => {
             return `<div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);">
-                <span style="flex:2;color:var(--text);min-width:0;">${nome}</span>
-                <div style="flex:2;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
+                <span style="flex:1; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${nome}">${nome}</span>
+                <div style="flex:1; height:5px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden;">
                     <div style="width:${(qtd/maxAnt*100).toFixed(1)}%;height:100%;background:var(--accent-green);border-radius:3px;"></div>
                 </div>
-                <span style="flex-shrink:0;min-width:26px;text-align:right;color:var(--accent-green);font-weight:700;">${qtd}</span>
-                <span style="flex-shrink:0;min-width:42px;text-align:right;color:var(--muted);">(${getPct(qtd, prestadorRealizado[nome] || qtd)}%)</span>
+                <span style="flex-shrink:0; width:26px; text-align:right; color:var(--accent-green); font-weight:700;">${qtd}</span>
+                <div style="flex-shrink:0; width:45px; text-align:right; color:var(--muted);">(${getPct(qtd, prestadorRealizado[nome] || qtd)}%)</div>
             </div>`;
         }).join('');
 
@@ -766,7 +781,7 @@ function renderPainel(dados) {
                     <div style="width:${(qtd/maxVol*100).toFixed(1)}%;height:100%;background:${color};border-radius:3px;"></div>
                 </div>
                 <span style="flex-shrink:0; width:26px; text-align:right; color:${color}; font-weight:700;">${qtd}</span>
-                <div style="flex-shrink:0; width:70px; text-align:right;">${scBadge}</div>
+                <div style="flex-shrink:0; width:75px; text-align:right;">${scBadge}</div>
             </div>`;
         }).join('');
     }
@@ -778,12 +793,12 @@ function renderPainel(dados) {
         ? '<div class="empty">Sem dados de tratativa.</div>'
         : tratsArr.map(([nome, qtd])=>`
             <div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);">
-                <span style="flex:3;min-width:0;color:var(--text);line-height:1.4;">${formatarNome(nome)}</span>
-                <div style="flex:2;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
+                <span style="flex:1; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${formatarNome(nome)}">${formatarNome(nome)}</span>
+                <div style="flex:1; height:5px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden;">
                     <div style="width:${(qtd/maxTrat*100).toFixed(1)}%;height:100%;background:var(--accent-cyan);border-radius:3px;"></div>
                 </div>
-                <span style="flex-shrink:0;min-width:26px;text-align:right;color:var(--accent-cyan);font-weight:700;">${qtd}</span>
-                <span style="flex-shrink:0;min-width:42px;text-align:right;color:var(--muted);">(${getPct(qtd, totalRealizado)}%)</span>
+                <span style="flex-shrink:0; width:26px; text-align:right; color:var(--accent-cyan); font-weight:700;">${qtd}</span>
+                <div style="flex-shrink:0; width:45px; text-align:right; color:var(--muted);">(${getPct(qtd, totalRealizado)}%)</div>
             </div>`).join('');
 
     let txt = `*📊 PAINEL TORRE DE CONTROLE — COBLI (${textoData})*\n\n`;
@@ -803,7 +818,12 @@ function renderPainel(dados) {
     }
 
     if (totalSemContato > 0) txt += `\n*⚡ Sem Contato:* ${totalSemContato} (${getPct(totalSemContato, totalGeral)}% do total)\n`;
-    if (totalFDS > 0) txt += `*🔴 Fim de Semana:* ${totalFDS} atends. (${getPct(totalFDS, totalGeral)}% do total)\n`;
+    
+    if (totalFDS > 0) {
+        txt += `*🔴 Fim de Semana:* ${totalFDS} atends. (${getPct(totalFDS, totalGeral)}% do total)\n`;
+        if (fdsConcluido > 0) txt += `> • Concluídos FDS: ${fdsConcluido}\n`;
+        if (fdsImpedido > 0) txt += `> • Impedidos FDS: ${fdsImpedido}\n`;
+    }
     
     if (nsArr.length > 0) {
         txt += `\n*🚨 No-Show:*\n`;
