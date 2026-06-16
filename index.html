@@ -11,119 +11,128 @@
     <style>
         :root {
             --cobli-navy:    #07074E;
-            --cobli-mid:     #1F1F5F;
             --bg:            #0F0F2A;
             --card:          #181830;
             --card2:         #13132A;
-            --surface:       #1E1E3A;
             --text:          #F0F0F8;
             --muted:         #7A7FA8;
-            --subtle:        #3A3A60;
             --border:        rgba(255,255,255,0.07);
             --border-strong: rgba(255,255,255,0.12);
-            --accent-cyan:   #0FFDC9;
-            --accent-green:  #1FEF51;
-            --accent-blue:   #7F8DDB;
-            --accent-red:    #F04040;
-            --accent-yellow: #F5C519;
-            --accent-purple: #C084FC;
+            --cyan:   #0FFDC9;
+            --green:  #1FEF51;
+            --blue:   #7F8DDB;
+            --red:    #F04040;
+            --yellow: #F5C519;
+            --purple: #C084FC;
             --font: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
+        * { box-sizing:border-box; margin:0; padding:0; }
+        body { background:var(--bg); color:var(--text); font-family:var(--font); min-height:100vh; }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; }
-
-        /* ── UPLOAD ── */
+        /* UPLOAD */
         #upload-screen { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; padding:40px 20px; gap:24px; }
-        .upload-logo { font-size:13px; font-weight:700; letter-spacing:4px; color:var(--accent-cyan); text-transform:uppercase; }
-        .upload-title { font-size:28px; font-weight:700; color:var(--text); }
+        .upload-logo { font-size:12px; font-weight:700; letter-spacing:4px; color:var(--cyan); text-transform:uppercase; }
+        .upload-title { font-size:26px; font-weight:700; color:var(--text); }
         .upload-sub { font-size:14px; color:var(--muted); text-align:center; max-width:420px; }
         .upload-box { background:var(--card); border:2px dashed var(--border); border-radius:16px; padding:48px 64px; text-align:center; cursor:pointer; transition:border-color 0.2s,background 0.2s; max-width:460px; width:100%; }
-        .upload-box:hover { border-color:var(--accent-cyan); background:rgba(15,253,201,0.05); }
-        .upload-box .icon { font-size:40px; margin-bottom:12px; }
-        .upload-box p { font-size:14px; color:var(--muted); margin-top:8px; }
+        .upload-box:hover { border-color:var(--cyan); background:rgba(15,253,201,0.05); }
+        .upload-box .icon { font-size:36px; margin-bottom:12px; }
+        .upload-box p { font-size:13px; color:var(--muted); margin-top:8px; }
         .input-row { display:flex; align-items:center; gap:12px; width:100%; max-width:460px; }
         .input-row label { font-size:12px; color:var(--muted); white-space:nowrap; }
         .input-row input[type="text"] { flex:1; background:var(--card); border:1px solid var(--border); border-radius:8px; padding:10px 14px; color:var(--text); font-size:13px; outline:none; }
-        .input-row input[type="text"]:focus { border-color:var(--accent-cyan); }
+        .input-row input[type="text"]:focus { border-color:var(--cyan); }
         #csvFileInput { display:none; }
 
-        /* ── DASHBOARD ── */
+        /* DASHBOARD */
         #dashboard-screen { display:none; }
         .top-bar-outer { background:var(--card2); border-bottom:1px solid var(--border); }
-        .top-bar { max-width:1100px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; padding:14px 28px; flex-wrap:wrap; gap:16px; }
-        .top-bar-left { display:flex; align-items:center; gap:12px; flex-wrap:wrap; flex:1; }
-        .cobli-badge { font-size:11px; font-weight:700; letter-spacing:3px; color:var(--accent-cyan); text-transform:uppercase; background:rgba(15,253,201,0.08); padding:4px 10px; border-radius:6px; border:1px solid rgba(15,253,201,0.15); }
-        #topbar-date { font-size:13px; font-weight:600; color:var(--muted); }
-        .badge { padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; text-transform:uppercase; }
-        .badge-cyan { background:rgba(15,253,201,0.1); color:var(--accent-cyan); border:1px solid rgba(15,253,201,0.2); }
-
-        .filter-group { display:flex; gap:4px; background:var(--card); padding:4px; border-radius:8px; border:1px solid var(--border-strong); }
-        .filter-btn { background:transparent; color:var(--muted); border:none; padding:6px 14px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.2s; }
-        .filter-btn.active { background:var(--accent-cyan); color:var(--cobli-navy); }
+        .top-bar { max-width:1160px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; padding:12px 28px; flex-wrap:wrap; gap:12px; }
+        .top-bar-left { display:flex; align-items:center; gap:10px; flex:1; }
+        .cobli-badge { font-size:11px; font-weight:700; letter-spacing:3px; color:var(--cyan); text-transform:uppercase; background:rgba(15,253,201,0.08); padding:4px 10px; border-radius:6px; border:1px solid rgba(15,253,201,0.15); }
+        #topbar-date { font-size:12px; font-weight:600; color:var(--muted); }
+        .badge-pill { padding:2px 10px; border-radius:20px; font-size:11px; font-weight:700; }
+        .badge-cyan { background:rgba(15,253,201,0.1); color:var(--cyan); border:1px solid rgba(15,253,201,0.2); }
+        .filter-group { display:flex; gap:3px; background:var(--card); padding:3px; border-radius:8px; border:1px solid var(--border-strong); }
+        .filter-btn { background:transparent; color:var(--muted); border:none; padding:5px 12px; border-radius:5px; font-size:11px; font-weight:600; cursor:pointer; transition:all 0.2s; }
+        .filter-btn.active { background:var(--cyan); color:var(--cobli-navy); }
         .filter-btn:hover:not(.active) { color:var(--text); background:rgba(255,255,255,0.05); }
-
-        .top-bar-actions { display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; flex:1; }
-        .btn { display:inline-flex; align-items:center; gap:7px; padding:9px 16px; border-radius:8px; border:none; font-size:12px; font-weight:600; cursor:pointer; transition:opacity 0.15s; }
+        .top-bar-actions { display:flex; gap:8px; flex-wrap:wrap; }
+        .btn { display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:7px; border:none; font-size:12px; font-weight:600; cursor:pointer; transition:opacity 0.15s; }
         .btn:hover { opacity:0.85; }
         .btn-outline { background:rgba(255,255,255,0.04); border:1px solid var(--border-strong); color:var(--text); }
         .btn-slack { background:#4A154B; color:#fff; }
         .btn-reload { background:transparent; border:1px solid var(--border); color:var(--muted); }
 
-        /* ── PAINEL ── */
-        #painel-cobli { background:var(--bg); padding:28px 32px 36px; max-width:1100px; margin:0 auto; }
+        /* PAINEL */
+        #painel-cobli { background:var(--bg); padding:24px 28px 32px; max-width:1160px; margin:0 auto; }
 
-        .kpi-row { display:grid; gap:12px; margin-bottom:14px; }
-        .kpi-row-5 { grid-template-columns:repeat(5,1fr); }
-        .kpi-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px 22px; position:relative; overflow:hidden; border-left:3px solid var(--kpi-accent,var(--accent-blue)); }
-        .kpi-label { font-size:10px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
-        .kpi-value { font-size:32px; font-weight:700; color:var(--text); line-height:1; }
-        .kpi-sub { font-size:11px; color:var(--kpi-accent,var(--muted)); margin-top:6px; font-weight:600; }
-        .kpi-icon { position:absolute; top:14px; right:16px; font-size:20px; opacity:0.08; }
+        /* KPI CARDS */
+        .kpi-row { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-bottom:12px; }
+        .kpi-card { background:var(--card); border:1px solid var(--border); border-left:3px solid var(--acc,var(--blue)); border-radius:10px; padding:16px 18px; position:relative; overflow:hidden; }
+        .kpi-label { font-size:9px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+        .kpi-value { font-size:28px; font-weight:700; color:var(--text); line-height:1; }
+        .kpi-sub { font-size:10px; color:var(--acc,var(--muted)); margin-top:5px; font-weight:600; }
+        .kpi-icon { position:absolute; top:12px; right:14px; font-size:18px; opacity:0.07; }
+        .kpi-extra { margin-top:10px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.07); display:flex; flex-direction:column; gap:3px; }
+        .kpi-extra-row { display:flex; justify-content:space-between; font-size:10px; }
+        .kpi-badge { display:inline-block; font-size:9px; font-weight:700; padding:2px 6px; border-radius:10px; margin-top:6px; }
 
-        .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:14px; }
-        .grid-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:14px; }
+        /* GRID BLOCKS */
+        .g3 { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:12px; }
+        .g2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+        .panel-block { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px 18px; }
+        .pbt { font-size:9px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:var(--muted); margin-bottom:12px; display:flex; align-items:center; gap:7px; }
+        .pbt .dot { width:6px; height:6px; border-radius:50%; background:currentColor; flex-shrink:0; }
 
-        .panel-block { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px 22px; }
-        .panel-block-title { font-size:10px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:var(--muted); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
-        .panel-block-title .dot { width:6px; height:6px; border-radius:50%; background:currentColor; flex-shrink:0; }
+        /* NOSHOW CARD TABLE */
+        .ns-row { display:flex; align-items:center; gap:8px; padding:4px 0; border-bottom:1px solid var(--border); font-size:11px; }
+        .ns-row:last-child { border-bottom:none; }
+        .ns-name { flex:1; color:var(--text); }
+        .ns-bar-wrap { width:60px; height:4px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden; }
+        .ns-bar { height:100%; border-radius:2px; }
+        .ns-count { width:20px; text-align:right; font-weight:700; color:var(--red); }
+        .ns-pct { width:34px; text-align:right; color:var(--muted); }
 
-        .tratativa-item { display:flex; align-items:center; gap:10px; font-size:12px; padding:5px 0; border-bottom:1px solid var(--border); }
-        .tratativa-item:last-child { border-bottom:none; }
-        .tratativa-name { color:var(--text); }
+        /* TRATATIVAS / PRESTADORES LIST */
+        .t-row { display:flex; align-items:center; gap:8px; padding:4px 0; border-bottom:1px solid var(--border); font-size:11px; }
+        .t-row:last-child { border-bottom:none; }
+        .t-name { flex:3; min-width:0; color:var(--text); line-height:1.3; }
+        .t-bar-wrap { flex:2; height:4px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden; flex-shrink:0; }
+        .t-bar { height:100%; border-radius:2px; }
+        .t-count { width:24px; text-align:right; font-weight:700; color:var(--cyan); flex-shrink:0; }
+        .t-pct { width:38px; text-align:right; color:var(--muted); flex-shrink:0; }
+        .t-badge { flex-shrink:0; font-size:9px; background:rgba(245,197,25,0.15); color:var(--yellow); border:1px solid rgba(245,197,25,0.3); border-radius:20px; padding:1px 6px; white-space:nowrap; }
 
-        .noshow-tags { display:flex; flex-wrap:wrap; gap:8px; }
-        .noshow-tag { font-size:11px; padding:5px 12px; background:rgba(240,26,26,0.08); border:1px solid rgba(240,26,26,0.2); border-left:3px solid var(--accent-red); border-radius:4px; color:var(--text); font-weight:500; }
+        /* CHART */
+        .chart-scroll-wrap { overflow-x:auto; overflow-y:hidden; }
+        .chart-wrap { position:relative; height:220px; }
+        .chart-wrap-fixed { position:relative; height:220px; width:100%; }
 
-        .chart-wrap { position:relative; height:240px; width:100%; }
-
-        #slack-section { display:none; background:#222; padding:20px 28px; }
+        /* SLACK */
         .slack-outer { background:var(--card2); border-top:1px solid var(--border); }
+        #slack-section { display:none; padding:20px 28px; max-width:1160px; margin:0 auto; }
         #texto-slack-preview { width:100%; height:180px; background:#111; border:1px solid var(--border); border-radius:8px; padding:12px 14px; color:#ccc; font-family:monospace; font-size:12px; resize:vertical; outline:none; }
 
-        @media (max-width:950px) {
-            .kpi-row-5 { grid-template-columns:repeat(2,1fr); }
-            .grid-2,.grid-3 { grid-template-columns:1fr; }
+        .empty { color:var(--muted); font-size:11px; font-style:italic; padding:6px 0; }
+
+        @media (max-width:900px) {
+            .kpi-row { grid-template-columns:repeat(2,1fr); }
+            .g3,.g2 { grid-template-columns:1fr; }
         }
-        .empty { color:var(--muted); font-size:12px; font-style:italic; padding:8px 0; }
-        
-        /* Custom scrollbar para listas internas */
-        .scrollable-list::-webkit-scrollbar { width: 6px; }
-        .scrollable-list::-webkit-scrollbar-track { background: var(--bg); border-radius: 4px; }
-        .scrollable-list::-webkit-scrollbar-thumb { background: var(--subtle); border-radius: 4px; }
-        .scrollable-list::-webkit-scrollbar-thumb:hover { background: var(--muted); }
     </style>
 </head>
 <body>
 
+<!-- UPLOAD -->
 <div id="upload-screen">
     <div class="upload-logo">Cobli</div>
     <div class="upload-title">Painel de Performance</div>
-    <div class="upload-sub">Importe o arquivo CSV exportado do sistema para gerar o painel automaticamente.</div>
+    <div class="upload-sub">Importe o CSV exportado do sistema para gerar o painel automaticamente.</div>
     <div class="upload-box" onclick="document.getElementById('csvFileInput').click()">
         <div class="icon">📂</div>
-        <div style="font-size:15px;font-weight:600;color:var(--text);">Clique para importar o CSV</div>
-        <p>Ou arraste o arquivo aqui<br><strong>Formatos aceitos: .csv</strong></p>
+        <div style="font-size:14px;font-weight:600;color:var(--text);">Clique para importar o CSV</div>
+        <p>Ou arraste aqui &nbsp;·&nbsp; <strong>Formatos: .csv</strong></p>
     </div>
     <div class="input-row">
         <label>Webhook Slack</label>
@@ -132,19 +141,20 @@
     <input type="file" id="csvFileInput" accept=".csv">
 </div>
 
+<!-- DASHBOARD -->
 <div id="dashboard-screen">
     <div class="top-bar-outer"><div class="top-bar">
         <div class="top-bar-left">
             <span class="cobli-badge">Cobli</span>
-            <span id="topbar-date">—</span>
-            <span id="topbar-total" class="badge badge-cyan"></span>
+            <span id="topbar-date" style="font-size:12px;color:var(--muted);font-weight:600;">—</span>
+            <span id="topbar-total" class="badge-pill badge-cyan"></span>
         </div>
         <div style="display:flex;justify-content:center;flex:1;">
             <div class="filter-group">
                 <button class="filter-btn" onclick="aplicarFiltro('7',this)">7 dias</button>
                 <button class="filter-btn" onclick="aplicarFiltro('15',this)">15 dias</button>
                 <button class="filter-btn" onclick="aplicarFiltro('30',this)">30 dias</button>
-                <button class="filter-btn active" onclick="aplicarFiltro('all',this)">Todo o período</button>
+                <button class="filter-btn active" onclick="aplicarFiltro('all',this)">Todo período</button>
             </div>
         </div>
         <div class="top-bar-actions">
@@ -156,93 +166,153 @@
     </div></div>
 
     <div id="painel-cobli">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;padding-bottom:16px;border-bottom:1px solid var(--border);">
+        <!-- Header -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border);">
             <div>
-                <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent-cyan);margin-bottom:4px;">Performance Report</div>
-                <div style="font-size:18px;font-weight:700;color:var(--text);" id="painel-titulo-data">Cobli — Carregando...</div>
+                <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);margin-bottom:4px;">Performance Report</div>
+                <div style="font-size:17px;font-weight:700;color:var(--text);" id="painel-titulo-data">Cobli — Carregando...</div>
             </div>
             <div style="text-align:right;">
-                <div style="font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;">Gerado em</div>
-                <div style="font-size:12px;color:var(--text);font-weight:500;" id="painel-gerado-em">—</div>
+                <div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;">Gerado em</div>
+                <div style="font-size:11px;color:var(--text);font-weight:500;" id="painel-gerado-em">—</div>
             </div>
         </div>
 
-        <div class="kpi-row kpi-row-5" id="kpi-row-main"></div>
+        <!-- ① KPIs -->
+        <div class="kpi-row" id="kpi-row-main"></div>
 
-        <div class="grid-3">
-            <div class="panel-block" style="padding:16px 20px;">
-                <div class="panel-block-title" style="color:var(--accent-red);margin-bottom:10px;"><span class="dot"></span>Fim de Semana</div>
-                <div id="fds-totais-novo"></div>
+        <!-- ② Cards secundários: FDS · Sem Contato · No-Show -->
+        <div class="g3" id="grid-secundario">
+            <div class="panel-block" style="padding:14px 16px;">
+                <div class="pbt" style="color:var(--red);"><span class="dot"></span>Fim de Semana</div>
+                <div id="card-fds"></div>
             </div>
-            <div class="panel-block" style="padding:16px 20px;">
-                <div class="panel-block-title" style="color:var(--accent-yellow);margin-bottom:10px;"><span class="dot"></span>Sem Contato</div>
-                <div id="sc-totais-novo"></div>
+            <div class="panel-block" style="padding:14px 16px;">
+                <div class="pbt" style="color:var(--yellow);"><span class="dot"></span>Sem Contato</div>
+                <div id="card-sc"></div>
             </div>
-            <div class="panel-block" style="padding:16px 20px;">
-                <div class="panel-block-title" style="color:var(--accent-red);margin-bottom:10px;"><span class="dot" style="color:var(--accent-red);background:var(--accent-red);"></span>No-Show</div>
-                <div id="lista-no-show-novo" class="scrollable-list" style="max-height:120px;overflow-y:auto;padding-right:5px;"></div>
+            <div class="panel-block" style="padding:14px 16px;">
+                <div class="pbt" style="color:var(--red);"><span class="dot"></span>No-Show — Detalhamento</div>
+                <div id="card-noshow"></div>
             </div>
         </div>
 
-        <div class="panel-block" style="margin-bottom:14px;">
-            <div class="panel-block-title" style="color:var(--accent-blue);">
-                <span class="dot"></span>Evolução de Chamados por Dia
+        <!-- ③ Gráfico Evolução (linha) -->
+        <div class="panel-block" style="margin-bottom:12px;">
+            <div class="pbt" style="color:var(--blue);">
+                <span class="dot"></span>Evolução por Dia
+                <span id="legenda-linha" style="margin-left:auto;display:flex;gap:12px;"></span>
             </div>
-            <div style="display:flex;justify-content:flex-end;gap:16px;margin-bottom:10px;" id="grafico-legenda"></div>
-            <div class="chart-wrap"><canvas id="graficoEvolucao"></canvas></div>
+            <div class="chart-wrap-fixed"><canvas id="chartEvolucao"></canvas></div>
         </div>
 
-        <div class="grid-2" style="margin-bottom:14px;">
+        <!-- ④ Volume por dia (barras) + Top 10 Prestadores -->
+        <div class="g2" style="margin-bottom:12px;">
             <div class="panel-block">
-                <div class="panel-block-title" style="color:var(--accent-blue);">
+                <div class="pbt" style="color:var(--blue);">
                     <span class="dot"></span>Volume por Dia
-                    <span style="margin-left:8px;font-size:10px;color:var(--muted);">
-                        <span style="color:#F04040;font-weight:700;">■</span> fds &nbsp;·&nbsp;
-                        <span style="color:#F5C519;font-weight:700;">■</span> badge = sem contato
+                    <span style="margin-left:6px;font-size:9px;color:var(--muted);">
+                        <span style="color:var(--red);font-weight:700;">■</span> fds &nbsp;
+                        <span style="color:var(--yellow);font-weight:700;">■</span> s/contato
                     </span>
                 </div>
-                <div id="lista-volume-dia" class="scrollable-list" style="max-height:240px;overflow-y:auto;padding-right:8px;"></div>
+                <div class="chart-scroll-wrap">
+                    <div class="chart-wrap" id="chartBarWrap"><canvas id="chartVolume"></canvas></div>
+                </div>
             </div>
             <div class="panel-block">
-                <div class="panel-block-title" style="color:var(--accent-purple);"><span class="dot"></span>Top 10 Prestadores</div>
-                <div id="lista-prestadores" class="scrollable-list" style="max-height:240px;overflow-y:auto;padding-right:8px;"></div>
+                <div class="pbt" style="color:var(--purple);"><span class="dot"></span>Top 10 Prestadores</div>
+                <div id="lista-prestadores"></div>
             </div>
         </div>
 
-        <div class="panel-block" style="margin-bottom:14px;">
-            <div class="panel-block-title" style="color:var(--accent-cyan);"><span class="dot"></span>Fases de Tratativas</div>
-            <div id="lista-tratativas" class="scrollable-list" style="max-height:240px;overflow-y:auto;padding-right:8px;"></div>
+        <!-- ⑤ Fases de Tratativas (full width) -->
+        <div class="panel-block">
+            <div class="pbt" style="color:var(--blue);"><span class="dot"></span>Fases de Tratativas</div>
+            <div id="lista-tratativas"></div>
         </div>
     </div>
 
     <div class="slack-outer"><div id="slack-section">
-        <div style="font-size:12px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">📝 Pré-visualização Slack</div>
+        <div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">📝 Pré-visualização Slack</div>
         <textarea id="texto-slack-preview"></textarea>
     </div></div>
 </div>
 
 <script>
-let chartLine = null;
-let dadosGlobaisBase = [];
+// ─────────────────────────────────────────────
+//  CÓDIGOS DE TRATATIVA  (centralizados aqui)
+// ─────────────────────────────────────────────
+const COD = {
+    // Regra 1: conta no Total Geral (exceto FDS — FDS usa regra 6)
+    TOTAL: [
+        'AGENDAMENTO - EM ANDAMENTO - SEM CONTATO',
+        'AGENDAMENTO - NO-SHOW CLIENTE - SMARTOPS REAGENDAMENTO',
+        'AGENDAMENTO - NO-SHOW TÉCNICO - REAGENDADO',
+        'AGENDAMENTO - NO-SHOW TÉCNICO - REVERTIDO',
+        'AGENDAMENTO - NO-SHOW TÉCNICO - SMARTOPS REAGENDAMENTO',
+        'AGENDAMENTO - TÉCNICO NO LOCAL AGENDADO',
+    ],
+    // Regra 3: conta em Realizados
+    REALIZADO: [
+        'AGENDAMENTO - EM ANDAMENTO - SEM CONTATO',
+        'AGENDAMENTO - ANTECIPADO',
+        'AGENDAMENTO - NO-SHOW TÉCNICO - REVERTIDO',
+        'AGENDAMENTO - TÉCNICO NO LOCAL AGENDADO',
+    ],
+    // Regra 7: Sem Contato
+    SEM_CONTATO: [
+        'AGENDAMENTO - EM ANDAMENTO - SEM CONTATO',
+        'AGENDAMENTO - ANTECIPADO',
+    ],
+    // Regra 8: No-Show detalhado
+    NOSHOW: [
+        'AGENDAMENTO - NO-SHOW TÉCNICO - REAGENDADO',
+        'AGENDAMENTO - NO-SHOW TÉCNICO - REVERTIDO',
+        'AGENDAMENTO - NO-SHOW TÉCNICO - SMARTOPS REAGENDAMENTO',
+        'AGENDAMENTO - TÉCNICO NO LOCAL AGENDADO',
+        'AGENDAMENTO - NO-SHOW CLIENTE - SMARTOPS REAGENDAMENTO',
+    ],
+    // Regra 12: Fases de Tratativas
+    FASES: [
+        'AGENDAMENTO - EM ANDAMENTO - SEM CONTATO',
+        'AGENDAMENTO - NO-SHOW CLIENTE - SMARTOPS REAGENDAMENTO',
+        'AGENDAMENTO - NO-SHOW TÉCNICO - REAGENDADO',
+        'AGENDAMENTO - NO-SHOW TÉCNICO - REVERTIDO',
+        'AGENDAMENTO - NO-SHOW TÉCNICO - SMARTOPS REAGENDAMENTO',
+        'AGENDAMENTO - TÉCNICO NO LOCAL AGENDADO',
+    ],
+    // Ignorar sempre
+    CANCELADO: 'AGENDAMENTO - CANCELADO',
+    ANTECIPADO: 'AGENDAMENTO - ANTECIPADO',
+};
 
-// ── UPLOAD ──
+// helper: trata normalizações para comparação
+function normTrat(s) { return s.toUpperCase().trim(); }
+function matchCod(trat, lista) { const t = normTrat(trat); return lista.some(c => t.includes(c)); }
+function isCancelado(trat) { return normTrat(trat).includes(COD.CANCELADO); }
+
+// ─────────────────────────────────────────────
+//  HELPERS
+// ─────────────────────────────────────────────
+let chartEvol = null, chartVol = null;
+let dadosBase = [];
+
 const uploadBox = document.querySelector('.upload-box');
-uploadBox.addEventListener('dragover', e => { e.preventDefault(); uploadBox.style.borderColor='var(--accent-cyan)'; });
+uploadBox.addEventListener('dragover', e => { e.preventDefault(); uploadBox.style.borderColor='var(--cyan)'; });
 uploadBox.addEventListener('dragleave', () => { uploadBox.style.borderColor=''; });
 uploadBox.addEventListener('drop', e => { e.preventDefault(); uploadBox.style.borderColor=''; if(e.dataTransfer.files[0]) parseCSV(e.dataTransfer.files[0]); });
 document.getElementById('csvFileInput').addEventListener('change', e => { if(e.target.files[0]) parseCSV(e.target.files[0]); });
 
 function parseCSV(file) {
-    Papa.parse(file, {
-        header: true, skipEmptyLines: true, transformHeader: h => h.trim(),
-        complete: r => { dadosGlobaisBase = r.data; aplicarFiltro('all', null); }
+    Papa.parse(file, { header:true, skipEmptyLines:true, transformHeader:h=>h.trim(),
+        complete: r => { dadosBase = r.data; aplicarFiltro('all', null); }
     });
 }
 
-// ── HELPERS ──
-function val(linha, pedaco) {
-    const k = Object.keys(linha).find(k => k.toLowerCase().includes(pedaco.toLowerCase()));
-    return k ? (linha[k] || '').toString().trim() : '';
+function col(row, fragment) {
+    const k = Object.keys(row).find(k => k.toLowerCase().includes(fragment.toLowerCase()));
+    return k ? (row[k] || '').toString().trim() : '';
 }
 
 function toISO(s) {
@@ -255,389 +325,478 @@ function toISO(s) {
     return s;
 }
 
-function isFimDeSemana(isoStr) {
-    if (!isoStr || !isoStr.includes('-')) return false;
-    const [y,m,d] = isoStr.split('-').map(Number);
-    const dow = new Date(y, m-1, d).getDay();
-    return dow === 0 || dow === 6;
+function isFDS(iso) {
+    if (!iso || !iso.includes('-')) return false;
+    const [y,m,d] = iso.split('-').map(Number);
+    return [0,6].includes(new Date(y,m-1,d).getDay());
 }
 
-function fmtData(d) {
+function fmt(d) {
     return d.match(/^\d{4}-\d{2}-\d{2}/) ? d.slice(5).split('-').reverse().join('/') : d;
 }
 
-// ── FILTRO ──
+function pct(a, b, dec=1) { return b > 0 ? ((a/b)*100).toFixed(dec) : '0.0'; }
+
+// ─────────────────────────────────────────────
+//  FILTRO
+// ─────────────────────────────────────────────
 function aplicarFiltro(periodo, btnEl) {
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     if (btnEl) btnEl.classList.add('active');
     else document.querySelectorAll('.filter-btn')[3].classList.add('active');
+    if (!dadosBase.length) return;
 
-    if (!dadosGlobaisBase || dadosGlobaisBase.length === 0) return;
-
-    const todasDatas = [...new Set(dadosGlobaisBase.map(l => toISO(val(l,'data').split(' ')[0])).filter(Boolean))].sort();
-    const permitidas = periodo === 'all' ? todasDatas : todasDatas.slice(-parseInt(periodo, 10));
-    renderPainel(dadosGlobaisBase.filter(l => permitidas.includes(toISO(val(l,'data').split(' ')[0]))));
+    const allDates = [...new Set(dadosBase.map(r => toISO(col(r,'data').split(' ')[0])).filter(Boolean))].sort();
+    const allowed  = periodo === 'all' ? allDates : allDates.slice(-parseInt(periodo,10));
+    renderPainel(dadosBase.filter(r => allowed.includes(toISO(col(r,'data').split(' ')[0]))));
 }
 
-// ── RENDER ──
+// ─────────────────────────────────────────────
+//  RENDER
+// ─────────────────────────────────────────────
 function renderPainel(dados) {
-    // Definindo as regras de negócio / listas
-    const setA = [
-        'AGENDAMENTO - EM ANDAMENTO - SEM CONTATO',
-        'AGENDAMENTO - NO-SHOW CLIENTE - SMARTOPS REAGENDAMENTO',
-        'AGENDAMENTO - NO-SHOW TÉCNICO - REAGENDADO',
-        'AGENDAMENTO - NO-SHOW TÉCNICO - REVERTIDO',
-        'AGENDAMENTO - NO-SHOW TÉCNICO - SMARTOPS REAGENDAMENTO',
-        'AGENDAMENTO - TÉCNICO NO LOCAL AGENDADO'
-    ];
-    
-    const setB = [
-        'AGENDAMENTO - EM ANDAMENTO - SEM CONTATO',
-        'AGENDAMENTO - ANTECIPADO',
-        'AGENDAMENTO - NO-SHOW TÉCNICO - REVERTIDO',
-        'AGENDAMENTO - TÉCNICO NO LOCAL AGENDADO'
-    ];
-    
-    const setC = [
-        'AGENDAMENTO - NO-SHOW TÉCNICO - REAGENDADO',
-        'AGENDAMENTO - NO-SHOW TÉCNICO - REVERTIDO',
-        'AGENDAMENTO - NO-SHOW TÉCNICO - SMARTOPS REAGENDAMENTO',
-        'AGENDAMENTO - TÉCNICO NO LOCAL AGENDADO',
-        'AGENDAMENTO - NO-SHOW CLIENTE - SMARTOPS REAGENDAMENTO'
-    ];
 
-    const setD = [
-        'AGENDAMENTO - EM ANDAMENTO - SEM CONTATO',
-        'AGENDAMENTO - ANTECIPADO'
-    ];
+    // Contadores principais
+    let totalGeral=0, totalPilot=0, totalFDS=0;
+    let realizados=0, realizadosPilot=0;
+    let concluidos=0, concluidosPilot=0;
+    let impedidos=0,  impedidosPilot=0;
+    let antecipados=0;
+    let semContato=0, semContatoPilot=0;
+    let pilotNoShow=0;
+    let semFase=0; // dentro do total geral, sem código de tratativa
 
-    let checkInSet = (rawStr, list) => list.some(s => rawStr.includes(s));
+    // Maps para gráficos/listas
+    let volumeDia={}, realizadoDia={}, fdsDia={};
+    let noshowMap={};      // código → contagem (regra 8)
+    let prestMap={};       // nome → {total, semContato}
+    let pilotStatusMap={}; // status alocação dos pilots sem no-show
+    let fasesMap={};       // código → contagem (regra 12)
+    let datasSet=new Set();
 
-    // Variáveis de contagem
-    let countLidos = 0;
-    let totalGeral = 0, fasesSemConclusao = 0;
-    let totalPiloto = 0, pilotoConcluido = 0, pilotoImpedido = 0, pilotoNoShow = 0;
-    let totalRealizado = 0, noShowRule3Count = 0;
-    let totalImpedido = 0, totalAntecipado = 0;
-    let totalFDS = 0, totalSemContato = 0;
+    // ── LOOP PRINCIPAL ──
+    dados.forEach(row => {
+        const aloc   = col(row,'aloca');
+        const trat   = col(row,'tratativa');
+        const classe = col(row,'classe').toLowerCase();
+        const prest  = col(row,'prestador');
+        const dataRaw= col(row,'data').split(' ')[0];
+        const dataISO= toISO(dataRaw);
+        const fds    = isFDS(dataISO);
 
-    let realizedByDay = {};
-    let fdsByDay = {};
-    let semContatoPorDia = {};
-    let prestadorRealizado = {};
-    let prestadorSemContato = {};
-    let tratativasCountMap = {};
-    let noShowCountMap = {};
-    let datasSet = new Set();
+        const alocN  = aloc.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 
-    dados.forEach(linha => {
-        const alocacaoRaw = val(linha, 'aloca');
-        const alocacao = alocacaoRaw.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
-        const tratativaRaw = val(linha, 'tratativa').toUpperCase().trim();
-        const classe = val(linha, 'classe').toUpperCase();
-        const prestador = val(linha, 'prestador');
-        const dataStr = val(linha, 'data').split(' ')[0];
+        // ── IGNORAR CANCELADO (sempre, qualquer caso) ──
+        if (isCancelado(trat)) return;
+        // Cancelado sem tratativa → ignorar
+        const tratVazia = !trat || ['-','nan','null',''].includes(trat.toLowerCase());
+        if (alocN.includes('cancelad') && tratVazia) return;
 
-        // Regra Global: Remover CANCELADO sem impacto nenhum
-        if (tratativaRaw.includes('AGENDAMENTO - CANCELADO')) return;
-        
-        countLidos++;
-        const dataISO = toISO(dataStr);
-        if(dataISO) datasSet.add(dataISO);
+        // Remover prefixo de data/hora da tratativa para comparação limpa
+        const tratLimpa = trat.replace(/^\d{2}\/\d{2}[^—\-]*(—|-)\s*/, '').trim();
 
-        const fds = isFimDeSemana(dataISO);
-        const isConcluido = alocacao.includes('CONCLU');
-        const isImpedido = alocacao.includes('IMPED');
-        const isEmAndamento = alocacao.includes('ANDAMENTO');
+        const temCodTotal    = matchCod(tratLimpa, COD.TOTAL);
+        const temCodRealiz   = matchCod(tratLimpa, COD.REALIZADO);
+        const temCodSC       = matchCod(tratLimpa, COD.SEM_CONTATO);
+        const temCodNoShow   = matchCod(tratLimpa, COD.NOSHOW) || /no[\s\-]?show/i.test(tratLimpa);
+        const isConcluido    = alocN.includes('conclu');
+        const isImpedido     = /imped/i.test(alocN);
+        const isEmAndamento  = alocN.includes('andamento') || alocN.includes('em atend');
+        const isAntecipado   = normTrat(tratLimpa).includes(COD.ANTECIPADO.toUpperCase()) || alocN.includes('antecipa');
 
-        // Check sets
-        const isInSetA = checkInSet(tratativaRaw, setA);
-        const isInSetB = checkInSet(tratativaRaw, setB);
-        const isInSetC = checkInSet(tratativaRaw, setC);
-        const isInSetD = checkInSet(tratativaRaw, setD);
+        if (dataISO) datasSet.add(dataISO);
 
-        // Regra 1: Total Geral
-        const isSemConclusao = (isConcluido || isImpedido) && !isInSetA;
-        const qualifiesRule1 = !fds && (isInSetA || isConcluido || isImpedido);
-
-        if (qualifiesRule1) {
-            totalGeral++;
-            if (isSemConclusao) fasesSemConclusao++;
-
-            // Regra 2: Total Piloto
-            if (classe.includes('PILOTO') || classe.includes('PILOT')) {
-                totalPiloto++;
-                if (isConcluido) pilotoConcluido++;
-                if (isImpedido) pilotoImpedido++;
-                if (tratativaRaw.includes('NO-SHOW') || tratativaRaw.includes('NO SHOW')) pilotoNoShow++;
+        // ════════════════════════════════
+        //  REGRA 6: FDS — contagem própria
+        // ════════════════════════════════
+        if (fds) {
+            // FDS conta se: concluído, impedido, em andamento, ou tem no-show
+            if (isConcluido || isImpedido || isEmAndamento || temCodNoShow) {
+                totalFDS++;
+                if (dataISO) fdsDia[dataISO] = (fdsDia[dataISO]||0) + 1;
             }
+            return; // FDS não entra em nenhuma outra regra
+        }
 
-            // Regra 3: Total Realizados
-            if (isInSetB || isConcluido || isImpedido) {
-                totalRealizado++;
-                if (dataISO) realizedByDay[dataISO] = (realizedByDay[dataISO] || 0) + 1;
-                if (prestador) prestadorRealizado[prestador] = (prestadorRealizado[prestador] || 0) + 1;
+        // ════════════════════════════════
+        //  REGRA 1: Total Geral (dia útil)
+        //  Deve ter um dos códigos COD.TOTAL
+        //  OU status concluído/impedido sem código diferente
+        // ════════════════════════════════
+        const contaNoTotal = temCodTotal || isConcluido || isImpedido;
+        if (!contaNoTotal) return; // não entra no painel
+
+        totalGeral++;
+        if (dataISO) volumeDia[dataISO] = (volumeDia[dataISO]||0) + 1;
+
+        // Badge "Fases sem conclusão": tem código TOTAL mas não tem concluído/impedido
+        if (temCodTotal && !isConcluido && !isImpedido && !isAntecipado) semFase++;
+
+        if (isConcluido) concluidos++;
+        if (isImpedido)  impedidos++;
+        if (isAntecipado) antecipados++;
+
+        // ════════════════════════════════
+        //  REGRA 3: Realizados
+        // ════════════════════════════════
+        const contaRealiz = temCodRealiz || isConcluido || isImpedido;
+        if (contaRealiz) {
+            realizados++;
+            if (dataISO) realizadoDia[dataISO] = (realizadoDia[dataISO]||0) + 1;
+        }
+
+        // ════════════════════════════════
+        //  REGRA 7: Sem Contato
+        // ════════════════════════════════
+        if (temCodSC) semContato++;
+
+        // ════════════════════════════════
+        //  REGRA 8: No-Show detalhado
+        // ════════════════════════════════
+        COD.NOSHOW.forEach(c => {
+            if (normTrat(tratLimpa).includes(c)) {
+                noshowMap[c] = (noshowMap[c]||0) + 1;
             }
+        });
 
-            // Para Badge de No-Show na Regra 3
-            if (isInSetC) noShowRule3Count++;
+        // ════════════════════════════════
+        //  PRESTADORES (regra 11)
+        // ════════════════════════════════
+        if (prest && contaRealiz) {
+            if (!prestMap[prest]) prestMap[prest] = {total:0, sc:0};
+            prestMap[prest].total++;
+            if (temCodSC) prestMap[prest].sc++;
+        }
 
-            // Regra 4: Impedido
-            if (isImpedido) totalImpedido++;
-
-            // Fases de Tratativas (Rule 12 - usa Set A)
-            if (isInSetA) {
-                const matchedA = setA.find(s => tratativaRaw.includes(s));
-                if (matchedA) tratativasCountMap[matchedA] = (tratativasCountMap[matchedA] || 0) + 1;
+        // ════════════════════════════════
+        //  REGRA 12: Fases de Tratativas
+        // ════════════════════════════════
+        COD.FASES.forEach(c => {
+            if (normTrat(tratLimpa).includes(c)) {
+                const label = c.replace(/^AGENDAMENTO\s*[-–]\s*/i,'').trim();
+                fasesMap[label] = (fasesMap[label]||0) + 1;
             }
-        }
+        });
 
-        // Regra 5: Antecipados
-        if (tratativaRaw.includes('AGENDAMENTO - ANTECIPADO')) {
-            totalAntecipado++;
-        }
-
-        // Regra 6: Final de Semana
-        if (fds && (isConcluido || isImpedido || isEmAndamento || tratativaRaw.includes('NO-SHOW') || tratativaRaw.includes('NO SHOW'))) {
-            totalFDS++;
-            if (dataISO) fdsByDay[dataISO] = (fdsByDay[dataISO] || 0) + 1;
-        }
-
-        // Regra 7: Sem Contato
-        if (isInSetD) {
-            totalSemContato++;
-            if (prestador) prestadorSemContato[prestador] = (prestadorSemContato[prestador] || 0) + 1;
-            if (dataISO) semContatoPorDia[dataISO] = (semContatoPorDia[dataISO] || 0) + 1;
-        }
-
-        // Regra 8: No Show (apenas os do set C)
-        if (isInSetC) {
-            const matchedC = setC.find(s => tratativaRaw.includes(s));
-            if (matchedC) noShowCountMap[matchedC] = (noShowCountMap[matchedC] || 0) + 1;
+        // ════════════════════════════════
+        //  PILOT (regra 2)
+        // ════════════════════════════════
+        if (classe.includes('pilot')) {
+            totalPilot++;
+            if (contaRealiz) realizadosPilot++;
+            if (isConcluido)  concluidosPilot++;
+            if (isImpedido)   impedidosPilot++;
+            if (temCodSC)     semContatoPilot++;
+            if (temCodNoShow || /no[\s\-]?show/i.test(tratLimpa)) {
+                pilotNoShow++;
+            } else {
+                pilotStatusMap[aloc||'Sem Status'] = (pilotStatusMap[aloc||'Sem Status']||0)+1;
+            }
         }
     });
 
+    // ── TAXAS ──
+    const txRealiz    = pct(realizados, totalGeral);
+    const txImpedidos = pct(impedidos,  totalGeral);
+    const txAntec     = pct(antecipados, realizados); // % sobre realizados
+    const txPilot     = pct(totalPilot, totalGeral);
+    const txPilotNS   = pct(pilotNoShow, totalPilot, 0);
+    const txPilotConc = pct(concluidosPilot, totalPilot, 0);
+    const txPilotImp  = pct(impedidosPilot,  totalPilot, 0);
+    const txFDS       = pct(totalFDS, totalGeral+totalFDS);
+    const txSC        = pct(semContato, realizados);
+    const totalNS     = Object.values(noshowMap).reduce((a,b)=>a+b, 0);
+
+    // No-show como % de Realizados (regra 3 obs)
+    const noshowTotal = COD.NOSHOW.reduce((a,c) => a+(noshowMap[c]||0), 0);
+    const txNSRealiz  = pct(noshowTotal, realizados);
+
     // ── DATA TÍTULO ──
-    const datasValidas = [...datasSet].sort();
+    const datas = [...datasSet].sort();
     let textoData = 'Múltiplos Dias';
-    if (datasValidas.length === 1 && datasValidas[0]) textoData = fmtData(datasValidas[0]);
-    else if (datasValidas.length > 1) textoData = `${fmtData(datasValidas[0])} – ${fmtData(datasValidas[datasValidas.length-1])}`;
+    if (datas.length===1) textoData = fmt(datas[0]);
+    else if (datas.length>1) textoData = `${fmt(datas[0])} – ${fmt(datas[datas.length-1])}`;
 
-    // ── UI INICIAL ──
-    document.getElementById('upload-screen').style.display = 'none';
-    document.getElementById('dashboard-screen').style.display = 'block';
-    document.getElementById('topbar-date').textContent = textoData;
-    document.getElementById('topbar-total').textContent = `${countLidos} validados`;
-    document.getElementById('painel-titulo-data').textContent = `Cobli — ${textoData}`;
-    const agora = new Date();
-    document.getElementById('painel-gerado-em').textContent = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+    // ── UI ──
+    document.getElementById('upload-screen').style.display='none';
+    document.getElementById('dashboard-screen').style.display='block';
+    document.getElementById('topbar-date').textContent=textoData;
+    document.getElementById('topbar-total').textContent=`${totalGeral} chamados úteis`;
+    document.getElementById('painel-titulo-data').textContent=`Cobli — ${textoData}`;
+    const agora=new Date();
+    document.getElementById('painel-gerado-em').textContent=
+        agora.toLocaleDateString('pt-BR')+' '+agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
 
-    // ── KPIs (Regras 1 a 5) ──
-    const getPct = (v, base) => base > 0 ? ((v/base)*100).toFixed(1) : 0;
-    
-    const kpi1Extra = `<div style="margin-top:8px;"><span style="font-size:10px;background:rgba(240,64,64,0.15);color:var(--accent-red);padding:3px 8px;border-radius:12px;border:1px solid rgba(240,64,64,0.3);font-weight:700;">🚨 ${fasesSemConclusao} Fases sem conclusão</span></div>`;
-    
-    const kpi2Extra = `
-        <div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;gap:4px;">
-            <div style="display:flex;justify-content:space-between;font-size:11px;">
-                <span style="color:#7A7FA8;">Concluídos</span>
-                <span style="color:#1FEF51;font-weight:700;">${pilotoConcluido} <span style="font-weight:400;color:#7A7FA8;">(${getPct(pilotoConcluido, totalPiloto)}%)</span></span>
-            </div>
-            <div style="display:flex;justify-content:space-between;font-size:11px;">
-                <span style="color:#7A7FA8;">Impedidos</span>
-                <span style="color:#F5C519;font-weight:700;">${pilotoImpedido} <span style="font-weight:400;color:#7A7FA8;">(${getPct(pilotoImpedido, totalPiloto)}%)</span></span>
-            </div>
-            <div style="display:flex;justify-content:space-between;font-size:11px;">
-                <span style="color:#7A7FA8;">No-Show</span>
-                <span style="color:#F04040;font-weight:700;">${pilotoNoShow} <span style="font-weight:400;color:#7A7FA8;">(${getPct(pilotoNoShow, totalPiloto)}%)</span></span>
-            </div>
-        </div>`;
+    // ────────────────────────────────────
+    //  ① KPI CARDS
+    // ────────────────────────────────────
+    const pilotOther = Object.entries(pilotStatusMap).filter(([s])=>{
+        const n=s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+        return !n.includes('conclu')&&!n.includes('imped');
+    }).reduce((a,[,q])=>a+q,0);
 
-    const kpi3Extra = `<div style="margin-top:8px;"><span style="font-size:10px;background:rgba(240,64,64,0.15);color:var(--accent-red);padding:3px 8px;border-radius:12px;border:1px solid rgba(240,64,64,0.3);font-weight:700;">⚠️ ${getPct(noShowRule3Count, totalRealizado)}% No-Show</span></div>`;
+    const pilotExtra = `<div class="kpi-extra">
+        <div class="kpi-extra-row"><span style="color:var(--muted)">Concluídos</span><span style="color:var(--green);font-weight:700">${concluidosPilot} <span style="color:var(--muted);font-weight:400">(${txPilotConc}%)</span></span></div>
+        ${impedidosPilot>0?`<div class="kpi-extra-row"><span style="color:var(--muted)">Impedidos</span><span style="color:var(--yellow);font-weight:700">${impedidosPilot} <span style="color:var(--muted);font-weight:400">(${txPilotImp}%)</span></span></div>`:''}
+        ${pilotOther>0?`<div class="kpi-extra-row"><span style="color:var(--muted)">Outros</span><span style="color:var(--blue);font-weight:700">${pilotOther}</span></div>`:''}
+        <div class="kpi-extra-row"><span style="color:var(--muted)">No-Show</span><span style="color:var(--red);font-weight:700">${pilotNoShow} <span style="color:var(--muted);font-weight:400">(${txPilotNS}%)</span></span></div>
+    </div>`;
+
+    const realizBadge = noshowTotal>0
+        ? `<div class="kpi-badge" style="background:rgba(240,64,64,0.12);color:var(--red);border:1px solid rgba(240,64,64,0.25);">No-Show ${noshowTotal} (${txNSRealiz}%)</div>`
+        : '';
+
+    const totalBadge = semFase>0
+        ? `<div class="kpi-badge" style="background:rgba(245,197,25,0.12);color:var(--yellow);border:1px solid rgba(245,197,25,0.25);">⚠ Sem fase: ${semFase}</div>`
+        : '';
 
     document.getElementById('kpi-row-main').innerHTML = [
-        { label:'1. Total Geral',  value:totalGeral,      sub:'&nbsp;',                                accent:'var(--accent-cyan)',   icon:'📋', extra:kpi1Extra },
-        { label:'2. Total Pilot',  value:totalPiloto,     sub:getPct(totalPiloto, totalGeral)+'% do Geral',     accent:'var(--accent-blue)',   icon:'🚀', extra:kpi2Extra },
-        { label:'3. Realizados',   value:totalRealizado,  sub:getPct(totalRealizado, totalGeral)+'% do Geral',  accent:'var(--accent-green)',  icon:'⚡', extra:kpi3Extra },
-        { label:'4. Impedidos',    value:totalImpedido,   sub:getPct(totalImpedido, totalGeral)+'% do Geral',   accent:'var(--accent-red)',    icon:'🚫', extra:'' },
-        { label:'5. Antecipados',  value:totalAntecipado, sub:getPct(totalAntecipado, totalRealizado)+'% do Realiz.', accent:'var(--accent-purple)', icon:'⏳', extra:'' },
-    ].map(k=>`<div class="kpi-card" style="--kpi-accent:${k.accent}">
-        <div class="kpi-label">${k.label}</div>
-        <div class="kpi-value">${k.value}</div>
-        <div class="kpi-sub">${k.sub}</div>
-        ${k.extra}
-        <div class="kpi-icon">${k.icon}</div>
-    </div>`).join('');
+        { label:'Total Analisado', value:totalGeral, sub:'dias úteis',          acc:'var(--cyan)',   icon:'📋', extra: totalBadge },
+        { label:'Total Pilot',     value:totalPilot, sub:txPilot+'% do total',  acc:'var(--blue)',   icon:'🚀', extra: pilotExtra },
+        { label:'Realizados',      value:realizados,  sub:txRealiz+'% do total', acc:'var(--green)',  icon:'⚡', extra: realizBadge },
+        { label:'Impedidos',       value:impedidos,   sub:txImpedidos+'% do total', acc:'var(--red)', icon:'🚫', extra:'' },
+        { label:'Antecipados',     value:antecipados, sub:txAntec+'% dos realiz.',   acc:'var(--purple)', icon:'⏳', extra:'' },
+    ].map(k=>`
+        <div class="kpi-card" style="--acc:${k.acc}">
+            <div class="kpi-label">${k.label}</div>
+            <div class="kpi-value">${k.value}</div>
+            <div class="kpi-sub">${k.sub}</div>
+            ${k.extra}
+            <div class="kpi-icon">${k.icon}</div>
+        </div>`).join('');
 
-    // ── SECUNDÁRIOS (Regras 6, 7, 8) ──
-    const fdsEl = document.getElementById('fds-totais-novo');
-    if (fdsEl) fdsEl.innerHTML = totalFDS === 0
-        ? `<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum fim de semana</div>`
+    // ────────────────────────────────────
+    //  ② CARDS SECUNDÁRIOS
+    // ────────────────────────────────────
+
+    // Card FDS (regra 6)
+    const fdsDias = Object.keys(fdsDia).sort();
+    document.getElementById('card-fds').innerHTML = totalFDS === 0
+        ? `<div class="empty">Nenhum atendimento em FDS</div>`
         : `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;">
-               <span style="font-size:28px;font-weight:700;color:#F04040;line-height:1;">${totalFDS}</span>
-               <span style="font-size:11px;color:var(--muted);">atends.</span>
+               <span style="font-size:26px;font-weight:700;color:var(--red);line-height:1;">${totalFDS}</span>
+               <span style="font-size:11px;color:var(--muted);">atendimentos</span>
            </div>
-           <span style="font-size:12px;background:rgba(240,64,64,0.15);color:#F04040;border:1px solid rgba(240,64,64,0.3);border-radius:20px;padding:3px 12px;font-weight:700;">${getPct(totalFDS, totalGeral)}% do total analisado</span>`;
+           <span style="font-size:11px;background:rgba(240,64,64,0.12);color:var(--red);border:1px solid rgba(240,64,64,0.25);border-radius:20px;padding:2px 10px;font-weight:700;">${txFDS}% do período</span>
+           <div style="margin-top:8px;font-size:10px;color:var(--muted);">${fdsDias.length} dia${fdsDias.length>1?'s':''} de fim de semana</div>`;
 
-    const scEl = document.getElementById('sc-totais-novo');
-    if (scEl) scEl.innerHTML = totalSemContato === 0
-        ? `<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum sem contato</div>`
+    // Card Sem Contato (regra 7)
+    document.getElementById('card-sc').innerHTML = semContato === 0
+        ? `<div class="empty">Nenhum sem contato</div>`
         : `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;">
-               <span style="font-size:28px;font-weight:700;color:#F5C519;line-height:1;">${totalSemContato}</span>
-               <span style="font-size:11px;color:var(--muted);">atends.</span>
+               <span style="font-size:26px;font-weight:700;color:var(--yellow);line-height:1;">${semContato}</span>
+               <span style="font-size:11px;color:var(--muted);">atendimentos</span>
            </div>
-           <span style="font-size:12px;background:rgba(245,197,25,0.12);color:#F5C519;border:1px solid rgba(245,197,25,0.25);border-radius:20px;padding:3px 12px;font-weight:700;">${getPct(totalSemContato, totalGeral)}% do total analisado</span>`;
+           <span style="font-size:11px;background:rgba(245,197,25,0.12);color:var(--yellow);border:1px solid rgba(245,197,25,0.25);border-radius:20px;padding:2px 10px;font-weight:700;">${txSC}% dos realizados</span>`;
 
-    const nsArr = Object.entries(noShowCountMap).sort((a,b)=>b[1]-a[1]);
-    const maxNS = nsArr[0]?.[1] || 1;
-    const totalNSList = nsArr.reduce((a,b)=>a+b[1], 0);
-    const nsEl = document.getElementById('lista-no-show-novo');
-    if (nsEl) nsEl.innerHTML = nsArr.length === 0
-        ? '<div class="empty">Nenhum No-Show mapeado.</div>'
-        : nsArr.map(([nome,qtd]) => `
-            <div style="display:flex;align-items:center;gap:10px;font-size:11px;padding:6px 0;border-bottom:1px solid var(--border);">
-                <span style="flex:3;min-width:0;color:var(--text);line-height:1.2;">${nome.replace(/^AGENDAMENTO\s*[-–—]\s*/i, '')}</span>
-                <div style="flex:2;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;">
-                    <div style="width:${(qtd/maxNS*100).toFixed(1)}%;height:100%;background:var(--accent-red);border-radius:2px;"></div>
-                </div>
-                <span style="flex-shrink:0;min-width:26px;text-align:right;color:var(--accent-red);font-weight:700;">${qtd}</span>
-                <span style="flex-shrink:0;min-width:38px;text-align:right;color:var(--muted);">(${getPct(qtd, totalNSList)}%)</span>
+    // Card No-Show detalhado (regra 8)
+    const nsEntries = COD.NOSHOW.map(c => ({
+        label: c.replace(/^AGENDAMENTO\s*[-–]\s*/i,'').trim(),
+        qtd: noshowMap[c]||0
+    })).filter(e=>e.qtd>0).sort((a,b)=>b.qtd-a.qtd);
+    const maxNS = nsEntries[0]?.qtd||1;
+    document.getElementById('card-noshow').innerHTML = nsEntries.length===0
+        ? `<div class="empty">Sem no-show no período</div>`
+        : nsEntries.map(e=>`
+            <div class="ns-row">
+                <span class="ns-name">${e.label}</span>
+                <div class="ns-bar-wrap"><div class="ns-bar" style="width:${(e.qtd/maxNS*100).toFixed(0)}%;background:var(--red);"></div></div>
+                <span class="ns-count">${e.qtd}</span>
+                <span class="ns-pct">(${pct(e.qtd,totalNS||1)}%)</span>
             </div>`).join('');
 
-    // ── GRÁFICO EVOLUÇÃO (Regra 9) ──
-    Chart.register(ChartDataLabels);
-    const labels = datasValidas.map(d => fmtData(d));
-    const isFdsArr = datasValidas.map(d => isFimDeSemana(d));
-    const dataLine = datasValidas.map(d => isFimDeSemana(d) ? (fdsByDay[d] || 0) : (realizedByDay[d] || 0));
+    // ────────────────────────────────────
+    //  ③ GRÁFICO EVOLUÇÃO (linha)
+    // ────────────────────────────────────
+    // Dia útil = realizadoDia, FDS = fdsDia
+    const allDias = [...new Set([...Object.keys(realizadoDia),...Object.keys(fdsDia)])].sort();
+    const lblsEv  = allDias.map(d=>fmt(d));
+    const dataEv  = allDias.map(d => isFDS(d) ? (fdsDia[d]||0) : (realizadoDia[d]||0));
+    const isFDSArr= allDias.map(d => isFDS(d));
 
-    const ctxLine = document.getElementById('graficoEvolucao')?.getContext('2d');
-    if (ctxLine) {
-        if (chartLine) chartLine.destroy();
-        chartLine = new Chart(ctxLine, {
-            type: 'line',
-            data: { labels, datasets: [{
-                data: dataLine,
-                borderColor: '#0FFDC9', backgroundColor: 'rgba(15,253,201,0.05)',
-                borderWidth: 2,
-                pointBackgroundColor: isFdsArr.map(f => f ? '#F04040' : '#0F0F2A'),
-                pointBorderColor:     isFdsArr.map(f => f ? '#F04040' : '#0FFDC9'),
-                pointBorderWidth:     isFdsArr.map(f => f ? 2 : 1.5),
-                pointRadius:          isFdsArr.map(f => f ? 7 : 6),
-                fill: true, tension: 0.35
+    const ctxEv = document.getElementById('chartEvolucao')?.getContext('2d');
+    if (ctxEv) {
+        if (chartEvol) chartEvol.destroy();
+        Chart.register(ChartDataLabels);
+        chartEvol = new Chart(ctxEv, {
+            type:'line',
+            data:{ labels:lblsEv, datasets:[{
+                data: dataEv,
+                borderColor:'#0FFDC9', backgroundColor:'rgba(15,253,201,0.05)',
+                borderWidth:2,
+                pointBackgroundColor: isFDSArr.map(f=>f?'#F04040':'#0F0F2A'),
+                pointBorderColor:     isFDSArr.map(f=>f?'#F04040':'#0FFDC9'),
+                pointBorderWidth:     isFDSArr.map(f=>f?2:1.5),
+                pointRadius:          isFDSArr.map(f=>f?7:6),
+                fill:true, tension:0.35
             }]},
-            options: {
-                responsive: true, maintainAspectRatio: false, animation: false,
-                layout: { padding: { top: 28 } },
-                plugins: {
-                    legend: { display: false },
-                    tooltip: { callbacks: { title: i => isFdsArr[i[0].dataIndex] ? labels[i[0].dataIndex]+' ⛔ FDS' : labels[i[0].dataIndex] } },
-                    datalabels: { align:'top', anchor:'end', color: isFdsArr.map(f=>f?'#F04040':'#0FFDC9'), font:{size:11,weight:'bold'}, formatter: v=>v }
+            options:{
+                responsive:true, maintainAspectRatio:false, animation:false,
+                layout:{padding:{top:28}},
+                plugins:{
+                    legend:{display:false},
+                    tooltip:{callbacks:{title:i=>isFDSArr[i[0].dataIndex]?lblsEv[i[0].dataIndex]+' ⛔ FDS':lblsEv[i[0].dataIndex]}},
+                    datalabels:{align:'top',anchor:'end',color:isFDSArr.map(f=>f?'#F04040':'#0FFDC9'),font:{size:11,weight:'bold'},formatter:v=>v}
                 },
-                scales: {
-                    x: { ticks:{color:'#7A7FA8',font:{size:11}}, grid:{color:'rgba(255,255,255,0.04)'}, border:{color:'rgba(255,255,255,0.06)'} },
-                    y: { ticks:{color:'#7A7FA8',font:{size:11}}, grid:{color:'rgba(255,255,255,0.04)'}, border:{color:'rgba(255,255,255,0.06)'}, beginAtZero:true }
+                scales:{
+                    x:{ticks:{color:'#7A7FA8',font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'rgba(255,255,255,0.06)'}},
+                    y:{ticks:{color:'#7A7FA8',font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'rgba(255,255,255,0.06)'},beginAtZero:true}
                 }
             }
         });
     }
 
-    const legEl = document.getElementById('grafico-legenda');
-    if (legEl) legEl.innerHTML = `
-        <span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;color:#7A7FA8;">
-            <span style="width:10px;height:10px;border-radius:50%;background:#0FFDC9;display:inline-block;"></span> Dia útil (Regra 3)
-        </span>
-        <span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;color:#7A7FA8;">
-            <span style="width:10px;height:10px;border-radius:50%;background:#F04040;display:inline-block;"></span> Fim de semana (Regra 6)
-        </span>`;
+    document.getElementById('legenda-linha').innerHTML=`
+        <span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;color:#7A7FA8;"><span style="width:8px;height:8px;border-radius:50%;background:#0FFDC9;display:inline-block;"></span>Dia útil</span>
+        <span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;color:#7A7FA8;"><span style="width:8px;height:8px;border-radius:50%;background:#F04040;display:inline-block;"></span>FDS</span>`;
 
-    // ── VOLUME POR DIA EM BARRAS (Regra 10) ──
-    const diasOrdenadosDesc = [...datasValidas].reverse();
-    const ulVolume = document.getElementById('lista-volume-dia');
-    const maxVol = Math.max(...diasOrdenadosDesc.map(d => (isFimDeSemana(d) ? fdsByDay[d] : realizedByDay[d]) || 0));
-    if (ulVolume) {
-        ulVolume.innerHTML = diasOrdenadosDesc.map(d => {
-            const isFds = isFimDeSemana(d);
-            const qtd = (isFds ? fdsByDay[d] : realizedByDay[d]) || 0;
-            if (qtd === 0) return '';
-            const sc = semContatoPorDia[d] || 0;
-            const color = isFds ? 'var(--accent-red)' : 'var(--accent-blue)';
-            const scBadge = (!isFds && sc > 0) ? `<span style="flex-shrink:0;font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">${sc} s/c (${Math.round((sc/qtd)*100)}%)</span>` : '';
+    // ────────────────────────────────────
+    //  ④ VOLUME POR DIA (barras) — regra 10
+    //  Todos os dias, ordenado mais recente → mais antigo
+    //  Scroll se muitos dias; mostra 10 visíveis
+    // ────────────────────────────────────
+    const scData = allDias.map(d => {
+        // sem contato por dia: registros com SC naquele dia
+        return 0; // calculado abaixo
+    });
 
-            return `<div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);">
-                <span style="flex:2;color:var(--text);min-width:0;">${fmtData(d)} <span style="font-size:10px;color:var(--muted);">${isFds ? '(FDS)' : ''}</span></span>
-                <div style="flex:2;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
-                    <div style="width:${(qtd/maxVol*100).toFixed(1)}%;height:100%;background:${color};border-radius:3px;"></div>
-                </div>
-                <span style="flex-shrink:0;min-width:26px;text-align:right;color:${color};font-weight:700;">${qtd}</span>
-                ${scBadge}
-            </div>`;
-        }).join('');
+    // recalcular semContatoPorDia
+    const scDia = {};
+    dados.forEach(row => {
+        const trat   = col(row,'tratativa');
+        const dataISO= toISO(col(row,'data').split(' ')[0]);
+        if (isFDS(dataISO)) return;
+        if (isCancelado(trat)) return;
+        const tratLimpa = trat.replace(/^\d{2}\/\d{2}[^—\-]*(—|-)\s*/, '').trim();
+        if (matchCod(tratLimpa, COD.SEM_CONTATO)) {
+            scDia[dataISO] = (scDia[dataISO]||0)+1;
+        }
+    });
+
+    // Ordenar mais recente → mais antigo, scroll se > 10
+    const allDiasRev = [...allDias].reverse();
+    const BAR_W = 28, BAR_GAP = 8;
+    const totalBars = allDiasRev.length;
+    const chartMinW = Math.max(600, totalBars * (BAR_W + BAR_GAP));
+    const wrapEl = document.getElementById('chartBarWrap');
+    if (wrapEl) wrapEl.style.width = chartMinW + 'px';
+
+    const lblsBar   = allDiasRev.map(d=>fmt(d));
+    const dataBar   = allDiasRev.map(d => isFDS(d) ? (fdsDia[d]||0) : (volumeDia[d]||0));
+    const isFDSBar  = allDiasRev.map(d=>isFDS(d));
+    const scBarData = allDiasRev.map(d=>scDia[d]||0);
+
+    const ctxBar = document.getElementById('chartVolume')?.getContext('2d');
+    if (ctxBar) {
+        if (chartVol) chartVol.destroy();
+        chartVol = new Chart(ctxBar, {
+            data:{
+                labels:lblsBar,
+                datasets:[
+                    {
+                        type:'bar',
+                        data:dataBar,
+                        backgroundColor:isFDSBar.map(f=>f?'rgba(240,64,64,0.7)':'rgba(127,141,219,0.7)'),
+                        borderRadius:3,
+                        barThickness: BAR_W,
+                        datalabels:{color:'#F0F0F8',anchor:'end',align:'bottom',offset:3,font:{size:9,weight:'bold'},formatter:v=>v}
+                    },
+                    {
+                        type:'line',
+                        data:dataBar,
+                        borderColor:'transparent', pointRadius:0,
+                        datalabels:{
+                            backgroundColor:'rgba(245,197,25,0.12)',borderColor:'rgba(245,197,25,0.3)',borderWidth:1,borderRadius:20,
+                            color:'#F5C519',font:{size:8,weight:'bold'},padding:{top:1,bottom:1,left:5,right:5},
+                            align:'top',anchor:'end',offset:5,
+                            formatter:(v,ctx)=>{
+                                if(isFDSBar[ctx.dataIndex]) return null;
+                                const sc=scBarData[ctx.dataIndex];
+                                if(!sc) return null;
+                                return `${sc} s/c (${v>0?Math.round((sc/v)*100):0}%)`;
+                            }
+                        }
+                    }
+                ]
+            },
+            options:{
+                responsive:true, maintainAspectRatio:false, animation:false,
+                layout:{padding:{top:32}},
+                plugins:{legend:{display:false},tooltip:{enabled:false}},
+                scales:{
+                    x:{ticks:{color:'#7A7FA8',font:{size:9}},grid:{display:false},border:{color:'rgba(255,255,255,0.06)'}},
+                    y:{ticks:{color:'#7A7FA8',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'rgba(255,255,255,0.06)'},beginAtZero:true}
+                }
+            }
+        });
     }
 
-    // ── TOP 10 PRESTADORES (Regra 11) ──
-    const topPrest = Object.entries(prestadorRealizado).sort((a,b)=>b[1]-a[1]).slice(0,10);
-    const maxPrest = topPrest[0]?.[1] || 1;
-    const ulPrest  = document.getElementById('lista-prestadores');
-    if (ulPrest) ulPrest.innerHTML = topPrest.length === 0
+    // ────────────────────────────────────
+    //  ⑤ TOP 10 PRESTADORES (regra 11)
+    // ────────────────────────────────────
+    const topPrest = Object.entries(prestMap).sort((a,b)=>b[1].total-a[1].total).slice(0,10);
+    const maxPrest = topPrest[0]?.[1]?.total||1;
+    document.getElementById('lista-prestadores').innerHTML = topPrest.length===0
         ? '<div class="empty">Sem dados de prestador.</div>'
-        : topPrest.map(([nome,qtd]) => {
-            const sc = prestadorSemContato[nome] || 0;
-            const scBadge = sc > 0
-                ? `<span style="flex-shrink:0;font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">${sc} s/c (${Math.round((sc/qtd)*100)}%)</span>`
+        : topPrest.map(([nome,v])=>{
+            const scBadge = v.sc>0
+                ? `<span class="t-badge">${v.sc} s/c (${Math.round((v.sc/v.total)*100)}%)</span>`
                 : '';
-            return `<div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);">
-                <span style="flex:2;color:var(--text);min-width:0;">${nome}</span>
-                <div style="flex:2;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
-                    <div style="width:${(qtd/maxPrest*100).toFixed(1)}%;height:100%;background:var(--accent-purple);border-radius:3px;"></div>
-                </div>
-                <span style="flex-shrink:0;min-width:26px;text-align:right;color:var(--accent-purple);font-weight:700;">${qtd}</span>
+            return `<div class="t-row">
+                <span class="t-name">${nome}</span>
+                <div class="t-bar-wrap"><div class="t-bar" style="width:${(v.total/maxPrest*100).toFixed(0)}%;background:var(--purple);"></div></div>
+                <span class="t-count" style="color:var(--purple);">${v.total}</span>
                 ${scBadge}
             </div>`;
         }).join('');
 
-    // ── FASES DE TRATATIVAS (Regra 12) ──
-    const tratsArr = Object.entries(tratativasCountMap).sort((a,b)=>b[1]-a[1]);
-    const maxTrat = tratsArr[0]?.[1] || 1;
-    const ulTrat = document.getElementById('lista-tratativas');
-    if (ulTrat) ulTrat.innerHTML = tratsArr.length === 0
-        ? '<div class="empty">Sem dados de tratativa.</div>'
-        : tratsArr.map(([nome, qtd])=>`
-            <div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);">
-                <span style="flex:3;min-width:0;color:var(--text);line-height:1.4;">${nome.replace(/^AGENDAMENTO\s*[-–—]\s*/i, '')}</span>
-                <div style="flex:2;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
-                    <div style="width:${(qtd/maxTrat*100).toFixed(1)}%;height:100%;background:var(--accent-cyan);border-radius:3px;"></div>
-                </div>
-                <span style="flex-shrink:0;min-width:26px;text-align:right;color:var(--accent-cyan);font-weight:700;">${qtd}</span>
-                <span style="flex-shrink:0;min-width:42px;text-align:right;color:var(--muted);">(${getPct(qtd, totalRealizado)}%)</span>
+    // ────────────────────────────────────
+    //  ⑥ FASES DE TRATATIVAS (regra 12)
+    // ────────────────────────────────────
+    const fasesArr = Object.entries(fasesMap).sort((a,b)=>b[1]-a[1]);
+    const totalFases = fasesArr.reduce((a,[,q])=>a+q, 0)||realizados;
+    const maxFase = fasesArr[0]?.[1]||1;
+    document.getElementById('lista-tratativas').innerHTML = fasesArr.length===0
+        ? '<div class="empty">Sem dados de tratativas.</div>'
+        : fasesArr.map(([nome,qtd])=>`
+            <div class="t-row">
+                <span class="t-name">${nome}</span>
+                <div class="t-bar-wrap"><div class="t-bar" style="width:${(qtd/maxFase*100).toFixed(0)}%;background:var(--blue);"></div></div>
+                <span class="t-count">${qtd}</span>
+                <span class="t-pct">(${pct(qtd,realizados)}%)</span>
             </div>`).join('');
 
-    // ── SLACK ──
-    let txt = `*📊 PAINEL DE PERFORMANCE — COBLI (${textoData})*\n\n`;
-    txt += `*Resumo Geral:*\n• Total Geral: ${totalGeral}\n• Total Pilot: ${totalPiloto} (${getPct(totalPiloto, totalGeral)}%)\n• Realizados: ${totalRealizado} (${getPct(totalRealizado, totalGeral)}%)\n• Impedidos: ${totalImpedido} (${getPct(totalImpedido, totalGeral)}%)\n• Antecipados: ${totalAntecipado} (${getPct(totalAntecipado, totalRealizado)}%)\n\n`;
-    txt += `*🚀 Detalhes Pilot:*\n`;
-    if (pilotoNoShow > 0) txt += `• *🚨 NO-SHOW: ${pilotoNoShow} (${getPct(pilotoNoShow, totalPiloto)}%)*\n`;
-    txt += `• Concluídos: ${pilotoConcluido} (${getPct(pilotoConcluido, totalPiloto)}%)\n`;
-    txt += `• Impedidos: ${pilotoImpedido} (${getPct(pilotoImpedido, totalPiloto)}%)\n`;
-    if (totalSemContato > 0) txt += `\n*⚡ Sem Contato:* ${totalSemContato} (${getPct(totalSemContato, totalGeral)}% do total)\n`;
-    if (totalFDS > 0) txt += `*🔴 Fim de Semana:* ${totalFDS} atends. (${getPct(totalFDS, totalGeral)}% do total)\n`;
-    txt += `\n*📋 Fases de Tratativas:*\n`;
-    tratsArr.forEach(([nome, qtd]) => txt += `• ${nome.replace(/^AGENDAMENTO\s*[-–—]\s*/i, '')}: ${qtd} (${getPct(qtd, totalRealizado)}%)\n`);
+    // ────────────────────────────────────
+    //  SLACK
+    // ────────────────────────────────────
+    let txt=`*📊 PAINEL DE PERFORMANCE — COBLI (${textoData})*\n\n`;
+    txt+=`*Resumo Geral:*\n• Total Analisado: ${totalGeral}\n• Realizados: ${realizados} (${txRealiz}%)\n• Impedidos: ${impedidos} (${txImpedidos}%)\n• Antecipados: ${antecipados} (${txAntec}% dos realizados)\n• Sem Fase: ${semFase}\n\n`;
+    txt+=`*🚀 Pilot (${totalPilot} | ${txPilot}%):*\n• Concluídos: ${concluidosPilot} (${txPilotConc}%)\n• Impedidos: ${impedidosPilot} (${txPilotImp}%)\n• No-Show: ${pilotNoShow} (${txPilotNS}%)\n\n`;
+    txt+=`*🔴 Fim de Semana:* ${totalFDS} atends. (${txFDS}%)\n`;
+    txt+=`*📵 Sem Contato:* ${semContato} (${txSC}% dos realizados)\n\n`;
+    txt+=`*⚠️ No-Show:*\n`;
+    nsEntries.forEach(e=>txt+=`• ${e.label}: ${e.qtd} (${pct(e.qtd,totalNS||1)}%)\n`);
+    txt+=`\n*📋 Fases de Tratativas:*\n`;
+    fasesArr.forEach(([n,q])=>txt+=`• ${n}: ${q} (${pct(q,realizados)}%)\n`);
 
-    const slackArea = document.getElementById('texto-slack-preview');
-    if (slackArea) slackArea.value = txt;
+    const slackEl=document.getElementById('texto-slack-preview');
+    if(slackEl) slackEl.value=txt;
 }
 
-function toggleSlack()    { const s=document.getElementById('slack-section'); if(s) s.style.display=s.style.display==='none'?'block':'none'; }
-function recarregar()     { location.reload(); }
-function baixarImagem()   {
-    html2canvas(document.getElementById('painel-cobli'), { backgroundColor:'#0F0F2A', scale:2, useCORS:true }).then(canvas => {
-        const link=document.createElement('a'); link.download=`Cobli_Painel_${Date.now()}.png`; link.href=canvas.toDataURL('image/png'); link.click();
+// ─────────────────────────────────────────────
+//  AÇÕES
+// ─────────────────────────────────────────────
+function toggleSlack() { const s=document.getElementById('slack-section'); if(s) s.style.display=s.style.display==='none'?'block':'none'; }
+function recarregar()  { location.reload(); }
+function baixarImagem() {
+    html2canvas(document.getElementById('painel-cobli'),{backgroundColor:'#0F0F2A',scale:2,useCORS:true}).then(canvas=>{
+        const l=document.createElement('a'); l.download=`Cobli_Painel_${Date.now()}.png`; l.href=canvas.toDataURL('image/png'); l.click();
     });
 }
 function enviarParaSlack() {
     const url=document.getElementById('slackWebhook').value.trim();
-    if (!url) { alert('⚠️ Insira a URL do Webhook do Slack.'); return; }
-    fetch(url, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:JSON.stringify({text:document.getElementById('texto-slack-preview').value}) })
+    if(!url){alert('⚠️ Insira a URL do Webhook.');return;}
+    fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:JSON.stringify({text:document.getElementById('texto-slack-preview').value})})
     .then(()=>alert('✅ Notificação disparada!')).catch(e=>alert('❌ Erro: '+e));
 }
 </script>
