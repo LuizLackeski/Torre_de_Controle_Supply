@@ -13,14 +13,15 @@
             --cobli-navy:    #07074E;
             --cobli-mid:     #1F1F5F;
             --bg:            #0F0F2A;
-            --card:          #181830;
-            --card2:         #13132A;
+            --card:          #1D1D3A; 
+            --card2:         #161630; 
+            --bg-input:      #12122A; 
             --surface:       #1E1E3A;
-            --text:          #F0F0F8;
-            --muted:         #7A7FA8;
+            --text:          #FFFFFF; 
+            --muted:         #A3A9D1; 
             --subtle:        #3A3A60;
-            --border:        rgba(255,255,255,0.07);
-            --border-strong: rgba(255,255,255,0.12);
+            --border:        rgba(255,255,255,0.12); 
+            --border-strong: rgba(255,255,255,0.22);
             --accent-cyan:   #0FFDC9;
             --accent-green:  #1FEF51;
             --accent-blue:   #7F8DDB;
@@ -31,7 +32,7 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; }
+        body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; color-scheme:dark; }
 
         /* ── UPLOAD ── */
         #upload-screen { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; padding:40px 20px; gap:24px; }
@@ -55,7 +56,7 @@
         .top-bar-left { display:flex; align-items:center; flex-shrink:0; }
         .badge-cyan { background:rgba(15,253,201,0.1); color:var(--accent-cyan); border:1px solid rgba(15,253,201,0.25); border-radius: 8px; padding: 6px 14px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
 
-        .filter-group { display:flex; align-items:center; gap:6px; background:var(--card); padding:6px 8px; border-radius:10px; border:1px solid var(--border-strong); flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+        .filter-group { display:flex; align-items:center; gap:6px; background:var(--bg-input); padding:6px 8px; border-radius:10px; border:1px solid var(--border-strong); flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
         .filter-group::-webkit-scrollbar { display: none; }
         .filter-btn { background:transparent; color:var(--muted); border:none; padding:6px 14px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.2s; white-space: nowrap; }
         .filter-btn.active { background:var(--accent-cyan); color:var(--cobli-navy); }
@@ -82,7 +83,8 @@
         
         .kpi-row { display:grid; gap:12px; margin-bottom:14px; }
         .kpi-row-5 { grid-template-columns:repeat(5,1fr); }
-        .kpi-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px 22px; position:relative; border-left:3px solid var(--kpi-accent,var(--accent-blue)); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .kpi-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px 22px; position:relative; border-left:3px solid var(--kpi-accent,var(--accent-blue)); transition:border-color 0.2s, box-shadow 0.2s; }
+        .kpi-card:hover { border-color: rgba(127,141,219,0.35); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
         .kpi-label { font-size:10px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:var(--muted); margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; }
         .kpi-value { font-size:32px; font-weight:700; color:var(--text); line-height:1; }
         .kpi-sub { font-size:11px; color:var(--kpi-accent,var(--muted)); margin-top:6px; font-weight:600; }
@@ -96,7 +98,8 @@
         .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:14px; }
         .grid-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:14px; }
 
-        .panel-block { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px 22px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .panel-block { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px 22px; transition:border-color 0.2s, box-shadow 0.2s; }
+        .panel-block:hover { border-color: rgba(127,141,219,0.35); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
         .panel-block-title { font-size:10px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:var(--muted); margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; }
         .panel-block-title div { display:flex; align-items:center; gap:8px; }
         .panel-block-title .dot { width:6px; height:6px; border-radius:50%; background:currentColor; flex-shrink:0; }
@@ -104,6 +107,7 @@
         .prestador-item { display:flex; align-items:center; gap:10px; font-size:12px; padding:6px 8px; border-bottom:1px solid var(--border); transition: background 0.15s; border-radius: 6px; }
         .prestador-item:hover { background: rgba(255,255,255,0.04); }
         .prestador-item.active-filter { background: rgba(192,132,252,0.08); border-left: 3px solid var(--accent-purple); padding-left: 5px; font-weight: 600; }
+        .prestador-item.active-filter-cyan { background: rgba(15,253,201,0.08); border-left: 3px solid var(--accent-cyan); padding-left: 5px; font-weight: 600; }
 
         .chart-wrap { position:relative; height:240px; width:100%; }
 
@@ -121,20 +125,20 @@
 
         /* ── MODAIS ── */
         .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; justify-content:center; align-items:center; backdrop-filter:blur(3px); }
-        .modal-content { background:var(--card); border:1px solid var(--border-strong); border-radius:12px; padding:24px 28px; width:100%; max-width:550px; box-shadow:0 10px 30px rgba(0,0,0,0.5); }
+        .modal-content { background:var(--card); border:1px solid var(--border-strong); border-radius:12px; padding:24px 28px; width:100%; max-width:550px; box-shadow:0 16px 48px rgba(0,0,0,0.5); }
         .modal-title { font-size:18px; font-weight:700; color:var(--text); margin-bottom:20px; display:flex; align-items:center; gap:8px; }
         .modal-input-group { margin-bottom:16px; display:flex; flex-direction:column; gap:6px; }
         .modal-input-group label { font-size:12px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
-        .modal-input-group input { background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:10px 14px; color:var(--text); font-size:13px; outline:none; transition:border-color 0.2s; }
+        .modal-input-group input { background:var(--bg-input); border:1px solid var(--border); border-radius:8px; padding:10px 14px; color:var(--text); font-size:13px; outline:none; transition:border-color 0.2s; }
         .modal-input-group input:focus { border-color:var(--accent-cyan); }
-        .modal-input-group textarea { background:#111; border:1px solid var(--border); border-radius:8px; padding:12px 14px; color:#ccc; font-family:monospace; font-size:12px; resize:vertical; outline:none; height:180px; }
+        .modal-input-group textarea { background:var(--bg-input); border:1px solid var(--border); border-radius:8px; padding:12px 14px; color:var(--text); font-family:monospace; font-size:12px; resize:vertical; outline:none; height:180px; }
         .modal-actions { display:flex; justify-content:flex-end; gap:12px; margin-top:24px; }
 
         .table-os { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
         .table-os th { padding: 8px; border-bottom: 1px solid var(--border-strong); color: var(--muted); position: sticky; top: 0; background: var(--card); }
         .table-os td { padding: 8px; border-bottom: 1px solid var(--border); color: var(--text); }
         
-        #imagem-preview-container { height: 350px; display:flex; align-items:center; justify-content:center; background:#111; border:1px solid var(--border); border-radius:8px; margin-bottom: 16px; overflow:hidden; padding: 10px; }
+        #imagem-preview-container { height: 350px; display:flex; align-items:center; justify-content:center; background:var(--bg-input); border:1px solid var(--border); border-radius:8px; margin-bottom: 16px; overflow:hidden; padding: 10px; }
         #imagem-preview { display:none; max-width:100%; max-height:100%; width:auto; object-fit: contain; }
     </style>
 </head>
@@ -189,8 +193,13 @@
                 </div>
                 <div style="font-size:26px;font-weight:700;color:var(--text);letter-spacing:-0.5px; display:flex; align-items:center; flex-wrap:wrap; gap:12px;">
                     <span id="painel-titulo-data">Carregando...</span>
+                    
+                    <!-- Badges de Filtro (Prestador e Data) -->
                     <span id="filtro-prestador-badge" style="display:none; background:rgba(192,132,252,0.15); color:var(--accent-purple); border:1px solid rgba(192,132,252,0.3); padding:4px 10px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer;" onclick="limparFiltroPrestador()" title="Clique para limpar o filtro de prestador">
                         👤 Prestador: <span id="nome-prestador-badge"></span> ✕
+                    </span>
+                    <span id="filtro-data-badge" style="display:none; background:rgba(15,253,201,0.15); color:var(--accent-cyan); border:1px solid rgba(15,253,201,0.3); padding:4px 10px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer;" onclick="limparFiltroData()" title="Clique para limpar o filtro de data">
+                        📅 Data: <span id="nome-data-badge"></span> ✕
                     </span>
                 </div>
             </div>
@@ -200,8 +209,10 @@
             </div>
         </div>
 
+        <!-- KPIs Principais -->
         <div class="kpi-row kpi-row-5" id="kpi-row-main"></div>
 
+        <!-- Cards Secundários -->
         <div class="grid-3">
             <div class="panel-block" style="padding:16px 20px;">
                 <div class="panel-block-title" style="color:var(--accent-red);margin-bottom:10px;">
@@ -226,6 +237,7 @@
             </div>
         </div>
 
+        <!-- Evolução linha -->
         <div class="panel-block" id="bloco-evolucao" style="margin-bottom:14px;">
             <div class="panel-block-title" style="color:var(--accent-blue);">
                 <div><span class="dot"></span>Evolução de Chamados por Dia</div>
@@ -234,6 +246,7 @@
             <div class="chart-wrap"><canvas id="graficoEvolucao"></canvas></div>
         </div>
 
+        <!-- Prestadores e Antecipados -->
         <div class="grid-2" style="margin-bottom:14px;">
             <div class="panel-block">
                 <div class="panel-block-title" style="color:var(--accent-purple);">
@@ -251,6 +264,7 @@
             </div>
         </div>
 
+        <!-- Volume por Dia e Fases de Tratativas -->
         <div class="grid-2" style="margin-bottom:14px;">
             <div class="panel-block">
                 <div class="panel-block-title" style="color:var(--accent-blue);">
@@ -275,8 +289,9 @@
     </div>
 </div>
 
+<!-- Modal de Alerta Inicial -->
 <div id="alertaModal" class="modal-overlay">
-    <div class="modal-content" style="max-width: 400px; text-align: center; padding: 32px 28px;">
+    <div class="modal-content" style="max-width: 420px; text-align: center; padding: 32px 28px;">
         <div style="font-size: 48px; margin-bottom: 16px; line-height: 1;">🚨</div>
         <div class="modal-title" style="justify-content: center; color: var(--accent-red); margin-bottom: 12px; font-size: 20px;">Atenção!</div>
         <p style="font-size: 13px; color: var(--muted); margin-bottom: 24px; line-height: 1.5;">Constam chamados sem conclusão na Torre de Controle. Verifique a lista para mais detalhes.</p>
@@ -287,6 +302,7 @@
     </div>
 </div>
 
+<!-- Modal do Slack -->
 <div id="slackModal" class="modal-overlay">
     <div class="modal-content">
         <div class="modal-title">💬 Enviar Report para Slack</div>
@@ -309,6 +325,7 @@
     </div>
 </div>
 
+<!-- Modal OSs Sem Conclusão -->
 <div id="semConclusaoModal" class="modal-overlay">
     <div class="modal-content" style="max-width: 600px;">
         <div class="modal-title" style="color: var(--accent-red);">🚨 OSs Sem Fase de Conclusão</div>
@@ -331,6 +348,7 @@
     </div>
 </div>
 
+<!-- Modal de Imagem -->
 <div id="imagemModal" class="modal-overlay">
     <div class="modal-content" style="max-width: 800px;">
         <div class="modal-title">📸 Imagem do Painel</div>
@@ -352,6 +370,7 @@ let chartLine = null;
 let dadosGlobaisBase = [];
 let dadosFiltradosPorData = []; 
 let prestadorSelecionado = null; 
+let dataSelecionada = null; 
 let baseSlackMessage = "";
 let canvasGeradoGlobal = null;
 window.alertaExibido = false; 
@@ -416,6 +435,7 @@ function parseCSV(file) {
         complete: r => { 
             dadosGlobaisBase = r.data; 
             prestadorSelecionado = null;
+            dataSelecionada = null;
             aplicarFiltro('custom', document.getElementById('btn-custom-filter')); 
         }
     });
@@ -459,6 +479,8 @@ function aplicarFiltro(periodo, btnEl) {
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     if (btnEl) btnEl.classList.add('active');
     else document.getElementById('btn-custom-filter')?.classList.add('active');
+    
+    dataSelecionada = null; // Reseta drill-down de data sempre que mudar a aba de filtro
 
     if (!dadosGlobaisBase || dadosGlobaisBase.length === 0) return;
 
@@ -483,7 +505,7 @@ function aplicarFiltro(periodo, btnEl) {
     executarFiltrosEPlotar();
 }
 
-// ── DRILL-DOWN ──
+// ── DRILL-DOWN PRESTADOR E DATA ──
 function selecionarPrestador(nome) {
     prestadorSelecionado = (prestadorSelecionado === nome) ? null : nome;
     executarFiltrosEPlotar();
@@ -494,15 +516,33 @@ function limparFiltroPrestador() {
     executarFiltrosEPlotar();
 }
 
+function selecionarData(isoDate) {
+    dataSelecionada = (dataSelecionada === isoDate) ? null : isoDate;
+    executarFiltrosEPlotar();
+}
+
+function limparFiltroData() {
+    dataSelecionada = null;
+    executarFiltrosEPlotar();
+}
+
 function executarFiltrosEPlotar() {
     let dadosFinais = [...dadosFiltradosPorData];
     
     if (prestadorSelecionado) {
-        dadosFinais = dadosFiltradosPorData.filter(l => val(l, 'prestador') === prestadorSelecionado);
-        document.getElementById('filtro-prestador-badge').style.display = 'inline-block';
+        dadosFinais = dadosFinais.filter(l => val(l, 'prestador') === prestadorSelecionado);
+        document.getElementById('filtro-prestador-badge').style.display = 'inline-flex';
         document.getElementById('nome-prestador-badge').textContent = prestadorSelecionado;
     } else {
         document.getElementById('filtro-prestador-badge').style.display = 'none';
+    }
+    
+    if (dataSelecionada) {
+        dadosFinais = dadosFinais.filter(l => toISO(val(l, 'data').split(' ')[0]) === dataSelecionada);
+        document.getElementById('filtro-data-badge').style.display = 'inline-flex';
+        document.getElementById('nome-data-badge').textContent = fmtData(dataSelecionada);
+    } else {
+        document.getElementById('filtro-data-badge').style.display = 'none';
     }
     
     renderPainel(dadosFinais);
@@ -540,8 +580,9 @@ function renderPainel(dados) {
         const prestador = val(linha, 'prestador');
         const dataStr = val(linha, 'data').split(' ')[0];
 
-        if (/AGENDAMENTO\s*[-–—]\s*CANCELADO/.test(tratativaRaw) || tratativaRaw.includes('CANCELADO')) return;
-        
+        // ── REGRA SUPREMA: TUDO que tiver a tratativa "AGENDAMENTO - CANCELADO" é 100% desconsiderado. ──
+        if (/AGENDAMENTO\s*[-–—]\s*CANCELADO/.test(tratativaRaw)) return;
+
         countLidos++;
         const dataISO = toISO(dataStr);
         if(dataISO) datasSet.add(dataISO);
@@ -550,6 +591,9 @@ function renderPainel(dados) {
         const isConcluido = alocacao.includes('CONCLU');
         const isImpedido = alocacao.includes('IMPED');
         const isEmAndamento = alocacao.includes('ANDAMENTO');
+        
+        const statusCol = val(linha, 'status').toUpperCase();
+        const isCanceladoStatus = alocacao.includes('CANCEL') || statusCol.includes('CANCEL');
 
         const isInSetA = checkInSet(tratativaRaw, setA);
         const isInSetB = checkInSet(tratativaRaw, setB);
@@ -557,8 +601,10 @@ function renderPainel(dados) {
         const isInSetD = checkInSet(tratativaRaw, setD);
         const isExcluidoRealizado = checkInSet(tratativaRaw, excluidosRealizados);
 
-        const isSemConclusao = (isConcluido || isImpedido || isEmAndamento) && !isInSetA;
-        const qualifiesRule1 = !fds && (isInSetA || isConcluido || isImpedido || isEmAndamento);
+        // Se a OS tem uma das condições de operação, mas a TRATATIVA não pertence ao Set A (Fases Finais Válidas), entra em "Sem Conclusão".
+        // O NO-SHOW CLIENTE SMARTOPS REAGENDAMENTO não cai aqui porque ele está contido dentro do SetA.
+        const isSemConclusao = (isConcluido || isImpedido || isEmAndamento || isCanceladoStatus) && !isInSetA;
+        const qualifiesRule1 = !fds && (isInSetA || isConcluido || isImpedido || isEmAndamento || isCanceladoStatus);
 
         if (qualifiesRule1) {
             totalGeral++;
@@ -633,7 +679,9 @@ function renderPainel(dados) {
         const tratativaRaw = val(linha, 'tratativa').toUpperCase().trim();
         const prestador = val(linha, 'prestador');
         const dataISO = toISO(val(linha, 'data').split(' ')[0]);
-        if (/AGENDAMENTO\s*[-–—]\s*CANCELADO/.test(tratativaRaw) || tratativaRaw.includes('CANCELADO') || isFimDeSemana(dataISO)) return;
+        
+        // Mantendo a regra suprema do cancelado e do FDS
+        if (/AGENDAMENTO\s*[-–—]\s*CANCELADO/.test(tratativaRaw) || isFimDeSemana(dataISO)) return;
 
         if (checkInSet(tratativaRaw, setA) || alocacao.includes('CONCLU') || alocacao.includes('IMPED') || alocacao.includes('ANDAMENTO')) {
             if ((checkInSet(tratativaRaw, setB) || alocacao.includes('CONCLU') || alocacao.includes('IMPED')) && !checkInSet(tratativaRaw, excluidosRealizados)) {
@@ -650,7 +698,6 @@ function renderPainel(dados) {
     if (datasValidas.length === 1 && datasValidas[0]) textoData = fmtData(datasValidas[0]);
     else if (datasValidas.length > 1) textoData = `${fmtData(datasValidas[0])} – ${fmtData(datasValidas[datasValidas.length-1])}`;
 
-    // NOVO CÓDIGO AQUI PARA OCULTAR O GRÁFICO DE LINHA:
     const blocoEvolucao = document.getElementById('bloco-evolucao');
     if (blocoEvolucao) {
         blocoEvolucao.style.display = datasValidas.length <= 1 ? 'none' : '';
@@ -854,10 +901,12 @@ function renderPainel(dados) {
             if (qtd === 0) return '';
             const sc = semContatoPorDia[d] || 0;
             const color = isFds ? 'var(--accent-red)' : 'var(--accent-blue)';
+            
             const scBadge = (!isFds && sc > 0) ? `<span style="font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">${sc} (${getPct(sc, qtd)}%) s/c</span>` : '';
+            const isCurrentDateFilter = (dataSelecionada === d);
 
-            return `<div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 8px;border-bottom:1px solid var(--border);">
-                <span style="flex:0 0 85px; color:var(--text); white-space:nowrap;">${fmtData(d)} <span style="font-size:10px;color:var(--muted);">${isFds ? '(FDS)' : ''}</span></span>
+            return `<div class="prestador-item ${isCurrentDateFilter ? 'active-filter-cyan' : ''}" style="cursor:pointer;" onclick="selecionarData('${d}')" title="Clique para focar as métricas neste dia">
+                <span style="flex:0 0 85px; color:var(--text); white-space:nowrap; ${isCurrentDateFilter ? 'color:var(--accent-cyan); font-weight:bold;' : ''}">${fmtData(d)} <span style="font-size:10px;color:var(--muted);">${isFds ? '(FDS)' : ''}</span></span>
                 <div style="flex:1; height:5px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden;">
                     <div style="width:${(qtd/maxVol*100).toFixed(1)}%;height:100%;background:${color};border-radius:3px;"></div>
                 </div>
@@ -886,13 +935,15 @@ function renderPainel(dados) {
     if (prestadorSelecionado) {
         txt += `_⚠️ FILTRADO EXCLUSIVAMENTE POR PRESTADOR: ${prestadorSelecionado}_\n`;
     }
+    if (dataSelecionada) {
+        txt += `_📅 FILTRADO EXCLUSIVAMENTE PELO DIA: ${fmtData(dataSelecionada)}_\n`;
+    }
     txt += `\n*Resumo Geral:*\n`;
     txt += `> • Total Geral: ${totalGeral}\n`;
     if (totalPiloto > 0) txt += `> • Total Piloto: ${totalPiloto} (${getPct(totalPiloto, totalGeral)}%)\n`;
     txt += `> • Realizados: ${totalRealizado} (${getPct(totalRealizado, totalGeral)}%)\n`;
     if (totalImpedido > 0) txt += `> • Impedidos: ${totalImpedido} (${getPct(totalImpedido, totalGeral)}%)\n`;
     
-    // Inclusão da quantidade, % e a listagem detalhada por prestadores no resumo do Slack
     if (totalAntecipado > 0) {
         txt += `> • Antecipados: ${totalAntecipado} (${getPct(totalAntecipado, totalRealizado)}% do Realiz.)\n`;
         txt += `\n*⏳ Prestadores com Chamados Antecipados:*\n`;
