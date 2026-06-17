@@ -47,9 +47,8 @@
         /* ── DASHBOARD ── */
         #dashboard-screen { display:none; }
         
-        /* ── NOVA TOP BAR ── */
+        /* ── TOP BAR ── */
         .top-bar-outer { background:var(--card2); border-bottom:1px solid var(--border); position: sticky; top: 0; z-index: 50; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
-        
         .top-bar { max-width:1350px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; padding:12px 28px; flex-wrap:nowrap; gap:16px; overflow-x:auto; scrollbar-width:none; }
         .top-bar::-webkit-scrollbar { display: none; }
         
@@ -62,7 +61,6 @@
         .filter-btn.active { background:var(--accent-cyan); color:var(--cobli-navy); }
         .filter-btn:hover:not(.active) { color:var(--text); background:rgba(255,255,255,0.05); }
         
-        /* Inputs de Data Personalizados */
         .v-divider { width: 1px; height: 22px; background: var(--border-strong); margin: 0 4px; }
         .custom-date-box { display: flex; align-items: center; gap: 8px; padding-left: 4px; white-space: nowrap; }
         .date-input { background: var(--bg); border: 1px solid var(--border-strong); border-radius: 6px; color: var(--text); padding: 5px 10px; font-size: 12px; font-family: inherit; color-scheme: dark; outline: none; transition: border-color 0.2s; cursor: pointer; }
@@ -84,17 +82,13 @@
         
         .kpi-row { display:grid; gap:12px; margin-bottom:14px; }
         .kpi-row-5 { grid-template-columns:repeat(5,1fr); }
-        
         .kpi-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px 22px; position:relative; border-left:3px solid var(--kpi-accent,var(--accent-blue)); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        
         .kpi-label { font-size:10px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:var(--muted); margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; }
         .kpi-value { font-size:32px; font-weight:700; color:var(--text); line-height:1; }
         .kpi-sub { font-size:11px; color:var(--kpi-accent,var(--muted)); margin-top:6px; font-weight:600; }
-        /* Adicionado pointer-events: none para o ícone não roubar o mouse do tooltip */
         .kpi-icon { position:absolute; top:14px; right:16px; font-size:20px; opacity:0.08; pointer-events: none; }
 
         /* TOOLTIPS */
-        /* Adicionado z-index: 10 no container do tooltip */
         .tooltip { position: relative; display: inline-block; cursor: help; color: var(--muted); font-size: 11px; font-weight: bold; background: rgba(255,255,255,0.06); width: 15px; height: 15px; border-radius: 50%; text-align: center; line-height: 15px; text-transform: none; letter-spacing: 0; z-index: 10; }
         .tooltip .tooltiptext { visibility: hidden; width: 220px; background-color: #1A1A35; color: #fff; text-align: left; border: 1px solid var(--border-strong); border-radius: 8px; padding: 10px 12px; position: absolute; z-index: 9999; bottom: 130%; left: 50%; transform: translateX(-50%); opacity: 0; transition: opacity 0.15s; font-size: 11px; font-weight: normal; line-height: 1.4; box-shadow: 0 8px 24px rgba(0,0,0,0.5); pointer-events: none; }
         .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
@@ -107,7 +101,6 @@
         .panel-block-title div { display:flex; align-items:center; gap:8px; }
         .panel-block-title .dot { width:6px; height:6px; border-radius:50%; background:currentColor; flex-shrink:0; }
 
-        /* Elementos de Prestadores Clicáveis */
         .prestador-item { display:flex; align-items:center; gap:10px; font-size:12px; padding:6px 8px; border-bottom:1px solid var(--border); transition: background 0.15s; border-radius: 6px; }
         .prestador-item:hover { background: rgba(255,255,255,0.04); }
         .prestador-item.active-filter { background: rgba(192,132,252,0.08); border-left: 3px solid var(--accent-purple); padding-left: 5px; font-weight: 600; }
@@ -118,6 +111,7 @@
             .kpi-row-5 { grid-template-columns:repeat(2,1fr); }
             .grid-2,.grid-3 { grid-template-columns:1fr; }
         }
+        
         .empty { color:var(--muted); font-size:12px; font-style:italic; padding:8px 0; }
         
         .scrollable-list::-webkit-scrollbar { width: 6px; }
@@ -136,12 +130,10 @@
         .modal-input-group textarea { background:#111; border:1px solid var(--border); border-radius:8px; padding:12px 14px; color:#ccc; font-family:monospace; font-size:12px; resize:vertical; outline:none; height:180px; }
         .modal-actions { display:flex; justify-content:flex-end; gap:12px; margin-top:24px; }
 
-        /* Tabela Sem Conclusão */
         .table-os { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
         .table-os th { padding: 8px; border-bottom: 1px solid var(--border-strong); color: var(--muted); position: sticky; top: 0; background: var(--card); }
         .table-os td { padding: 8px; border-bottom: 1px solid var(--border); color: var(--text); }
         
-        /* Modal de Imagem */
         #imagem-preview-container { height: 350px; display:flex; align-items:center; justify-content:center; background:#111; border:1px solid var(--border); border-radius:8px; margin-bottom: 16px; overflow:hidden; padding: 10px; }
         #imagem-preview { display:none; max-width:100%; max-height:100%; width:auto; object-fit: contain; }
     </style>
@@ -288,6 +280,19 @@
     </div>
 </div>
 
+<!-- Modal de Alerta Inicial -->
+<div id="alertaModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 400px; text-align: center; padding: 32px 28px;">
+        <div style="font-size: 48px; margin-bottom: 16px; line-height: 1;">🚨</div>
+        <div class="modal-title" style="justify-content: center; color: var(--accent-red); margin-bottom: 12px; font-size: 20px;">Atenção!</div>
+        <p style="font-size: 13px; color: var(--muted); margin-bottom: 24px; line-height: 1.5;">Constam chamados sem conclusão na Torre de Controle. Verifique a lista para mais detalhes.</p>
+        <div style="display: flex; justify-content: center; gap: 12px;">
+            <button class="btn btn-outline" onclick="fecharAlertaModal()">Fechar</button>
+            <button class="btn" style="background: rgba(240,64,64,0.15); color: var(--accent-red); border: 1px solid rgba(240,64,64,0.3);" onclick="fecharAlertaModal(); abrirModalSemConclusao();">📋 Ver Lista</button>
+        </div>
+    </div>
+</div>
+
 <!-- Modal do Slack -->
 <div id="slackModal" class="modal-overlay">
     <div class="modal-content">
@@ -358,14 +363,17 @@ let dadosFiltradosPorData = [];
 let prestadorSelecionado = null; 
 let baseSlackMessage = "";
 let canvasGeradoGlobal = null;
+window.alertaExibido = false; 
 
+// Incluído explicitamente o código de antecipado no Set A de monitoramento
 const setA = [
     'AGENDAMENTO - EM ANDAMENTO - SEM CONTATO',
     'AGENDAMENTO - NO-SHOW CLIENTE - SMARTOPS REAGENDAMENTO',
     'AGENDAMENTO - NO-SHOW TÉCNICO - REAGENDADO',
     'AGENDAMENTO - NO-SHOW TÉCNICO - REVERTIDO',
     'AGENDAMENTO - NO-SHOW TÉCNICO - SMARTOPS REAGENDAMENTO',
-    'AGENDAMENTO - TÉCNICO NO LOCAL AGENDADO'
+    'AGENDAMENTO - TÉCNICO NO LOCAL AGENDADO',
+    'AGENDAMENTO - ANTECIPADO'
 ];
 const setB = [
     'AGENDAMENTO - EM ANDAMENTO - SEM CONTATO',
@@ -394,7 +402,8 @@ const dicionarioNomes = {
     'AGENDAMENTO - NO-SHOW TÉCNICO - REAGENDADO': 'Torre de Controle | Reagendado',
     'AGENDAMENTO - NO-SHOW TÉCNICO - REVERTIDO': 'Torre de Controle | Revertido',
     'AGENDAMENTO - NO-SHOW TÉCNICO - SMARTOPS REAGENDAMENTO': 'SmartOps | Reagendamento',
-    'AGENDAMENTO - TÉCNICO NO LOCAL AGENDADO': 'Técnico no Local Agendado'
+    'AGENDAMENTO - TÉCNICO NO LOCAL AGENDADO': 'Técnico no Local Agendado',
+    'AGENDAMENTO - ANTECIPADO': 'Agendamento Antecipado'
 };
 
 function formatarNome(nomeRaw) {
@@ -410,6 +419,7 @@ uploadBox.addEventListener('drop', e => { e.preventDefault(); uploadBox.style.bo
 document.getElementById('csvFileInput').addEventListener('change', e => { if(e.target.files[0]) parseCSV(e.target.files[0]); });
 
 function parseCSV(file) {
+    window.alertaExibido = false; 
     Papa.parse(file, {
         header: true, skipEmptyLines: true, transformHeader: h => h.trim(),
         complete: r => { 
@@ -482,7 +492,7 @@ function aplicarFiltro(periodo, btnEl) {
     executarFiltrosEPlotar();
 }
 
-// ── DRILL-DOWN LOGIC ──
+// ── DRILL-DOWN ──
 function selecionarPrestador(nome) {
     prestadorSelecionado = (prestadorSelecionado === nome) ? null : nome;
     executarFiltrosEPlotar();
@@ -616,6 +626,14 @@ function renderPainel(dados) {
             if (matchedC) noShowCountMap[matchedC] = (noShowCountMap[matchedC] || 0) + 1;
         }
     });
+
+    // Modal Elegante para Alerta de OSs Sem Conclusão
+    if (fasesSemConclusao > 0 && !window.alertaExibido) {
+        setTimeout(() => {
+            document.getElementById('alertaModal').style.display = 'flex';
+        }, 300);
+        window.alertaExibido = true;
+    }
 
     let prestadorRealizadoFull = {};
     let prestadorSemContatoFull = {};
@@ -802,7 +820,8 @@ function renderPainel(dados) {
         ? '<div class="empty">Sem dados de prestador.</div>'
         : topPrest.map(([nome,qtd]) => {
             const sc = prestadorSemContatoFull[nome] || 0;
-            const scBadge = sc > 0 ? `<span style="font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">${sc} s/c</span>` : '';
+            // ── AJUSTE 1: Porcentagem no Top Prestador ──
+            const scBadge = sc > 0 ? `<span style="font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">${sc} (${getPct(sc, qtd)}%) s/c</span>` : '';
             const isCurrentFilter = (prestadorSelecionado === nome);
             return `<div class="prestador-item ${isCurrentFilter ? 'active-filter' : ''}" style="cursor:pointer;" onclick="selecionarPrestador('${nome.replace(/'/g, "\\'")}')" title="Clique para focar as métricas neste prestador">
                 <span style="flex:1; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; ${isCurrentFilter ? 'color:var(--accent-purple); font-weight:bold;' : ''}">${nome}</span>
@@ -810,7 +829,7 @@ function renderPainel(dados) {
                     <div style="width:${(qtd/maxPrest*100).toFixed(1)}%;height:100%;background:var(--accent-purple);border-radius:3px;"></div>
                 </div>
                 <span style="flex-shrink:0; width:26px; text-align:right; color:var(--accent-purple); font-weight:700;">${qtd}</span>
-                <div style="flex-shrink:0; width:55px; text-align:right;">${scBadge}</div>
+                <div style="flex-shrink:0; width:75px; text-align:right;">${scBadge}</div>
             </div>`;
         }).join('');
 
@@ -840,7 +859,8 @@ function renderPainel(dados) {
             if (qtd === 0) return '';
             const sc = semContatoPorDia[d] || 0;
             const color = isFds ? 'var(--accent-red)' : 'var(--accent-blue)';
-            const scBadge = (!isFds && sc > 0) ? `<span style="font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">${sc} s/c</span>` : '';
+            // ── AJUSTE 1: Porcentagem no Volume por Dia ──
+            const scBadge = (!isFds && sc > 0) ? `<span style="font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">${sc} (${getPct(sc, qtd)}%) s/c</span>` : '';
 
             return `<div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 8px;border-bottom:1px solid var(--border);">
                 <span style="flex:0 0 85px; color:var(--text); white-space:nowrap;">${fmtData(d)} <span style="font-size:10px;color:var(--muted);">${isFds ? '(FDS)' : ''}</span></span>
@@ -848,7 +868,7 @@ function renderPainel(dados) {
                     <div style="width:${(qtd/maxVol*100).toFixed(1)}%;height:100%;background:${color};border-radius:3px;"></div>
                 </div>
                 <span style="flex-shrink:0; width:26px; text-align:right; color:${color}; font-weight:700;">${qtd}</span>
-                <div style="flex-shrink:0; width:50px; text-align:right;">${scBadge}</div>
+                <div style="flex-shrink:0; width:75px; text-align:right;">${scBadge}</div>
             </div>`;
         }).join('');
     }
@@ -877,7 +897,16 @@ function renderPainel(dados) {
     if (totalPiloto > 0) txt += `> • Total Piloto: ${totalPiloto} (${getPct(totalPiloto, totalGeral)}%)\n`;
     txt += `> • Realizados: ${totalRealizado} (${getPct(totalRealizado, totalGeral)}%)\n`;
     if (totalImpedido > 0) txt += `> • Impedidos: ${totalImpedido} (${getPct(totalImpedido, totalGeral)}%)\n`;
-    if (totalAntecipado > 0) txt += `> • Antecipados: ${totalAntecipado} (${getPct(totalAntecipado, totalRealizado)}%)\n`;
+    
+    // Inclusão da quantidade, % e a listagem detalhada por prestadores no resumo do Slack
+    if (totalAntecipado > 0) {
+        txt += `> • Antecipados: ${totalAntecipado} (${getPct(totalAntecipado, totalRealizado)}% do Realiz.)\n`;
+        txt += `\n*⏳ Prestadores com Chamados Antecipados:*\n`;
+        const antSorted = Object.entries(prestadorAntecipado).sort((a,b)=>b[1]-a[1]);
+        antSorted.forEach(([name, count]) => {
+            txt += `>   - ${name}: ${count}\n`;
+        });
+    }
     txt += `\n`;
 
     if (totalPiloto > 0) {
@@ -901,6 +930,10 @@ function renderPainel(dados) {
     }
     
     baseSlackMessage = txt;
+}
+
+function fecharAlertaModal() {
+    document.getElementById('alertaModal').style.display = 'none';
 }
 
 function recarregar() { location.reload(); }
