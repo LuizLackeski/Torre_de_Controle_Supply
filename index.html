@@ -48,16 +48,15 @@
         /* ── DASHBOARD ── */
         #dashboard-screen { display:none; }
         
-        /* ── TOP BAR ── */
+        /* ── TOP BAR (AJUSTADO PARA TELA PEQUENA) ── */
         .top-bar-outer { background:var(--card2); border-bottom:1px solid var(--border); position: sticky; top: 0; z-index: 50; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
-        .top-bar { max-width:1350px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; padding:12px 28px; flex-wrap:nowrap; gap:16px; overflow-x:auto; scrollbar-width:none; }
-        .top-bar::-webkit-scrollbar { display: none; }
+        .top-bar { max-width:1350px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; padding:12px 28px; flex-wrap:nowrap; gap:16px; overflow-x:auto; scrollbar-width:none; white-space: nowrap; }
+        .top-bar::-webkit-scrollbar { display: none; } 
         
         .top-bar-left { display:flex; align-items:center; flex-shrink:0; }
         .badge-cyan { background:rgba(15,253,201,0.1); color:var(--accent-cyan); border:1px solid rgba(15,253,201,0.25); border-radius: 8px; padding: 6px 14px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
 
-        .filter-group { display:flex; align-items:center; gap:6px; background:var(--bg-input); padding:6px 8px; border-radius:10px; border:1px solid var(--border-strong); flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
-        .filter-group::-webkit-scrollbar { display: none; }
+        .filter-group { display:flex; align-items:center; gap:6px; background:var(--bg-input); padding:6px 8px; border-radius:10px; border:1px solid var(--border-strong); flex-wrap: nowrap; flex-shrink:0; }
         .filter-btn { background:transparent; color:var(--muted); border:none; padding:6px 14px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.2s; white-space: nowrap; }
         .filter-btn.active { background:var(--accent-cyan); color:var(--cobli-navy); }
         .filter-btn:hover:not(.active) { color:var(--text); background:rgba(255,255,255,0.05); }
@@ -73,6 +72,11 @@
         .btn-outline { background:rgba(255,255,255,0.04); border:1px solid var(--border-strong); color:var(--text); }
         .btn-slack { background:#4A154B; color:#fff; }
         .btn-reload { background:transparent; border:1px solid var(--border); color:var(--muted); }
+
+        @media (max-width: 1000px) {
+            .top-bar { padding: 10px 16px; gap: 10px; }
+            .custom-date-box > span:first-child { display: none; } 
+        }
 
         /* ── PAINEL ── */
         #painel-cobli { background:var(--bg); padding:32px 32px 40px; max-width:1250px; margin:0 auto; }
@@ -124,7 +128,7 @@
         .scrollable-list::-webkit-scrollbar-thumb:hover { background: var(--muted); }
 
         /* ── MODAIS ── */
-        .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; justify-content:center; align-items:center; backdrop-filter:blur(3px); }
+        .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; justify-content:center; align-items:center; backdrop-filter:blur(4px); }
         .modal-content { background:var(--card); border:1px solid var(--border-strong); border-radius:12px; padding:24px 28px; width:100%; max-width:550px; box-shadow:0 16px 48px rgba(0,0,0,0.5); }
         .modal-title { font-size:18px; font-weight:700; color:var(--text); margin-bottom:20px; display:flex; align-items:center; gap:8px; }
         .modal-input-group { margin-bottom:16px; display:flex; flex-direction:column; gap:6px; }
@@ -140,6 +144,36 @@
         
         #imagem-preview-container { height: 350px; display:flex; align-items:center; justify-content:center; background:var(--bg-input); border:1px solid var(--border); border-radius:8px; margin-bottom: 16px; overflow:hidden; padding: 10px; }
         #imagem-preview { display:none; max-width:100%; max-height:100%; width:auto; object-fit: contain; }
+
+        /* ── TOAST NOTIFICATION ── */
+        #toast-aviso {
+            visibility: hidden; min-width: 280px; background-color: var(--accent-cyan); color: var(--bg); 
+            text-align: center; border-radius: 8px; padding: 14px 20px; position: fixed; z-index: 10000; 
+            left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 13px; font-weight: 700;
+            box-shadow: 0 8px 24px rgba(15,253,201,0.3); opacity: 0; transition: opacity 0.4s, bottom 0.4s;
+        }
+        #toast-aviso.show { visibility: visible; opacity: 1; bottom: 60px; }
+
+        /* ── BOTÃO LIMPAR FILTROS GERAL ── */
+        .btn-limpar-badge {
+            display: none; 
+            background: rgba(255,255,255,0.05); 
+            color: var(--muted); 
+            border: 1px solid var(--border-strong); 
+            padding: 4px 10px; 
+            border-radius: 8px; 
+            font-size: 12px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            align-items: center; 
+            transition: all 0.2s;
+        }
+        .btn-limpar-badge:hover {
+            background: rgba(255,255,255,0.1);
+            color: var(--text);
+            border-color: var(--text);
+        }
+
     </style>
 </head>
 <body>
@@ -194,12 +228,17 @@
                 <div style="font-size:26px;font-weight:700;color:var(--text);letter-spacing:-0.5px; display:flex; align-items:center; flex-wrap:wrap; gap:12px;">
                     <span id="painel-titulo-data">Carregando...</span>
                     
-                    <!-- Badges de Filtro (Prestador e Data) -->
-                    <span id="filtro-prestador-badge" style="display:none; background:rgba(192,132,252,0.15); color:var(--accent-purple); border:1px solid rgba(192,132,252,0.3); padding:4px 10px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer;" onclick="limparFiltroPrestador()" title="Clique para limpar o filtro de prestador">
-                        👤 Prestador: <span id="nome-prestador-badge"></span> ✕
+                    <!-- Badges de Filtro (Prestador e Data) com Respiro no X -->
+                    <span id="filtro-prestador-badge" style="display:none; background:rgba(192,132,252,0.15); color:var(--accent-purple); border:1px solid rgba(192,132,252,0.3); padding:4px 10px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; align-items:center;" onclick="limparFiltroPrestador()" title="Clique para limpar o filtro de prestador">
+                        👤 Prestador:&nbsp;<span id="nome-prestador-badge"></span> <span style="margin-left:8px; padding-left:8px; border-left:1px solid currentColor; opacity:0.6;">✕</span>
                     </span>
-                    <span id="filtro-data-badge" style="display:none; background:rgba(15,253,201,0.15); color:var(--accent-cyan); border:1px solid rgba(15,253,201,0.3); padding:4px 10px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer;" onclick="limparFiltroData()" title="Clique para limpar o filtro de data">
-                        📅 Data: <span id="nome-data-badge"></span> ✕
+                    <span id="filtro-data-badge" style="display:none; background:rgba(15,253,201,0.15); color:var(--accent-cyan); border:1px solid rgba(15,253,201,0.3); padding:4px 10px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; align-items:center;" onclick="limparFiltroData()" title="Clique para limpar o filtro de data">
+                        📅 Data:&nbsp;<span id="nome-data-badge"></span> <span style="margin-left:8px; padding-left:8px; border-left:1px solid currentColor; opacity:0.6;">✕</span>
+                    </span>
+                    
+                    <!-- NOVO BOTÃO LIMPAR TODOS OS FILTROS DE DRILL-DOWN -->
+                    <span id="btn-limpar-filtros-badge" class="btn-limpar-badge" onclick="limparTodosDrillDowns()" title="Remover filtros de Prestador e Data">
+                        Limpar Filtros
                     </span>
                 </div>
             </div>
@@ -289,6 +328,9 @@
     </div>
 </div>
 
+<!-- Toast Aviso de Filtro -->
+<div id="toast-aviso">Filtro aplicado! Para limpar, clique no "✕" ou no botão "Limpar".</div>
+
 <!-- Modal de Alerta Inicial -->
 <div id="alertaModal" class="modal-overlay">
     <div class="modal-content" style="max-width: 420px; text-align: center; padding: 32px 28px;">
@@ -374,6 +416,7 @@ let dataSelecionada = null;
 let baseSlackMessage = "";
 let canvasGeradoGlobal = null;
 window.alertaExibido = false; 
+window.toastExibido = false;
 
 // Incluído explicitamente o código de antecipado no Set A de monitoramento
 const setA = [
@@ -419,6 +462,14 @@ const dicionarioNomes = {
 function formatarNome(nomeRaw) {
     const key = Object.keys(dicionarioNomes).find(k => nomeRaw.includes(k));
     return key ? dicionarioNomes[key] : nomeRaw.replace(/^AGENDAMENTO\s*[-–—]\s*/i, '');
+}
+
+function mostrarToast() {
+    if (window.toastExibido) return;
+    const toast = document.getElementById("toast-aviso");
+    toast.classList.add("show");
+    setTimeout(() => { toast.classList.remove("show"); window.toastExibido = false; }, 4500);
+    window.toastExibido = true;
 }
 
 // ── UPLOAD ──
@@ -497,6 +548,8 @@ function aplicarFiltro(periodo, btnEl) {
             if (end) pass = pass && (d <= end);
             return pass;
         });
+        
+        if (start || end) mostrarToast();
     } else {
         permitidas = todasDatas.slice(-parseInt(periodo, 10));
     }
@@ -508,6 +561,7 @@ function aplicarFiltro(periodo, btnEl) {
 // ── DRILL-DOWN PRESTADOR E DATA ──
 function selecionarPrestador(nome) {
     prestadorSelecionado = (prestadorSelecionado === nome) ? null : nome;
+    if (prestadorSelecionado) mostrarToast();
     executarFiltrosEPlotar();
 }
 
@@ -518,10 +572,17 @@ function limparFiltroPrestador() {
 
 function selecionarData(isoDate) {
     dataSelecionada = (dataSelecionada === isoDate) ? null : isoDate;
+    if (dataSelecionada) mostrarToast();
     executarFiltrosEPlotar();
 }
 
 function limparFiltroData() {
+    dataSelecionada = null;
+    executarFiltrosEPlotar();
+}
+
+function limparTodosDrillDowns() {
+    prestadorSelecionado = null;
     dataSelecionada = null;
     executarFiltrosEPlotar();
 }
@@ -543,6 +604,12 @@ function executarFiltrosEPlotar() {
         document.getElementById('nome-data-badge').textContent = fmtData(dataSelecionada);
     } else {
         document.getElementById('filtro-data-badge').style.display = 'none';
+    }
+
+    if (prestadorSelecionado || dataSelecionada) {
+        document.getElementById('btn-limpar-filtros-badge').style.display = 'inline-flex';
+    } else {
+        document.getElementById('btn-limpar-filtros-badge').style.display = 'none';
     }
     
     renderPainel(dadosFinais);
@@ -573,6 +640,9 @@ function renderPainel(dados) {
     let listaOSsSemConclusao = [];
 
     dados.forEach(linha => {
+        let osId = linha['OS'] || linha['os'] || linha['Os'] || linha['ID'] || linha['id'] || val(linha, 'chamado') || val(linha, 'ticket');
+        if (!osId) return; // IGNORA LINHAS TOTALMENTE VAZIAS DO CSV
+
         const alocacaoRaw = val(linha, 'aloca');
         const alocacao = alocacaoRaw.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
         const tratativaRaw = val(linha, 'tratativa').toUpperCase().trim();
@@ -580,8 +650,8 @@ function renderPainel(dados) {
         const prestador = val(linha, 'prestador');
         const dataStr = val(linha, 'data').split(' ')[0];
 
-        // ── REGRA SUPREMA: TUDO que tiver a tratativa "AGENDAMENTO - CANCELADO" é 100% desconsiderado. ──
-        if (/AGENDAMENTO\s*[-–—]\s*CANCELADO/.test(tratativaRaw)) return;
+        // ── REGRA SUPREMA: TUDO que tiver a tratativa EXATAMENTE como "AGENDAMENTO - CANCELADO" é ignorado da Base. ──
+        if (tratativaRaw.includes('AGENDAMENTO - CANCELADO')) return;
 
         countLidos++;
         const dataISO = toISO(dataStr);
@@ -592,8 +662,11 @@ function renderPainel(dados) {
         const isImpedido = alocacao.includes('IMPED');
         const isEmAndamento = alocacao.includes('ANDAMENTO');
         
+        // Verifica se a OS foi listada como Cancelado ou Agendado no status ou alocação
         const statusCol = val(linha, 'status').toUpperCase();
         const isCanceladoStatus = alocacao.includes('CANCEL') || statusCol.includes('CANCEL');
+        const isAgendadoStatus = alocacao.includes('AGENDAD') || statusCol.includes('AGENDAD');
+        const isTratativaEmBranco = tratativaRaw === '' || tratativaRaw === '-';
 
         const isInSetA = checkInSet(tratativaRaw, setA);
         const isInSetB = checkInSet(tratativaRaw, setB);
@@ -601,10 +674,9 @@ function renderPainel(dados) {
         const isInSetD = checkInSet(tratativaRaw, setD);
         const isExcluidoRealizado = checkInSet(tratativaRaw, excluidosRealizados);
 
-        // Se a OS tem uma das condições de operação, mas a TRATATIVA não pertence ao Set A (Fases Finais Válidas), entra em "Sem Conclusão".
-        // O NO-SHOW CLIENTE SMARTOPS REAGENDAMENTO não cai aqui porque ele está contido dentro do SetA.
-        const isSemConclusao = (isConcluido || isImpedido || isEmAndamento || isCanceladoStatus) && !isInSetA;
-        const qualifiesRule1 = !fds && (isInSetA || isConcluido || isImpedido || isEmAndamento || isCanceladoStatus);
+        // Ajuste Sem Conclusão: Se não tiver uma tratativa válida no Set A, e preencher qualquer condição acima (ou se a tratativa estiver em branco) avisa.
+        const isSemConclusao = (isConcluido || isImpedido || isEmAndamento || isCanceladoStatus || isAgendadoStatus || isTratativaEmBranco) && !isInSetA;
+        const qualifiesRule1 = !fds && (isInSetA || isSemConclusao);
 
         if (qualifiesRule1) {
             totalGeral++;
@@ -612,7 +684,6 @@ function renderPainel(dados) {
             
             if (isSemConclusao) {
                 fasesSemConclusao++;
-                let osId = linha['OS'] || linha['os'] || linha['Os'] || linha['ID'] || linha['id'] || val(linha, 'chamado') || val(linha, 'ticket');
                 listaOSsSemConclusao.push({
                     os: osId || 'Sem ID',
                     prestador: prestador || '-',
@@ -674,14 +745,17 @@ function renderPainel(dados) {
     let prestadorRealizadoFull = {};
     let prestadorSemContatoFull = {};
     dadosFiltradosPorData.forEach(linha => {
+        let osId = linha['OS'] || linha['os'] || linha['Os'] || linha['ID'] || linha['id'] || val(linha, 'chamado') || val(linha, 'ticket');
+        if (!osId) return;
+
         const alocacaoRaw = val(linha, 'aloca');
         const alocacao = alocacaoRaw.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
         const tratativaRaw = val(linha, 'tratativa').toUpperCase().trim();
         const prestador = val(linha, 'prestador');
         const dataISO = toISO(val(linha, 'data').split(' ')[0]);
         
-        // Mantendo a regra suprema do cancelado e do FDS
-        if (/AGENDAMENTO\s*[-–—]\s*CANCELADO/.test(tratativaRaw) || isFimDeSemana(dataISO)) return;
+        // Mantendo a regra suprema
+        if (tratativaRaw.includes('AGENDAMENTO - CANCELADO') || isFimDeSemana(dataISO)) return;
 
         if (checkInSet(tratativaRaw, setA) || alocacao.includes('CONCLU') || alocacao.includes('IMPED') || alocacao.includes('ANDAMENTO')) {
             if ((checkInSet(tratativaRaw, setB) || alocacao.includes('CONCLU') || alocacao.includes('IMPED')) && !checkInSet(tratativaRaw, excluidosRealizados)) {
@@ -698,6 +772,7 @@ function renderPainel(dados) {
     if (datasValidas.length === 1 && datasValidas[0]) textoData = fmtData(datasValidas[0]);
     else if (datasValidas.length > 1) textoData = `${fmtData(datasValidas[0])} – ${fmtData(datasValidas[datasValidas.length-1])}`;
 
+    // Oculta Gráfico de Linha caso o arquivo / filtro tenha apenas um único dia
     const blocoEvolucao = document.getElementById('bloco-evolucao');
     if (blocoEvolucao) {
         blocoEvolucao.style.display = datasValidas.length <= 1 ? 'none' : '';
@@ -944,6 +1019,7 @@ function renderPainel(dados) {
     txt += `> • Realizados: ${totalRealizado} (${getPct(totalRealizado, totalGeral)}%)\n`;
     if (totalImpedido > 0) txt += `> • Impedidos: ${totalImpedido} (${getPct(totalImpedido, totalGeral)}%)\n`;
     
+    // Inclusão da quantidade, % e a listagem detalhada por prestadores no resumo do Slack
     if (totalAntecipado > 0) {
         txt += `> • Antecipados: ${totalAntecipado} (${getPct(totalAntecipado, totalRealizado)}% do Realiz.)\n`;
         txt += `\n*⏳ Prestadores com Chamados Antecipados:*\n`;
