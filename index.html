@@ -108,10 +108,13 @@
         .panel-block-title div { display:flex; align-items:center; gap:8px; }
         .panel-block-title .dot { width:6px; height:6px; border-radius:50%; background:currentColor; flex-shrink:0; }
 
-        .prestador-item { display:flex; align-items:center; gap:10px; font-size:12px; padding:6px 8px; border-bottom:1px solid var(--border); transition: background 0.15s; border-radius: 6px; }
-        .prestador-item:hover { background: rgba(255,255,255,0.04); }
-        .prestador-item.active-filter { background: rgba(192,132,252,0.08); border-left: 3px solid var(--accent-purple); padding-left: 5px; font-weight: 600; }
-        .prestador-item.active-filter-cyan { background: rgba(15,253,201,0.08); border-left: 3px solid var(--accent-cyan); padding-left: 5px; font-weight: 600; }
+        /* Estilos genéricos para itens clicáveis */
+        .clickable-item { display:flex; align-items:center; gap:10px; font-size:12px; padding:6px 8px; border-bottom:1px solid var(--border); transition: background 0.15s; border-radius: 6px; cursor: pointer; }
+        .clickable-item:hover { background: rgba(255,255,255,0.04); }
+        
+        .active-filter { background: rgba(192,132,252,0.08); border-left: 3px solid var(--accent-purple); padding-left: 5px; font-weight: 600; }
+        .active-filter-cyan { background: rgba(15,253,201,0.08); border-left: 3px solid var(--accent-cyan); padding-left: 5px; font-weight: 600; }
+        .active-filter-red { background: rgba(240,64,64,0.08); border-left: 3px solid var(--accent-red); padding-left: 5px; font-weight: 600; }
 
         .chart-wrap { position:relative; height:240px; width:100%; }
 
@@ -228,16 +231,19 @@
                 <div style="font-size:26px;font-weight:700;color:var(--text);letter-spacing:-0.5px; display:flex; align-items:center; flex-wrap:wrap; gap:12px;">
                     <span id="painel-titulo-data">Carregando...</span>
                     
-                    <!-- Badges de Filtro (Prestador e Data) com Respiro no X -->
+                    <!-- Badges de Filtro -->
                     <span id="filtro-prestador-badge" style="display:none; background:rgba(192,132,252,0.15); color:var(--accent-purple); border:1px solid rgba(192,132,252,0.3); padding:4px 10px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; align-items:center;" onclick="limparFiltroPrestador()" title="Clique para limpar o filtro de prestador">
                         👤 Prestador:&nbsp;<span id="nome-prestador-badge"></span> <span style="margin-left:8px; padding-left:8px; border-left:1px solid currentColor; opacity:0.6;">✕</span>
                     </span>
                     <span id="filtro-data-badge" style="display:none; background:rgba(15,253,201,0.15); color:var(--accent-cyan); border:1px solid rgba(15,253,201,0.3); padding:4px 10px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; align-items:center;" onclick="limparFiltroData()" title="Clique para limpar o filtro de data">
                         📅 Data:&nbsp;<span id="nome-data-badge"></span> <span style="margin-left:8px; padding-left:8px; border-left:1px solid currentColor; opacity:0.6;">✕</span>
                     </span>
+                    <span id="filtro-tratativa-badge" style="display:none; background:rgba(127,141,219,0.15); color:var(--accent-blue); border:1px solid rgba(127,141,219,0.3); padding:4px 10px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; align-items:center;" onclick="limparFiltroTratativa()" title="Clique para limpar o filtro de tratativa">
+                        🏷️ Tratativa:&nbsp;<span id="nome-tratativa-badge"></span> <span style="margin-left:8px; padding-left:8px; border-left:1px solid currentColor; opacity:0.6;">✕</span>
+                    </span>
                     
-                    <!-- NOVO BOTÃO LIMPAR TODOS OS FILTROS DE DRILL-DOWN -->
-                    <span id="btn-limpar-filtros-badge" class="btn-limpar-badge" onclick="limparTodosDrillDowns()" title="Remover filtros de Prestador e Data">
+                    <!-- BOTÃO LIMPAR TODOS OS FILTROS DE DRILL-DOWN -->
+                    <span id="btn-limpar-filtros-badge" class="btn-limpar-badge" onclick="limparTodosDrillDowns()" title="Remover todos os filtros aplicados clicando nos cards">
                         Limpar Filtros
                     </span>
                 </div>
@@ -270,7 +276,7 @@
             <div class="panel-block" style="padding:16px 20px;">
                 <div class="panel-block-title" style="color:var(--accent-red);margin-bottom:10px;">
                     <div><span class="dot" style="color:var(--accent-red);background:var(--accent-red);"></span>No-Show Mapeados</div>
-                    <span class="tooltip">? <span class="tooltiptext">Distribuição volumétrica das falhas por ausência/não-comparecimento (Regra 3).</span></span>
+                    <span class="tooltip">? <span class="tooltiptext">Distribuição volumétrica das falhas por ausência/não-comparecimento (Regra 3). Clique para filtrar!</span></span>
                 </div>
                 <div id="lista-no-show-novo" class="scrollable-list" style="max-height:160px;overflow-y:auto;padding-right:5px;"></div>
             </div>
@@ -320,7 +326,7 @@
             <div class="panel-block">
                 <div class="panel-block-title" style="color:var(--accent-cyan);">
                     <div><span class="dot"></span>Fases de Tratativas</div>
-                    <span class="tooltip">? <span class="tooltiptext">Abertura de motivos e fases internas nos chamados validados (Regra 1).</span></span>
+                    <span class="tooltip">? <span class="tooltiptext">Abertura de motivos e fases internas nos chamados validados. Clique para filtrar o painel inteiro por uma tratativa!</span></span>
                 </div>
                 <div id="lista-tratativas" class="scrollable-list" style="max-height:240px;overflow-y:auto;padding-right:8px;"></div>
             </div>
@@ -413,6 +419,7 @@ let dadosGlobaisBase = [];
 let dadosFiltradosPorData = []; 
 let prestadorSelecionado = null; 
 let dataSelecionada = null; 
+let tratativaSelecionada = null; 
 let baseSlackMessage = "";
 let canvasGeradoGlobal = null;
 window.alertaExibido = false; 
@@ -487,6 +494,7 @@ function parseCSV(file) {
             dadosGlobaisBase = r.data; 
             prestadorSelecionado = null;
             dataSelecionada = null;
+            tratativaSelecionada = null;
             aplicarFiltro('custom', document.getElementById('btn-custom-filter')); 
         }
     });
@@ -531,7 +539,8 @@ function aplicarFiltro(periodo, btnEl) {
     if (btnEl) btnEl.classList.add('active');
     else document.getElementById('btn-custom-filter')?.classList.add('active');
     
-    dataSelecionada = null; // Reseta drill-down de data sempre que mudar a aba de filtro
+    dataSelecionada = null; 
+    tratativaSelecionada = null; 
 
     if (!dadosGlobaisBase || dadosGlobaisBase.length === 0) return;
 
@@ -558,13 +567,12 @@ function aplicarFiltro(periodo, btnEl) {
     executarFiltrosEPlotar();
 }
 
-// ── DRILL-DOWN PRESTADOR E DATA ──
+// ── DRILL-DOWNS INTERATIVOS ──
 function selecionarPrestador(nome) {
     prestadorSelecionado = (prestadorSelecionado === nome) ? null : nome;
     if (prestadorSelecionado) mostrarToast();
     executarFiltrosEPlotar();
 }
-
 function limparFiltroPrestador() {
     prestadorSelecionado = null;
     executarFiltrosEPlotar();
@@ -575,21 +583,32 @@ function selecionarData(isoDate) {
     if (dataSelecionada) mostrarToast();
     executarFiltrosEPlotar();
 }
-
 function limparFiltroData() {
     dataSelecionada = null;
+    executarFiltrosEPlotar();
+}
+
+function selecionarTratativa(nomeTratativa) {
+    tratativaSelecionada = (tratativaSelecionada === nomeTratativa) ? null : nomeTratativa;
+    if (tratativaSelecionada) mostrarToast();
+    executarFiltrosEPlotar();
+}
+function limparFiltroTratativa() {
+    tratativaSelecionada = null;
     executarFiltrosEPlotar();
 }
 
 function limparTodosDrillDowns() {
     prestadorSelecionado = null;
     dataSelecionada = null;
+    tratativaSelecionada = null;
     executarFiltrosEPlotar();
 }
 
 function executarFiltrosEPlotar() {
     let dadosFinais = [...dadosFiltradosPorData];
     
+    // Aplica filtro de Prestador
     if (prestadorSelecionado) {
         dadosFinais = dadosFinais.filter(l => val(l, 'prestador') === prestadorSelecionado);
         document.getElementById('filtro-prestador-badge').style.display = 'inline-flex';
@@ -598,6 +617,7 @@ function executarFiltrosEPlotar() {
         document.getElementById('filtro-prestador-badge').style.display = 'none';
     }
     
+    // Aplica filtro de Data
     if (dataSelecionada) {
         dadosFinais = dadosFinais.filter(l => toISO(val(l, 'data').split(' ')[0]) === dataSelecionada);
         document.getElementById('filtro-data-badge').style.display = 'inline-flex';
@@ -606,7 +626,20 @@ function executarFiltrosEPlotar() {
         document.getElementById('filtro-data-badge').style.display = 'none';
     }
 
-    if (prestadorSelecionado || dataSelecionada) {
+    // Aplica filtro de Tratativa
+    if (tratativaSelecionada) {
+        dadosFinais = dadosFinais.filter(l => {
+            const rawTratativa = val(l, 'tratativa').toUpperCase().trim();
+            return rawTratativa.includes(tratativaSelecionada);
+        });
+        document.getElementById('filtro-tratativa-badge').style.display = 'inline-flex';
+        document.getElementById('nome-tratativa-badge').textContent = formatarNome(tratativaSelecionada);
+    } else {
+        document.getElementById('filtro-tratativa-badge').style.display = 'none';
+    }
+
+    // Exibe ou esconde o Botão Limpar Filtros
+    if (prestadorSelecionado || dataSelecionada || tratativaSelecionada) {
         document.getElementById('btn-limpar-filtros-badge').style.display = 'inline-flex';
     } else {
         document.getElementById('btn-limpar-filtros-badge').style.display = 'none';
@@ -674,7 +707,7 @@ function renderPainel(dados) {
         const isInSetD = checkInSet(tratativaRaw, setD);
         const isExcluidoRealizado = checkInSet(tratativaRaw, excluidosRealizados);
 
-        // Ajuste Sem Conclusão: Se não tiver uma tratativa válida no Set A, e preencher qualquer condição acima (ou se a tratativa estiver em branco) avisa.
+        // Ajuste Sem Conclusão
         const isSemConclusao = (isConcluido || isImpedido || isEmAndamento || isCanceladoStatus || isAgendadoStatus || isTratativaEmBranco) && !isInSetA;
         const qualifiesRule1 = !fds && (isInSetA || isSemConclusao);
 
@@ -868,15 +901,17 @@ function renderPainel(dados) {
            </div>
            <span style="font-size:12px;background:rgba(245,197,25,0.12);color:#F5C519;border:1px solid rgba(245,197,25,0.25);border-radius:20px;padding:3px 12px;font-weight:700;">${getPct(totalSemContato, totalGeral)}% do total analisado</span>`;
 
+    // ── GERAÇÃO LISTA NO-SHOW (INTERATIVA - CORRIGIDA) ──
     const nsArr = Object.entries(noShowCountMap).sort((a,b)=>b[1]-a[1]);
     const maxNS = nsArr[0]?.[1] || 1;
     const totalNSList = nsArr.reduce((a,b)=>a+b[1], 0);
     const nsEl = document.getElementById('lista-no-show-novo');
     if (nsEl) nsEl.innerHTML = nsArr.length === 0
         ? '<div class="empty">Nenhum No-Show mapeado.</div>'
-        : nsArr.map(([nome,qtd]) => `
-            <div style="display:flex; flex-direction:column; gap:3px; font-size:11px; padding:5px 0; border-bottom:1px solid var(--border);">
-                <div style="color:var(--text); line-height:1.2;">${formatarNome(nome)}</div>
+        : nsArr.map(([nome,qtd]) => {
+            const isCurrent = (tratativaSelecionada === nome);
+            return `<div class="clickable-item ${isCurrent ? 'active-filter-red' : ''}" style="flex-direction:column; align-items:stretch; gap:3px; font-size:11px; padding:6px 8px;" onclick="selecionarTratativa('${nome.replace(/'/g, "\\'")}')" title="Filtrar por este No-Show">
+                <div style="color:var(--text); line-height:1.2; text-align:left;">${formatarNome(nome)}</div>
                 <div style="display:flex; align-items:center; gap:8px;">
                     <div style="flex:1; height:4px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden;">
                         <div style="width:${(qtd/maxNS*100).toFixed(1)}%;height:100%;background:var(--accent-red);border-radius:2px;"></div>
@@ -884,7 +919,8 @@ function renderPainel(dados) {
                     <span style="flex-shrink:0; width:24px; text-align:right; color:var(--accent-red); font-weight:700;">${qtd}</span>
                     <span style="flex-shrink:0; width:40px; text-align:right; color:var(--muted);">(${getPct(qtd, totalNSList)}%)</span>
                 </div>
-            </div>`).join('');
+            </div>`;
+        }).join('');
 
     Chart.register(ChartDataLabels);
     const labels = datasValidas.map(d => fmtData(d));
@@ -940,7 +976,7 @@ function renderPainel(dados) {
             const sc = prestadorSemContatoFull[nome] || 0;
             const scBadge = sc > 0 ? `<span style="font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">${sc} (${getPct(sc, qtd)}%) s/c</span>` : '';
             const isCurrentFilter = (prestadorSelecionado === nome);
-            return `<div class="prestador-item ${isCurrentFilter ? 'active-filter' : ''}" style="cursor:pointer;" onclick="selecionarPrestador('${nome.replace(/'/g, "\\'")}')" title="Clique para focar as métricas neste prestador">
+            return `<div class="clickable-item prestador-item ${isCurrentFilter ? 'active-filter' : ''}" onclick="selecionarPrestador('${nome.replace(/'/g, "\\'")}')" title="Clique para focar as métricas neste prestador">
                 <span style="flex:1; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; ${isCurrentFilter ? 'color:var(--accent-purple); font-weight:bold;' : ''}">${nome}</span>
                 <div style="flex:1;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
                     <div style="width:${(qtd/maxPrest*100).toFixed(1)}%;height:100%;background:var(--accent-purple);border-radius:3px;"></div>
@@ -980,7 +1016,7 @@ function renderPainel(dados) {
             const scBadge = (!isFds && sc > 0) ? `<span style="font-size:10px;background:rgba(245,197,25,0.15);color:#F5C519;border:1px solid rgba(245,197,25,0.3);border-radius:20px;padding:1px 7px;white-space:nowrap;">${sc} (${getPct(sc, qtd)}%) s/c</span>` : '';
             const isCurrentDateFilter = (dataSelecionada === d);
 
-            return `<div class="prestador-item ${isCurrentDateFilter ? 'active-filter-cyan' : ''}" style="cursor:pointer;" onclick="selecionarData('${d}')" title="Clique para focar as métricas neste dia">
+            return `<div class="clickable-item prestador-item ${isCurrentDateFilter ? 'active-filter-cyan' : ''}" onclick="selecionarData('${d}')" title="Clique para focar as métricas neste dia">
                 <span style="flex:0 0 85px; color:var(--text); white-space:nowrap; ${isCurrentDateFilter ? 'color:var(--accent-cyan); font-weight:bold;' : ''}">${fmtData(d)} <span style="font-size:10px;color:var(--muted);">${isFds ? '(FDS)' : ''}</span></span>
                 <div style="flex:1; height:5px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden;">
                     <div style="width:${(qtd/maxVol*100).toFixed(1)}%;height:100%;background:${color};border-radius:3px;"></div>
@@ -996,15 +1032,17 @@ function renderPainel(dados) {
     const ulTrat = document.getElementById('lista-tratativas');
     if (ulTrat) ulTrat.innerHTML = tratsArr.length === 0
         ? '<div class="empty">Sem dados de tratativa.</div>'
-        : tratsArr.map(([nome, qtd])=>`
-            <div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:6px 8px;border-bottom:1px solid var(--border);">
+        : tratsArr.map(([nome, qtd])=> {
+            const isCurrent = (tratativaSelecionada === nome);
+            return `<div class="clickable-item ${isCurrent ? 'active-filter-cyan' : ''}" onclick="selecionarTratativa('${nome.replace(/'/g, "\\'")}')" title="Filtrar por esta tratativa">
                 <span style="flex:3;min-width:0;color:var(--text);line-height:1.4;">${formatarNome(nome)}</span>
                 <div style="flex:2;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
                     <div style="width:${(qtd/maxTrat*100).toFixed(1)}%;height:100%;background:var(--accent-cyan);border-radius:3px;"></div>
                 </div>
                 <span style="flex-shrink:0;min-width:26px;text-align:right;color:var(--accent-cyan);font-weight:700;">${qtd}</span>
                 <span style="flex-shrink:0;min-width:42px;text-align:right;color:var(--muted);">(${getPct(qtd, totalRealizado)}%)</span>
-            </div>`).join('');
+            </div>`;
+        }).join('');
 
     let txt = `*📊 PAINEL TORRE DE CONTROLE — COBLI (${textoData})*\n`;
     if (prestadorSelecionado) {
@@ -1013,13 +1051,15 @@ function renderPainel(dados) {
     if (dataSelecionada) {
         txt += `_📅 FILTRADO EXCLUSIVAMENTE PELO DIA: ${fmtData(dataSelecionada)}_\n`;
     }
+    if (tratativaSelecionada) {
+        txt += `_🏷️ FILTRADO EXCLUSIVAMENTE PELA TRATATIVA: ${formatarNome(tratativaSelecionada)}_\n`;
+    }
     txt += `\n*Resumo Geral:*\n`;
     txt += `> • Total Geral: ${totalGeral}\n`;
     if (totalPiloto > 0) txt += `> • Total Piloto: ${totalPiloto} (${getPct(totalPiloto, totalGeral)}%)\n`;
     txt += `> • Realizados: ${totalRealizado} (${getPct(totalRealizado, totalGeral)}%)\n`;
     if (totalImpedido > 0) txt += `> • Impedidos: ${totalImpedido} (${getPct(totalImpedido, totalGeral)}%)\n`;
     
-    // Inclusão da quantidade, % e a listagem detalhada por prestadores no resumo do Slack
     if (totalAntecipado > 0) {
         txt += `> • Antecipados: ${totalAntecipado} (${getPct(totalAntecipado, totalRealizado)}% do Realiz.)\n`;
         txt += `\n*⏳ Prestadores com Chamados Antecipados:*\n`;
