@@ -242,10 +242,15 @@
                         🏷️ Tratativa:&nbsp;<span id="nome-tratativa-badge"></span> <span style="margin-left:8px; padding-left:8px; border-left:1px solid currentColor; opacity:0.6;">✕</span>
                     </span>
                     
-                    <!-- BOTÃO LIMPAR TODOS OS FILTROS DE DRILL-DOWN -->
-                    <span id="btn-limpar-filtros-badge" class="btn-limpar-badge" onclick="limparTodosDrillDowns()" title="Remover todos os filtros aplicados clicando nos cards">
-                        Limpar Filtros
-                    </span>
+                    <!-- BOTÕES DE AÇÃO DOS FILTROS -->
+                    <div style="display:flex; gap:8px;">
+                        <span id="btn-ver-detalhes-badge" class="btn-limpar-badge" style="background:rgba(15,253,201,0.1); color:var(--accent-cyan); border-color:rgba(15,253,201,0.3);" onclick="abrirModalDetalhes()" title="Ver detalhes completos dos chamados filtrados">
+                            📋 Ver Detalhes
+                        </span>
+                        <span id="btn-limpar-filtros-badge" class="btn-limpar-badge" onclick="limparTodosDrillDowns()" title="Remover todos os filtros aplicados clicando nos cards">
+                            Limpar Filtros
+                        </span>
+                    </div>
                 </div>
             </div>
             <div style="text-align:right;">
@@ -396,6 +401,33 @@
     </div>
 </div>
 
+<!-- Modal OSs Detalhes de Filtro -->
+<div id="detalhesModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 1000px;">
+        <div class="modal-title" style="color: var(--accent-cyan);">📋 Detalhes dos Chamados</div>
+        <p style="font-size: 12px; color: var(--muted); margin-bottom: 16px;">Listagem detalhada de todos os chamados que compõem os filtros atualmente selecionados.</p>
+        <div class="scrollable-list" style="max-height: 450px; overflow-y: auto;">
+            <table class="table-os">
+                <thead>
+                    <tr>
+                        <th>Chamado</th>
+                        <th>Classe</th>
+                        <th>Data</th>
+                        <th>Alocação (Status)</th>
+                        <th>Prestador</th>
+                        <th>Cliente</th>
+                        <th>Tratativa</th>
+                    </tr>
+                </thead>
+                <tbody id="lista-detalhes-tabela"></tbody>
+            </table>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-outline" onclick="fecharModalDetalhes()">Fechar</button>
+        </div>
+    </div>
+</div>
+
 <!-- Modal de Imagem -->
 <div id="imagemModal" class="modal-overlay">
     <div class="modal-content" style="max-width: 800px;">
@@ -422,6 +454,7 @@ let dataSelecionada = null;
 let tratativaSelecionada = null; 
 let baseSlackMessage = "";
 let canvasGeradoGlobal = null;
+let dadosAtuaisPainel = []; // Variável para armazenar o dataset atual renderizado para o Modal
 window.alertaExibido = false; 
 window.toastExibido = false;
 
@@ -648,11 +681,13 @@ function executarFiltrosEPlotar() {
         document.getElementById('filtro-tratativa-badge').style.display = 'none';
     }
 
-    // Exibe ou esconde o Botão Limpar Filtros
+    // Exibe ou esconde o Botão Limpar Filtros e Ver Detalhes
     if (prestadorSelecionado || dataSelecionada || tratativaSelecionada) {
         document.getElementById('btn-limpar-filtros-badge').style.display = 'inline-flex';
+        document.getElementById('btn-ver-detalhes-badge').style.display = 'inline-flex';
     } else {
         document.getElementById('btn-limpar-filtros-badge').style.display = 'none';
+        document.getElementById('btn-ver-detalhes-badge').style.display = 'none';
     }
     
     renderPainel(dadosFinais);
@@ -681,6 +716,7 @@ function renderPainel(dados) {
     let datasSet = new Set();
     
     let listaOSsSemConclusao = [];
+    dadosAtuaisPainel = []; // Limpa os dados do modal a cada renderização
 
     dados.forEach(linha => {
         let osId = linha['OS'] || linha['os'] || linha['Os'] || linha['ID'] || linha['id'] || val(linha, 'chamado') || val(linha, 'ticket');
@@ -723,6 +759,7 @@ function renderPainel(dados) {
 
         if (qualifiesRule1) {
             totalGeral++;
+            dadosAtuaisPainel.push(linha); // Popula a tabela de detalhes com os dados da regra 1
             if (dataISO) geralByDay[dataISO] = (geralByDay[dataISO] || 0) + 1;
             
             if (isSemConclusao) {
@@ -1157,6 +1194,42 @@ function fecharAlertaModal() {
 }
 
 function recarregar() { location.reload(); }
+
+// ── FUNÇÕES DO MODAL DE DETALHES ──
+function abrirModalDetalhes() {
+    const tbody = document.getElementById('lista-detalhes-tabela');
+    if (dadosAtuaisPainel.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:16px; color:var(--muted);">Nenhum chamado encontrado para este filtro.</td></tr>';
+    } else {
+        tbody.innerHTML = dadosAtuaisPainel.map(linha => {
+            const osId = linha['OS'] || linha['os'] || linha['Os'] || linha['ID'] || linha['id'] || val(linha, 'chamado') || val(linha, 'ticket') || '-';
+            const classe = val(linha, 'classe') || '-';
+            const dataRaw = val(linha, 'data').split(' ')[0];
+            const data = dataRaw ? fmtData(toISO(dataRaw)) : '-';
+            const alocacao = val(linha, 'aloca') || val(linha, 'status') || '-';
+            const prestador = val(linha, 'prestador') || '-';
+            const cliente = val(linha, 'cliente') || '-';
+            const tratativa = val(linha, 'tratativa') || '-';
+
+            return `
+                <tr>
+                    <td style="font-weight: bold; color: #fff;">${osId}</td>
+                    <td>${classe}</td>
+                    <td>${data}</td>
+                    <td>${alocacao}</td>
+                    <td>${prestador}</td>
+                    <td>${cliente}</td>
+                    <td>${tratativa}</td>
+                </tr>
+            `;
+        }).join('');
+    }
+    document.getElementById('detalhesModal').style.display = 'flex';
+}
+
+function fecharModalDetalhes() {
+    document.getElementById('detalhesModal').style.display = 'none';
+}
 
 function abrirModalImagem() {
     document.getElementById('imagemModal').style.display = 'flex';
