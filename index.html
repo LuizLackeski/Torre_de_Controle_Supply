@@ -268,8 +268,8 @@
             </div>
             <div class="panel-block" style="padding:16px 20px;">
                 <div class="panel-block-title" style="color:var(--accent-yellow);margin-bottom:10px;">
-                    <div><span class="dot"></span>Sem Contato</div>
-                    <span class="tooltip">? <span class="tooltiptext">Chamados em dias úteis que ficaram com status de andamento sem contato ou antecipado pendente (Regra 4).</span></span>
+                    <div><span class="dot"></span>Sem Contato & Com Contato</div>
+                    <span class="tooltip">? <span class="tooltiptext">Chamados em dias úteis categorizados entre contatos efetivos e andamentos sem sucesso.</span></span>
                 </div>
                 <div id="sc-totais-novo"></div>
             </div>
@@ -278,7 +278,7 @@
                     <div><span class="dot" style="color:var(--accent-red);background:var(--accent-red);"></span>No-Show Mapeados</div>
                     <span class="tooltip">? <span class="tooltiptext">Distribuição volumétrica das falhas por ausência/não-comparecimento (Regra 3). Clique para filtrar!</span></span>
                 </div>
-                <div id="lista-no-show-novo" class="scrollable-list" style="max-height:160px;overflow-y:auto;padding-right:5px;"></div>
+                <div id="lista-no-show-novo" style="padding-right:5px; display:flex; flex-direction:column; gap:4px;"></div>
             </div>
         </div>
 
@@ -425,7 +425,7 @@ let canvasGeradoGlobal = null;
 window.alertaExibido = false; 
 window.toastExibido = false;
 
-// Incluído explicitamente o código de antecipado no Set A de monitoramento
+// Monitoramentos Iniciais
 const setA = [
     'AGENDAMENTO - EM ANDAMENTO - SEM CONTATO',
     'AGENDAMENTO - NO-SHOW CLIENTE - SMARTOPS REAGENDAMENTO',
@@ -451,9 +451,19 @@ const setD = [
     'AGENDAMENTO - EM ANDAMENTO - SEM CONTATO',
     'AGENDAMENTO - ANTECIPADO'
 ];
+
 const excluidosRealizados = [
     'AGENDAMENTO - NO-SHOW CLIENTE - SMARTOPS REAGENDAMENTO',
-    'AGENDAMENTO - NO-SHOW TÉCNICO - SMARTOPS REAGENDAMENTO'
+    'AGENDAMENTO - NO-SHOW TÉCNICO - SMARTOPS REAGENDAMENTO',
+    'AGENDAMENTO - NO-SHOW TÉCNICO - REAGENDADO'
+];
+
+const comContatoTratativas = [
+    'AGENDAMENTO - NO-SHOW TÉCNICO - REAGENDADO',
+    'AGENDAMENTO - NO-SHOW TÉCNICO - SMARTOPS REAGENDAMENTO',
+    'AGENDAMENTO - NO-SHOW TÉCNICO - REVERTIDO',
+    'AGENDAMENTO - NO-SHOW CLIENTE - SMARTOPS REAGENDAMENTO',
+    'AGENDAMENTO - TÉCNICO NO LOCAL AGENDADO'
 ];
 
 const dicionarioNomes = {
@@ -657,7 +667,7 @@ function renderPainel(dados) {
     let totalPiloto = 0, pilotoConcluido = 0, pilotoImpedido = 0, pilotoNoShow = 0;
     let totalRealizado = 0, noShowRule3Count = 0;
     let totalImpedido = 0, totalAntecipado = 0;
-    let totalFDS = 0, totalSemContato = 0;
+    let totalFDS = 0, totalSemContato = 0, totalComContato = 0;
 
     let fdsConcluido = 0, fdsImpedido = 0;
 
@@ -695,7 +705,6 @@ function renderPainel(dados) {
         const isImpedido = alocacao.includes('IMPED');
         const isEmAndamento = alocacao.includes('ANDAMENTO');
         
-        // Verifica se a OS foi listada como Cancelado ou Agendado no status ou alocação
         const statusCol = val(linha, 'status').toUpperCase();
         const isCanceladoStatus = alocacao.includes('CANCEL') || statusCol.includes('CANCEL');
         const isAgendadoStatus = alocacao.includes('AGENDAD') || statusCol.includes('AGENDAD');
@@ -706,6 +715,7 @@ function renderPainel(dados) {
         const isInSetC = checkInSet(tratativaRaw, setC);
         const isInSetD = checkInSet(tratativaRaw, setD);
         const isExcluidoRealizado = checkInSet(tratativaRaw, excluidosRealizados);
+        const isInComContato = checkInSet(tratativaRaw, comContatoTratativas);
 
         // Ajuste Sem Conclusão
         const isSemConclusao = (isConcluido || isImpedido || isEmAndamento || isCanceladoStatus || isAgendadoStatus || isTratativaEmBranco) && !isInSetA;
@@ -742,6 +752,11 @@ function renderPainel(dados) {
             if (isInSetA) {
                 const matchedA = setA.find(s => tratativaRaw.includes(s));
                 if (matchedA) tratativasCountMap[matchedA] = (tratativasCountMap[matchedA] || 0) + 1;
+            }
+
+            // Soma isolada e exata de Com Contato
+            if (isInComContato) {
+                totalComContato++;
             }
         }
 
@@ -787,7 +802,6 @@ function renderPainel(dados) {
         const prestador = val(linha, 'prestador');
         const dataISO = toISO(val(linha, 'data').split(' ')[0]);
         
-        // Mantendo a regra suprema
         if (tratativaRaw.includes('AGENDAMENTO - CANCELADO') || isFimDeSemana(dataISO)) return;
 
         if (checkInSet(tratativaRaw, setA) || alocacao.includes('CONCLU') || alocacao.includes('IMPED') || alocacao.includes('ANDAMENTO')) {
@@ -805,7 +819,6 @@ function renderPainel(dados) {
     if (datasValidas.length === 1 && datasValidas[0]) textoData = fmtData(datasValidas[0]);
     else if (datasValidas.length > 1) textoData = `${fmtData(datasValidas[0])} – ${fmtData(datasValidas[datasValidas.length-1])}`;
 
-    // Oculta Gráfico de Linha caso o arquivo / filtro tenha apenas um único dia
     const blocoEvolucao = document.getElementById('bloco-evolucao');
     if (blocoEvolucao) {
         blocoEvolucao.style.display = datasValidas.length <= 1 ? 'none' : '';
@@ -892,16 +905,35 @@ function renderPainel(dados) {
                ${badgesFDS}
            </div>`;
 
+    // ── AJUSTE 1 e 4: CARD SEM CONTATO x COM CONTATO HORIZONTAL ──
     const scEl = document.getElementById('sc-totais-novo');
-    if (scEl) scEl.innerHTML = totalSemContato === 0
-        ? `<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum sem contato</div>`
-        : `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;">
-               <span style="font-size:28px;font-weight:700;color:#F5C519;line-height:1;">${totalSemContato}</span>
-               <span style="font-size:11px;color:var(--muted);">atends.</span>
-           </div>
-           <span style="font-size:12px;background:rgba(245,197,25,0.12);color:#F5C519;border:1px solid rgba(245,197,25,0.25);border-radius:20px;padding:3px 12px;font-weight:700;">${getPct(totalSemContato, totalGeral)}% do total analisado</span>`;
+    if (scEl) {
+        if (totalSemContato === 0 && totalComContato === 0) {
+            scEl.innerHTML = `<div style="font-size:11px;color:var(--accent-cyan);">✅ Nenhum dado de contato</div>`;
+        } else {
+            scEl.innerHTML = `
+               <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px;">
+                   <div style="flex:1;">
+                       <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:8px;">
+                           <span style="font-size:26px;font-weight:700;color:#F5C519;line-height:1;">${totalSemContato}</span>
+                           <span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">sem contato</span>
+                       </div>
+                       <span style="display:inline-block;font-size:10px;background:rgba(245,197,25,0.12);color:#F5C519;border:1px solid rgba(245,197,25,0.25);border-radius:20px;padding:3px 10px;font-weight:700;white-space:nowrap;" title="% do Total Geral">${getPct(totalSemContato, totalGeral)}% do Total</span>
+                   </div>
+                   
+                   <div style="width:1px; background:var(--border-strong); align-self:stretch; opacity:0.5; margin:0 4px;"></div>
+                   
+                   <div style="flex:1;">
+                       <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:8px;">
+                           <span style="font-size:26px;font-weight:700;color:var(--accent-green);line-height:1;">${totalComContato}</span>
+                           <span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">com contato</span>
+                       </div>
+                       <span style="display:inline-block;font-size:10px;background:rgba(31,239,81,0.1);color:var(--accent-green);border:1px solid rgba(31,239,81,0.25);border-radius:20px;padding:3px 10px;font-weight:700;white-space:nowrap;" title="% do Total Geral">${getPct(totalComContato, totalGeral)}% do Total</span>
+                   </div>
+               </div>`;
+        }
+    }
 
-    // ── GERAÇÃO LISTA NO-SHOW (INTERATIVA - CORRIGIDA) ──
     const nsArr = Object.entries(noShowCountMap).sort((a,b)=>b[1]-a[1]);
     const maxNS = nsArr[0]?.[1] || 1;
     const totalNSList = nsArr.reduce((a,b)=>a+b[1], 0);
@@ -1027,22 +1059,49 @@ function renderPainel(dados) {
         }).join('');
     }
 
+    let countAntecipado = tratativasCountMap['AGENDAMENTO - ANTECIPADO'] || 0;
+    let countSemContato = tratativasCountMap['AGENDAMENTO - EM ANDAMENTO - SEM CONTATO'] || 0;
+    
+    // Soma Antecipado para dentro de Sem Contato na visualização da barra principal
+    if (countAntecipado > 0) {
+        tratativasCountMap['AGENDAMENTO - EM ANDAMENTO - SEM CONTATO'] = countSemContato + countAntecipado;
+        delete tratativasCountMap['AGENDAMENTO - ANTECIPADO'];
+    }
+
     const tratsArr = Object.entries(tratativasCountMap).sort((a,b)=>b[1]-a[1]);
     const maxTrat = tratsArr[0]?.[1] || 1;
     const ulTrat = document.getElementById('lista-tratativas');
-    if (ulTrat) ulTrat.innerHTML = tratsArr.length === 0
-        ? '<div class="empty">Sem dados de tratativa.</div>'
-        : tratsArr.map(([nome, qtd])=> {
-            const isCurrent = (tratativaSelecionada === nome);
-            return `<div class="clickable-item ${isCurrent ? 'active-filter-cyan' : ''}" onclick="selecionarTratativa('${nome.replace(/'/g, "\\'")}')" title="Filtrar por esta tratativa">
-                <span style="flex:3;min-width:0;color:var(--text);line-height:1.4;">${formatarNome(nome)}</span>
-                <div style="flex:2;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
-                    <div style="width:${(qtd/maxTrat*100).toFixed(1)}%;height:100%;background:var(--accent-cyan);border-radius:3px;"></div>
-                </div>
-                <span style="flex-shrink:0;min-width:26px;text-align:right;color:var(--accent-cyan);font-weight:700;">${qtd}</span>
-                <span style="flex-shrink:0;min-width:42px;text-align:right;color:var(--muted);">(${getPct(qtd, totalRealizado)}%)</span>
-            </div>`;
-        }).join('');
+    
+    if (ulTrat) {
+        if (tratsArr.length === 0) {
+            ulTrat.innerHTML = '<div class="empty">Sem dados de tratativa.</div>';
+        } else {
+            let tratsHTML = tratsArr.map(([nome, qtd])=> {
+                const isCurrent = (tratativaSelecionada === nome);
+                return `<div class="clickable-item ${isCurrent ? 'active-filter-cyan' : ''}" onclick="selecionarTratativa('${nome.replace(/'/g, "\\'")}')" title="Filtrar por esta tratativa">
+                    <span style="flex:3;min-width:0;color:var(--text);line-height:1.4;">${formatarNome(nome)}</span>
+                    <div style="flex:2;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
+                        <div style="width:${(qtd/maxTrat*100).toFixed(1)}%;height:100%;background:var(--accent-cyan);border-radius:3px;"></div>
+                    </div>
+                    <span style="flex-shrink:0;min-width:26px;text-align:right;color:var(--accent-cyan);font-weight:700;">${qtd}</span>
+                    <span style="flex-shrink:0;min-width:42px;text-align:right;color:var(--muted);" title="% do Total Geral">(${getPct(qtd, totalGeral)}%)</span>
+                </div>`;
+            }).join('');
+
+            // Adiciona o informativo em destaque amarelo sutil para o Antecipado
+            if (countAntecipado > 0) {
+                const isCurrentAnt = (tratativaSelecionada === 'AGENDAMENTO - ANTECIPADO');
+                tratsHTML += `
+                <div class="clickable-item ${isCurrentAnt ? 'active-filter-cyan' : ''}" onclick="selecionarTratativa('AGENDAMENTO - ANTECIPADO')" title="Filtrar o painel inteiro apenas por chamados Antecipados" style="background: rgba(245, 197, 25, 0.08); border: 1px dashed rgba(245, 197, 25, 0.3); margin-top: 8px;">
+                    <span style="flex:3;min-width:0;color:var(--accent-yellow);line-height:1.4;font-style:italic;">↳ Deste volume, apenas Antecipados:</span>
+                    <div style="flex:2;"></div>
+                    <span style="flex-shrink:0;min-width:26px;text-align:right;color:var(--accent-yellow);font-weight:700;">${countAntecipado}</span>
+                    <span style="flex-shrink:0;min-width:42px;text-align:right;color:var(--muted);" title="% do Total Geral">(${getPct(countAntecipado, totalGeral)}%)</span>
+                </div>`;
+            }
+            ulTrat.innerHTML = tratsHTML;
+        }
+    }
 
     let txt = `*📊 PAINEL TORRE DE CONTROLE — COBLI (${textoData})*\n`;
     if (prestadorSelecionado) {
@@ -1077,7 +1136,7 @@ function renderPainel(dados) {
         if (pilotoImpedido > 0) txt += `> • Impedidos: ${pilotoImpedido} (${getPct(pilotoImpedido, totalPiloto)}%)\n`;
     }
 
-    if (totalSemContato > 0) txt += `\n*⚡ Sem Contato:* ${totalSemContato} (${getPct(totalSemContato, totalGeral)}% do total)\n`;
+    if (totalSemContato > 0 || totalComContato > 0) txt += `\n*📞 Contatos:* Sem Contato: ${totalSemContato} (${getPct(totalSemContato, totalGeral)}%) | Com Contato: ${totalComContato} (${getPct(totalComContato, totalGeral)}%)\n`;
     
     if (totalFDS > 0) {
         txt += `*🔴 Fim de Semana:* ${totalFDS} atends. (${getPct(totalFDS, totalGeral)}% do total)\n`;
