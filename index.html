@@ -267,7 +267,7 @@
             <div class="panel-block" style="padding:16px 20px;">
                 <div class="panel-block-title" style="color:var(--accent-red);margin-bottom:10px;">
                     <div><span class="dot"></span>Fim de Semana</div>
-                    <span class="tooltip">? <span class="tooltiptext">Chamados de sábado ou domingo com alocação concluída, impedida ou No-Show registrado (Regra 6).</span></span>
+                    <span class="tooltip">? <span class="tooltiptext">Chamados de sábado ou domingo com alocação concluída, impedida, pendente ou No-Show (Regra 6).</span></span>
                 </div>
                 <div id="fds-totais-novo"></div>
             </div>
@@ -300,14 +300,19 @@
         <div class="grid-2" style="margin-bottom:14px;">
             <div class="panel-block">
                 <div class="panel-block-title" style="color:var(--accent-purple);">
-                    <div><span class="dot"></span>Top 10 Prestadores</div>
+                    <div>
+                        <span class="dot"></span>Top 10 Prestadores
+                        <span style="margin-left:8px;font-size:10px;color:var(--muted);text-transform:none;letter-spacing:0;">
+                            <span style="color:#F5C519;font-weight:700;">■</span> s/c = sem contato
+                        </span>
+                    </div>
                     <span class="tooltip">? <span class="tooltiptext">Maiores prestadores em volume Realizado. Clique no nome de um prestador para filtrar o painel inteiro por ele!</span></span>
                 </div>
                 <div id="lista-prestadores" class="scrollable-list" style="max-height:240px;overflow-y:auto;padding-right:8px;"></div>
             </div>
             <div class="panel-block">
                 <div class="panel-block-title" style="color:var(--accent-green);">
-                    <div><span class="dot"></span>Top 10 Antecipados</div>
+                    <div><span class="dot"></span>Prestador com atencipação de atendimento</div>
                     <span class="tooltip">? <span class="tooltiptext">Prestadores com maior número de agendamentos antecipados com sucesso.</span></span>
                 </div>
                 <div id="lista-antecipados" class="scrollable-list" style="max-height:240px;overflow-y:auto;padding-right:8px;"></div>
@@ -454,7 +459,7 @@ let dataSelecionada = null;
 let tratativaSelecionada = null; 
 let baseSlackMessage = "";
 let canvasGeradoGlobal = null;
-let dadosAtuaisPainel = []; // Variável para armazenar o dataset atual renderizado para o Modal
+let dadosAtuaisPainel = []; 
 window.alertaExibido = false; 
 window.toastExibido = false;
 
@@ -651,7 +656,6 @@ function limparTodosDrillDowns() {
 function executarFiltrosEPlotar() {
     let dadosFinais = [...dadosFiltradosPorData];
     
-    // Aplica filtro de Prestador
     if (prestadorSelecionado) {
         dadosFinais = dadosFinais.filter(l => val(l, 'prestador') === prestadorSelecionado);
         document.getElementById('filtro-prestador-badge').style.display = 'inline-flex';
@@ -660,7 +664,6 @@ function executarFiltrosEPlotar() {
         document.getElementById('filtro-prestador-badge').style.display = 'none';
     }
     
-    // Aplica filtro de Data
     if (dataSelecionada) {
         dadosFinais = dadosFinais.filter(l => toISO(val(l, 'data').split(' ')[0]) === dataSelecionada);
         document.getElementById('filtro-data-badge').style.display = 'inline-flex';
@@ -669,7 +672,6 @@ function executarFiltrosEPlotar() {
         document.getElementById('filtro-data-badge').style.display = 'none';
     }
 
-    // Aplica filtro de Tratativa
     if (tratativaSelecionada) {
         dadosFinais = dadosFinais.filter(l => {
             const rawTratativa = val(l, 'tratativa').toUpperCase().trim();
@@ -681,7 +683,6 @@ function executarFiltrosEPlotar() {
         document.getElementById('filtro-tratativa-badge').style.display = 'none';
     }
 
-    // Exibe ou esconde o Botão Limpar Filtros e Ver Detalhes
     if (prestadorSelecionado || dataSelecionada || tratativaSelecionada) {
         document.getElementById('btn-limpar-filtros-badge').style.display = 'inline-flex';
         document.getElementById('btn-ver-detalhes-badge').style.display = 'inline-flex';
@@ -704,7 +705,7 @@ function renderPainel(dados) {
     let totalImpedido = 0, totalAntecipado = 0;
     let totalFDS = 0, totalSemContato = 0, totalComContato = 0;
 
-    let fdsConcluido = 0, fdsImpedido = 0;
+    let fdsConcluido = 0, fdsImpedido = 0, fdsPendente = 0; 
 
     let geralByDay = {};
     let realizedByDay = {};
@@ -716,11 +717,11 @@ function renderPainel(dados) {
     let datasSet = new Set();
     
     let listaOSsSemConclusao = [];
-    dadosAtuaisPainel = []; // Limpa os dados do modal a cada renderização
+    dadosAtuaisPainel = []; 
 
     dados.forEach(linha => {
         let osId = linha['OS'] || linha['os'] || linha['Os'] || linha['ID'] || linha['id'] || val(linha, 'chamado') || val(linha, 'ticket');
-        if (!osId) return; // IGNORA LINHAS TOTALMENTE VAZIAS DO CSV
+        if (!osId) return; 
 
         const alocacaoRaw = val(linha, 'aloca');
         const alocacao = alocacaoRaw.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
@@ -729,7 +730,6 @@ function renderPainel(dados) {
         const prestador = val(linha, 'prestador');
         const dataStr = val(linha, 'data').split(' ')[0];
 
-        // ── REGRA SUPREMA: TUDO que tiver a tratativa EXATAMENTE como "AGENDAMENTO - CANCELADO" é ignorado da Base. ──
         if (tratativaRaw.includes('AGENDAMENTO - CANCELADO')) return;
 
         countLidos++;
@@ -753,13 +753,12 @@ function renderPainel(dados) {
         const isExcluidoRealizado = checkInSet(tratativaRaw, excluidosRealizados);
         const isInComContato = checkInSet(tratativaRaw, comContatoTratativas);
 
-        // Ajuste Sem Conclusão
         const isSemConclusao = (isConcluido || isImpedido || isEmAndamento || isCanceladoStatus || isAgendadoStatus || isTratativaEmBranco) && !isInSetA;
         const qualifiesRule1 = !fds && (isInSetA || isSemConclusao);
 
         if (qualifiesRule1) {
             totalGeral++;
-            dadosAtuaisPainel.push(linha); // Popula a tabela de detalhes com os dados da regra 1
+            dadosAtuaisPainel.push(linha); 
             if (dataISO) geralByDay[dataISO] = (geralByDay[dataISO] || 0) + 1;
             
             if (isSemConclusao) {
@@ -791,7 +790,6 @@ function renderPainel(dados) {
                 if (matchedA) tratativasCountMap[matchedA] = (tratativasCountMap[matchedA] || 0) + 1;
             }
 
-            // Soma isolada e exata de Com Contato
             if (isInComContato) {
                 totalComContato++;
             }
@@ -802,11 +800,12 @@ function renderPainel(dados) {
             if (prestador) prestadorAntecipado[prestador] = (prestadorAntecipado[prestador] || 0) + 1;
         }
 
-        if (fds && (isConcluido || isImpedido || isEmAndamento || tratativaRaw.includes('NO-SHOW') || tratativaRaw.includes('NO SHOW'))) {
+        if (fds && (isConcluido || isImpedido || isEmAndamento || isAgendadoStatus || tratativaRaw.includes('NO-SHOW') || tratativaRaw.includes('NO SHOW'))) {
             totalFDS++;
             if (dataISO) fdsByDay[dataISO] = (fdsByDay[dataISO] || 0) + 1;
             if (isConcluido) fdsConcluido++;
             if (isImpedido) fdsImpedido++;
+            if (isEmAndamento || isAgendadoStatus) fdsPendente++; 
         }
 
         if (isInSetD && !fds) {
@@ -927,8 +926,9 @@ function renderPainel(dados) {
     </div>`).join('');
 
     let badgesFDS = '';
-    if (fdsConcluido > 0) badgesFDS += `<span style="font-size:11px;background:rgba(31,239,81,0.1);color:var(--accent-green);border:1px solid rgba(31,239,81,0.25);border-radius:20px;padding:2px 8px;font-weight:600;">${fdsConcluido} Concluídos FDS</span>`;
-    if (fdsImpedido > 0) badgesFDS += `<span style="font-size:11px;background:rgba(245,197,25,0.1);color:var(--accent-yellow);border:1px solid rgba(245,197,25,0.25);border-radius:20px;padding:2px 8px;font-weight:600;">${fdsImpedido} Impedidos FDS</span>`;
+    if (fdsConcluido > 0) badgesFDS += `<span style="font-size:11px;background:rgba(31,239,81,0.1);color:var(--accent-green);border:1px solid rgba(31,239,81,0.25);border-radius:20px;padding:2px 8px;font-weight:600;">${fdsConcluido} Concluídos</span> `;
+    if (fdsImpedido > 0) badgesFDS += `<span style="font-size:11px;background:rgba(245,197,25,0.1);color:var(--accent-yellow);border:1px solid rgba(245,197,25,0.25);border-radius:20px;padding:2px 8px;font-weight:600;">${fdsImpedido} Impedidos</span> `;
+    if (fdsPendente > 0) badgesFDS += `<span style="font-size:11px;background:rgba(127,141,219,0.1);color:var(--accent-blue);border:1px solid rgba(127,141,219,0.25);border-radius:20px;padding:2px 8px;font-weight:600;">${fdsPendente} Pendentes</span>`;
 
     const fdsEl = document.getElementById('fds-totais-novo');
     if (fdsEl) fdsEl.innerHTML = totalFDS === 0
@@ -939,10 +939,9 @@ function renderPainel(dados) {
            </div>
            <div style="display:flex; flex-direction:column; align-items:flex-start; gap:6px; margin-bottom:6px;">
                <span style="font-size:11px;background:rgba(240,64,64,0.15);color:#F04040;border:1px solid rgba(240,64,64,0.3);border-radius:20px;padding:2px 8px;font-weight:700;">${getPct(totalFDS, totalGeral)}% do total analisado</span>
-               ${badgesFDS}
+               <div style="display:flex; flex-wrap:wrap; gap:4px;">${badgesFDS}</div>
            </div>`;
 
-    // ── AJUSTE 1 e 4: CARD SEM CONTATO x COM CONTATO HORIZONTAL ──
     const scEl = document.getElementById('sc-totais-novo');
     if (scEl) {
         if (totalSemContato === 0 && totalComContato === 0) {
@@ -1099,7 +1098,6 @@ function renderPainel(dados) {
     let countAntecipado = tratativasCountMap['AGENDAMENTO - ANTECIPADO'] || 0;
     let countSemContato = tratativasCountMap['AGENDAMENTO - EM ANDAMENTO - SEM CONTATO'] || 0;
     
-    // Soma Antecipado para dentro de Sem Contato na visualização da barra principal
     if (countAntecipado > 0) {
         tratativasCountMap['AGENDAMENTO - EM ANDAMENTO - SEM CONTATO'] = countSemContato + countAntecipado;
         delete tratativasCountMap['AGENDAMENTO - ANTECIPADO'];
@@ -1125,7 +1123,6 @@ function renderPainel(dados) {
                 </div>`;
             }).join('');
 
-            // Adiciona o informativo em destaque amarelo sutil para o Antecipado
             if (countAntecipado > 0) {
                 const isCurrentAnt = (tratativaSelecionada === 'AGENDAMENTO - ANTECIPADO');
                 tratsHTML += `
@@ -1179,6 +1176,7 @@ function renderPainel(dados) {
         txt += `*🔴 Fim de Semana:* ${totalFDS} atends. (${getPct(totalFDS, totalGeral)}% do total)\n`;
         if (fdsConcluido > 0) txt += `> • Concluídos FDS: ${fdsConcluido}\n`;
         if (fdsImpedido > 0) txt += `> • Impedidos FDS: ${fdsImpedido}\n`;
+        if (fdsPendente > 0) txt += `> • Pendentes FDS: ${fdsPendente}\n`;
     }
     
     if (nsArr.length > 0) {
@@ -1195,7 +1193,6 @@ function fecharAlertaModal() {
 
 function recarregar() { location.reload(); }
 
-// ── FUNÇÕES DO MODAL DE DETALHES ──
 function abrirModalDetalhes() {
     const tbody = document.getElementById('lista-detalhes-tabela');
     if (dadosAtuaisPainel.length === 0) {
